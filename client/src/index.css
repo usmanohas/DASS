@@ -1,0 +1,19 @@
+.ticket-card {
+  border-radius: 12px;
+  transition: all 0.25s ease;
+  background: #ffffff;
+}
+
+.ticket-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* smoother text */
+.ticket-card h6 {
+  font-size: 0.95rem;
+}
+
+.ticket-card p {
+  line-height: 1.4;
+}
