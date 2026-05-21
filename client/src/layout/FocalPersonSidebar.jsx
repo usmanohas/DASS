@@ -14,411 +14,401 @@ const FocalPersonSidebar = ({ collapsed, user }) => {
   const isParentActive = (paths) =>
     paths.some((path) => location.pathname.startsWith(path));
 
-  const activeParentStyle = {
-    background: "#2cd2d2",
-    color: "#ffffff",
-    borderRadius: "8px",
+  /* ================= MENU STYLE ================= */
+  const menuItem = (active) => ({
+    background: active ? "rgba(44,210,210,0.15)" : "transparent",
+    borderLeft: active ? "4px solid #2cd2d2" : "4px solid transparent",
+    borderRadius: "12px",
+    transition: "all 0.25s ease",
+  });
+
+  const iconStyle = {
+    width: "42px",
+    height: "42px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "1rem",
+    flexShrink: 0,
   };
+
+  const navItemClass =
+    "d-flex align-items-center text-white text-decoration-none px-2 py-2 sidebar-link";
+
+  const dropdownClass =
+    "d-flex align-items-center text-white px-2 py-2 sidebar-link";
 
   return (
     <div
-      className={`text-white d-flex flex-column p-3 ${
-        collapsed ? "d-none d-md-flex" : ""
-      }`}
-      style={{ width: "250px", minHeight: "100vh", backgroundColor: "#00c2c1" }}
+      className="d-flex flex-column text-white"
+      style={{
+        width: collapsed ? "82px" : "265px",
+        transition: "all 0.3s ease",
+        minHeight: "100vh",
+        padding: "14px",
+        borderRight: "1px solid rgba(255,255,255,0.06)",
+      }}
     >
-      {/* Logo */}
-      <div className="text-center mb-4">
-        <img src="/assets/images/logo.png" alt="logo" width={50} />
-        <h5 className="fw-bold">NPHCDA-DASS</h5>
-        <small>
-          <i className="bi bi-file-earmark-text me-1"></i>
-          {user?.file_number}
-        </small>
+      {/* ================= BRAND ================= */}
+      <div className="text-center  pb-3 border-bottom border-secondary border-opacity-25">
+        <img
+          src="/assets/images/logo.png"
+          alt="logo"
+          width={collapsed ? 38 : 54}
+          className="mb-2"
+        />
+
+        {!collapsed && (
+          <>
+            <h5 className="fw-bold mt-2 mb-1 text-white">NPHCDA-DASS</h5>
+
+            <small style={{color:"#badfdf" }}>
+              <i className="bi bi-file-earmark-text me-1"></i>
+              {user?.file_number}
+            </small>
+          </>
+        )}
       </div>
 
-      {/* Navigation */}
-      <ul className="nav flex-column mb-auto">
-        {/* Dashboard */}
-        <li className="nav-item mb-2 position-relative">
-          {isActive("/") && <span className="active-indicator"></span>}
+      {/* ================= MENU ================= */}
+      <div className="flex-grow-1 d-flex flex-column gap-1">
+        {/* DASHBOARD */}
+        <Link
+          to="/"
+          style={menuItem(isActive("/"))}
+          className={navItemClass}
+        >
+          <div style={iconStyle}>
+            <i className="bi bi-speedometer2"></i>
+          </div>
 
-          <Link
-            to="/"
-            className="nav-link text-white d-flex align-items-center"
-          >
-            <i className="bi bi-speedometer2 me-2"></i>
-            Dashboard
-            {isActive("/") && (
-              <i className="bi bi-dot ms-auto text-warning"></i>
-            )}
-          </Link>
-        </li>
+          {!collapsed && (
+            <>
+              <span>Dashboard</span>
 
-        {/* Document */}
-        <li className="nav-item mb-2">
+              {isActive("/") && (
+                <span className="ms-auto badge rounded-pill bg-info">
+                  Active
+                </span>
+              )}
+            </>
+          )}
+        </Link>
+
+        {/* ================= DOCUMENT ================= */}
+        <div>
           <div
             onClick={() => toggleMenu("document")}
-            className="nav-link d-flex justify-content-between align-items-center text-white position-relative"
-            style={{
-              cursor: "pointer",
-              ...(isParentActive([
+            style={menuItem(
+              isParentActive([
                 "/department/document/upload",
                 "/department/document/manage",
                 "/department/document/archived-deleted",
-              ])
-                ? activeParentStyle
-                : {}),
-            }}
+              ]),
+            )}
+            className={dropdownClass}
+            role="button"
           >
-            <span>
-              <i className="bi bi-files me-2"></i> Document
-            </span>
-            <i
-              className={`bi ${
-                openMenu === "document"
-                  ? "bi-caret-down-fill text-white"
-                  : "bi-caret-right-fill"
-              }`}
-            ></i>
+            <div style={iconStyle}>
+              <i className="bi bi-files"></i>
+            </div>
+
+            {!collapsed && (
+              <>
+                <span>Document</span>
+
+                <i
+                  className={`bi ms-auto ${
+                    openMenu === "document"
+                      ? "bi-chevron-down"
+                      : "bi-chevron-right"
+                  }`}
+                />
+              </>
+            )}
           </div>
 
           <div
             style={{
-              maxHeight: openMenu === "document" ? "300px" : "0px",
+              maxHeight: openMenu === "document" && !collapsed ? "250px" : "0",
               overflow: "hidden",
-              transition: "max-height 0.3s ease",
+              transition: "all 0.3s ease",
             }}
           >
-            <ul className="nav flex-column ms-3 mt-1">
-              <li className="nav-item mb-2 position-relative">
-                {isActive("/department/document/upload") && (
-                  <span className="active-indicator"></span>
-                )}
-
+            {!collapsed && (
+              <div className="ms-5 mt-2 d-flex flex-column gap-2">
                 <Link
                   to="/department/document/upload"
-                  className="nav-link text-white d-flex align-items-center"
+                  className="submenu-link"
                 >
                   Upload
-                  {isActive("/department/document/upload") && (
-                    <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
-                  )}
                 </Link>
-              </li>
-              <li className="nav-item mb-2 position-relative">
-                {isActive("/department/document/manage") && (
-                  <span className="active-indicator"></span>
-                )}
 
                 <Link
                   to="/department/document/manage"
-                  className="nav-link text-white d-flex align-items-center"
+                  className="submenu-link"
                 >
-                  Manage Document
-                  {isActive("/department/document/manage") && (
-                    <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
-                  )}
+                  Manage
                 </Link>
-              </li>
-              <li className="nav-item mb-2 position-relative">
-                {isActive("/department/document/archived-deleted") && (
-                  <span className="active-indicator"></span>
-                )}
 
                 <Link
                   to="/department/document/archived-deleted"
-                  className="nav-link text-white d-flex align-items-center"
+                  className="submenu-link"
                 >
-                  Archived/Deleted
-                  {isActive("/department/document/archived-deleted") && (
-                    <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
-                  )}
+                  Archived / Deleted
                 </Link>
-              </li>
-            </ul>
-          </div>
-        </li>
-
-        {/* Other Workstream */}
-        <li className="nav-item mb-2 position-relative">
-          {isActive("/department/document/section") && (
-            <span className="active-indicator"></span>
-          )}
-
-          <Link
-            to="/department/document/section"
-            className="nav-link text-white d-flex align-items-center"
-          >
-            <i className="bi bi-diagram-3 me-2"></i>Workstream
-            {isActive("/department/document/section") && (
-              <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
+              </div>
             )}
-          </Link>
-        </li>
+          </div>
+        </div>
 
-        {/* Document Access Request */}
-        <li className="nav-item mb-2">
+        {/* ================= WORKSTREAM ================= */}
+        <Link
+          to="/department/document/section"
+          style={menuItem(isActive("/department/document/section"))}
+          className={navItemClass}
+        >
+          <div style={iconStyle}>
+            <i className="bi bi-building"></i>
+          </div>
+
+          {!collapsed && <span>Inter-Departmental</span>}
+        </Link>
+
+        {/* ================= REQUESTS ================= */}
+        <div>
           <div
             onClick={() => toggleMenu("request")}
-            className="nav-link d-flex justify-content-between align-items-center text-white"
-            style={{
-              cursor: "pointer",
-              ...(isParentActive([
-                "/department/document/staff/department-access-requests",
+            style={menuItem(
+              isParentActive([
                 "/department/access-requests",
-                "/department/my-requests",
-              ])
-                ? activeParentStyle
-                : {}),
-            }}
+                "/department/document/staff/department-access-requests",
+                "/department/document/request",
+              ]),
+            )}
+            className={dropdownClass}
+            role="button"
           >
-            <span>
-              <i className="bi bi-shield-lock me-2"></i>Requests
-            </span>
-            <i
-              className={`bi ${
-                openMenu === "request"
-                  ? "bi-caret-down-fill text-white"
-                  : "bi-caret-right-fill"
-              }`}
-            ></i>
+            <div style={iconStyle}>
+              <i className="bi bi-shield-lock"></i>
+            </div>
+
+            {!collapsed && (
+              <>
+                <span>Requests</span>
+
+                <i
+                  className={`bi ms-auto ${
+                    openMenu === "request"
+                      ? "bi-chevron-down"
+                      : "bi-chevron-right"
+                  }`}
+                />
+              </>
+            )}
           </div>
 
           <div
             style={{
-              maxHeight: openMenu === "request" ? "300px" : "0px",
+              maxHeight: openMenu === "request" && !collapsed ? "250px" : "0",
               overflow: "hidden",
-              transition: "max-height 0.3s ease",
+              transition: "all 0.3s ease",
             }}
           >
-            <ul className="nav flex-column ms-3 mt-1">
-              <li className="nav-item mb-2 position-relative">
-                {isActive("/department/access-requests") && (
-                  <span className="active-indicator"></span>
-                )}
-
+            {!collapsed && (
+              <div className="ms-5 mt-2 d-flex flex-column gap-2">
                 <Link
                   to="/department/access-requests"
-                  className="nav-link text-white d-flex align-items-center"
+                  className="submenu-link"
                 >
-                  Internal Requests
-                  {isActive("/department/access-requests") && (
-                    <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
-                  )}
+                  Internal
                 </Link>
-              </li>
-
-              <li className="nav-item mb-2 position-relative">
-                {isActive(
-                  "/department/document/staff/department-access-requests",
-                ) && <span className="active-indicator"></span>}
 
                 <Link
                   to="/department/document/staff/department-access-requests"
-                  className="nav-link text-white d-flex align-items-center"
+                  className="submenu-link"
                 >
-                  Cross-Department Requests
-                  {isActive(
-                    "/department/document/staff/department-access-requests",
-                  ) && (
-                    <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
-                  )}
+                  Cross Department
                 </Link>
-              </li>
-
-              <li className="nav-item mb-2 position-relative">
-                {isActive("/department/document/request") && (
-                  <span className="active-indicator"></span>
-                )}
 
                 <Link
                   to="/department/document/request"
-                  className="nav-link text-white d-flex align-items-center"
+                  className="submenu-link"
                 >
-                  My Request
-                  {isActive("/department/document/request") && (
-                    <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
-                  )}
+                  My Requests
                 </Link>
-              </li>
-            </ul>
+              </div>
+            )}
           </div>
-        </li>
+        </div>
 
-        {/* Staff */}
-        <li className="nav-item mb-2">
+        {/* ================= STAFF ================= */}
+        <div>
           <div
             onClick={() => toggleMenu("staff")}
-            className="nav-link d-flex justify-content-between align-items-center text-white"
-            style={{
-              cursor: "pointer",
-              ...(isParentActive([
+            style={menuItem(
+              isParentActive([
                 "/department/staff",
                 "/department/staff-directory",
-              ])
-                ? activeParentStyle
-                : {}),
-            }}
+              ]),
+            )}
+            className={dropdownClass}
+            role="button"
           >
-            <span>
-              <i className="bi bi-people me-2"></i> Staff
-            </span>
-            <i
-              className={`bi ${
-                openMenu === "staff"
-                  ? "bi-caret-down-fill text-white"
-                  : "bi-caret-right-fill"
-              }`}
-            ></i>
+            <div style={iconStyle}>
+              <i className="bi bi-people"></i>
+            </div>
+
+            {!collapsed && (
+              <>
+                <span>Staff</span>
+
+                <i
+                  className={`bi ms-auto ${
+                    openMenu === "staff"
+                      ? "bi-chevron-down"
+                      : "bi-chevron-right"
+                  }`}
+                />
+              </>
+            )}
           </div>
 
           <div
             style={{
-              maxHeight: openMenu === "staff" ? "300px" : "0px",
+              maxHeight: openMenu === "staff" && !collapsed ? "200px" : "0",
               overflow: "hidden",
-              transition: "max-height 0.3s ease",
+              transition: "all 0.3s ease",
             }}
           >
-            <ul className="nav flex-column ms-3 mt-1">
-              <li className="nav-item mb-2 position-relative">
-                {isActive("/department/staff") && (
-                  <span className="active-indicator"></span>
-                )}
-
-                <Link
-                  to="/department/staff"
-                  className="nav-link text-white d-flex align-items-center"
-                >
-                  Department Staff
-                  {isActive("/department/staff") && (
-                    <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
-                  )}
+            {!collapsed && (
+              <div className="ms-5 mt-2 d-flex flex-column gap-2">
+                <Link to="/department/staff" className="submenu-link">
+                  Department Only
                 </Link>
-              </li>
-
-              <li className="nav-item mb-2 position-relative">
-                {isActive("/department/staff-directory") && (
-                  <span className="active-indicator"></span>
-                )}
 
                 <Link
                   to="/department/staff-directory"
-                  className="nav-link text-white d-flex align-items-center"
+                  className="submenu-link"
                 >
-                  Staff Directory
-                  {isActive("/department/staff-directory") && (
-                    <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
-                  )}
+                  All Department
                 </Link>
-              </li>
-            </ul>
-          </div>
-        </li>
-
-        {/* Support */}
-        <li className="nav-item mb-2 position-relative">
-          {isActive("/department/my-support-tickets") && (
-            <span className="active-indicator"></span>
-          )}
-          <Link
-            to="/department/my-support-tickets"
-            className="nav-link text-white d-flex align-items-center"
-          >
-            <i className="bi bi-ticket-detailed me-2"></i>Tickets
-            {isActive("/department/my-support-tickets") && (
-              <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
+              </div>
             )}
-          </Link>
-        </li>
+          </div>
+        </div>
 
-        {/* Programs / Campaigns */}
-        <li className="nav-item mb-2">
+        {/* ================= TICKETS ================= */}
+        <Link
+          to="/department/my-support-tickets"
+          style={menuItem(isActive("/department/my-support-tickets"))}
+          className={navItemClass}
+        >
+          <div style={iconStyle}>
+            <i className="bi bi-ticket-detailed"></i>
+          </div>
+
+          {!collapsed && <span>Support Ticket</span>}
+        </Link>
+
+        {/* ================= PROGRAMS ================= */}
+        <div>
           <div
             onClick={() => toggleMenu("program")}
-            className="nav-link d-flex justify-content-between align-items-center text-white"
-            style={{
-              cursor: "pointer",
-              ...(isParentActive([
-                "/department/programs",
-                "/department/programs/assigned",
-              ])
-                ? activeParentStyle
-                : {}),
-            }}
+            style={menuItem(isParentActive(["/department/programs"]))}
+            className={dropdownClass}
+            role="button"
           >
-            <span>
-              <i className="bi bi-droplet  me-2"></i> Programs
-            </span>
-            <i
-              className={`bi ${
-                openMenu === "staff"
-                  ? "bi-caret-down-fill text-white"
-                  : "bi-caret-right-fill"
-              }`}
-            ></i>
+            <div style={iconStyle}>
+              <i className="bi bi-droplet"></i>
+            </div>
+
+            {!collapsed && (
+              <>
+                <span>Programs</span>
+
+                <i
+                  className={`bi ms-auto ${
+                    openMenu === "program"
+                      ? "bi-chevron-down"
+                      : "bi-chevron-right"
+                  }`}
+                />
+              </>
+            )}
           </div>
 
           <div
             style={{
-              maxHeight: openMenu === "program" ? "300px" : "0px",
+              maxHeight: openMenu === "program" && !collapsed ? "200px" : "0",
               overflow: "hidden",
-              transition: "max-height 0.3s ease",
+              transition: "all 0.3s ease",
             }}
           >
-            <ul className="nav flex-column ms-3 mt-1">
-              <li className="nav-item mb-2 position-relative">
-                {isActive("/department/programs") && (
-                  <span className="active-indicator"></span>
-                )}
-
-                <Link
-                  to="/department/programs"
-                  className="nav-link text-white d-flex align-items-center"
-                >
+            {!collapsed && (
+              <div className="ms-5 mt-2 d-flex flex-column gap-2">
+                <Link to="/department/programs" className="submenu-link">
                   Manage Programs
-                  {isActive("/department/programs") && (
-                    <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
-                  )}
                 </Link>
-              </li>
-
-              <li className="nav-item mb-2 position-relative">
-                {isActive("/department/programs/assigned") && (
-                  <span className="active-indicator"></span>
-                )}
 
                 <Link
                   to="/department/programs/assigned"
-                  className="nav-link text-white d-flex align-items-center"
+                  className="submenu-link"
                 >
                   Team Lead
-                  {isActive("/department/programs/assigned") && (
-                    <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
-                  )}
                 </Link>
-              </li>
-            </ul>
+              </div>
+            )}
           </div>
-        </li>
-      </ul>
+        </div>
+      </div>
 
-      {/* Bottom */}
-      <div className="mt-auto position-relative">
-        {isActive("/department/change-password") && (
-          <span className="active-indicator"></span>
-        )}
-
+      {/* ================= SETTINGS ================= */}
+      <div className="pt-3 mt-3 border-top border-secondary border-opacity-25">
         <Link
-          to="/department/change-password"
-          className="nav-link text-white d-flex align-items-center"
-        >
-          <i className="bi bi-gear-fill me-2"></i> Settings
-          {isActive("/department/change-password") && (
-            <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
+          to="/department/user/change-password"
+          style={menuItem(
+            isActive("/department/user/change-password"),
           )}
+          className={navItemClass}
+        >
+          <div style={iconStyle}>
+            <i className="bi bi-gear"></i>
+          </div>
+
+          {!collapsed && <span>Settings</span>}
         </Link>
       </div>
+
+      {/* ================= CUSTOM CSS ================= */}
+      <style>
+        {`
+          .sidebar-link {
+            transition: all 0.25s ease;
+            border-radius: 12px;
+            cursor: pointer;
+          }
+
+          .sidebar-link:hover {
+            background: rgba(255,255,255,0.06);
+            transform: translateX(2px);
+          }
+
+          .submenu-link {
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            padding: 6px 10px;
+            border-radius: 8px;
+          }
+
+          .submenu-link:hover {
+            color: #ffffff;
+            padding-left: 14px;
+          }
+        `}
+      </style>
     </div>
   );
 };

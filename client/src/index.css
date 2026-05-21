@@ -17,3 +17,93 @@
 .ticket-card p {
   line-height: 1.4;
 }
+
+.action-row td {
+  background: #f8f9fa;
+  border-top: none;
+  animation: fadeSlide 0.2s ease-in-out;
+}
+
+.action-panel {
+  border-left: 4px solid #0b8585;
+  border-radius: 8px;
+  background: #edf2fa;
+}
+
+/* hover effect */
+.action-panel button {
+  transition: 0.2s ease;
+}
+
+.action-panel button:hover {
+  transform: translateY(-1px);
+}
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.upload-stepper {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.step-item {
+  text-align: center;
+  flex: 1;
+}
+
+.step-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #dee2e6;
+  margin: auto;
+  line-height: 40px;
+  font-weight: bold;
+}
+
+.step-circle.active {
+  background: #0d6efd;
+  color: white;
+}
+
+.upload-zone {
+  border: 2px dashed #ccc;
+  padding: 30px;
+  text-align: center;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.upload-inner {
+  cursor: pointer;
+}
+
+.sidebar-tooltip {
+  position: absolute;
+  left: 70px;
+  background: #111827;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(-5px);
+  transition: 0.2s ease;
+  pointer-events: none;
+}
+
+a:hover .sidebar-tooltip {
+  opacity: 1;
+  transform: translateX(0);
+}

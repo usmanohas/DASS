@@ -41,9 +41,12 @@ const SectionDocumentDFP = () => {
 
   const fetchDepartments = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/department/departments", {
-        withCredentials: true,
-      });
+      const res = await axios.get(
+        "http://localhost:3000/department/departments",
+        {
+          withCredentials: true,
+        },
+      );
 
       if (res.data.Status) {
         setDepartments(res.data.Departments);
@@ -70,9 +73,12 @@ const SectionDocumentDFP = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/department/categories", {
-        withCredentials: true,
-      });
+      const res = await axios.get(
+        "http://localhost:3000/department/categories",
+        {
+          withCredentials: true,
+        },
+      );
 
       setCategories(res.data);
     } catch (err) {
@@ -124,8 +130,9 @@ const SectionDocumentDFP = () => {
   return (
     <div className="container-fluid py-4">
       {/* Header */}
-      <h3 className="">
-        <i className="bi bi-diagram-3"></i> Documents from Other Departments
+      <h3 className="mb-3 fw-bold">
+        <i className="bi bi-building me-2"></i>
+        Inter-Departmental Documents
       </h3>
       {/* ================= FILTER BAR ================= */}
       <div className="card shadow-sm border-0 mb-4">
@@ -138,7 +145,7 @@ const SectionDocumentDFP = () => {
 
             {/* Active Filter Badge */}
             {getActiveFilterCount() > 0 && (
-              <span className="badge bg-success">
+              <span className="badge bg-secondary">
                 {getActiveFilterCount()} Active
               </span>
             )}
@@ -235,7 +242,7 @@ const SectionDocumentDFP = () => {
             {/* Reset Button */}
             <div className="col-md-2 d-grid">
               <button
-              title="Reset"
+                title="Reset"
                 className="btn btn-outline-secondary"
                 onClick={() => {
                   setDepartment("");
@@ -293,7 +300,9 @@ const SectionDocumentDFP = () => {
                       key={doc.id}
                       role="button"
                       className="cursor-pointer"
-                      onClick={() => navigate(`/department/document/section/${doc.id}`)}
+                      onClick={() =>
+                        navigate(`/department/document/section/${doc.id}`)
+                      }
                     >
                       <td className="text-center">{index + 1}</td>
                       <td>
@@ -318,14 +327,9 @@ const SectionDocumentDFP = () => {
                       </td>
 
                       <td className="text-center">
-                        <span
-                          className={`badge ${
-                            classificationColors[doc.classification] ||
-                            "bg-secondary"
-                          }`}
-                        >
-                          {doc.classification}
-                        </span>
+                        <span className="badge bg-light text-dark border px-3 py-2 rounded-pill">
+                            {doc.classification}
+                          </span>
                       </td>
 
                       <td className="text-center">

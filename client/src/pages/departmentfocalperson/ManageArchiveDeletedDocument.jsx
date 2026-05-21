@@ -87,10 +87,10 @@ const ArchiveDeletePage = () => {
       {/* HEADER */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h4 className="mb-0 fw-bold text-success">
+          <h3 className="mb-0 fw-bold">
             <i className="bi bi-archive me-2 text-muted"></i>
             Archived & Deleted Documents
-          </h4>
+          </h3>
           <small className="text-muted">
             Manage and request restoration of documents
           </small>

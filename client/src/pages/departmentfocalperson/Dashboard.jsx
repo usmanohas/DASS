@@ -329,11 +329,11 @@ const DfpDashboard = () => {
   return (
     <div className="container">
       {/* Page Header */}
-      <div className="card border-0 shadow-sm mb-2">
-        <div className="card-body d-flex justify-content-between align-items-center flex-wrap">
+      <div className="mb-4">
+        <div className="d-flex justify-content-between align-items-center flex-wrap">
           {/* Left Section */}
           <div>
-            <h2 className="mb-1">
+            <h2 className="mb-2">
               <i className="bi bi-speedometer2 text-muted me-2"></i>
               Department Dashboard
             </h2>
@@ -358,38 +358,166 @@ const DfpDashboard = () => {
 
       {/* KPI CARDS */}
       <div className="row g-3 mb-4">
-        <Card title="Total Staff" value={summary.total_staff} icon="people" />
-        <Card
-          title="Active Staff"
-          value={summary.active_staff}
-          icon="person-check"
-        />
-        <Card
-          title="Total Documents"
-          value={summary.total_documents}
-          icon="file-earmark"
-        />
-        <Card
-          title="Archived"
-          value={summary.archived_documents}
-          icon="archive"
-        />
-        <Card title="Deleted" value={summary.deleted_documents} icon="trash3" />
-        <Card
-          title="Uploads This Year"
-          value={summary.uploads_this_month}
-          icon="upload"
-        />
-        <Card
-          title="Downloads"
-          value={summary.downloads_this_month}
-          icon="download"
-        />
-        <Card
-          title="Storage (MB)"
-          value={(summary.total_storage / 1024 / 1024).toFixed(2)}
-          icon="hdd"
-        />
+        <div className="col-md-3">
+          <div className="card border-0 shadow-sm h-100">
+            <div className="card-body d-flex align-items-center gap-3">
+              <div
+                className="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center"
+                style={{ width: 55, height: 55 }}
+              >
+                <i className="bi bi-people fs-4"></i>
+              </div>
+
+              <div>
+                <small className="text-muted">Total Staff</small>
+                <h4 className="text-muted mb-0">
+                  {summary.total_staff}
+                </h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-md-3">
+          <div className="card border-0 shadow-sm h-100">
+            <div className="card-body d-flex align-items-center gap-3">
+              <div
+                className="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center"
+                style={{ width: 55, height: 55 }}
+              >
+                <i className="bi bi-person-check fs-4"></i>
+              </div>
+
+              <div>
+                <small className="text-muted">Active Staff</small>
+                <h4 className="text-muted mb-0">
+                  {summary.active_staff}
+                </h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-md-3">
+          <div className="card border-0 shadow-sm h-100">
+            <div className="card-body d-flex align-items-center gap-3">
+              <div
+                className="bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center"
+                style={{ width: 55, height: 55 }}
+              >
+                <i className="bi bi-file-earmark fs-4"></i>
+              </div>
+
+              <div>
+                <small className="text-muted">Total Documents</small>
+                <h4 className="text-muted mb-0">
+                  {summary.total_documents}
+                </h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-md-3">
+          <div className="card border-0 shadow-sm h-100">
+            <div className="card-body d-flex align-items-center gap-3">
+              <div
+                className="bg-dark bg-opacity-10 text-secondary rounded-circle d-flex align-items-center justify-content-center"
+                style={{ width: 55, height: 55 }}
+              >
+                <i className="bi bi-archive fs-4"></i>
+              </div>
+
+              <div>
+                <small className="text-muted">Archived</small>
+                <h4 className="text-muted mb-0">
+                  {summary.archived_documents}
+                </h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-md-3">
+          <div className="card border-0 shadow-sm h-100">
+            <div className="card-body d-flex align-items-center gap-3">
+              <div
+                className="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center"
+                style={{ width: 55, height: 55 }}
+              >
+                <i className="bi bi-trash3 fs-4"></i>
+              </div>
+
+              <div>
+                <small className="text-muted">Deleted</small>
+                <h4 className="text-muted mb-0">
+                  {summary.deleted_documents}
+                </h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-md-3">
+          <div className="card border-0 shadow-sm h-100">
+            <div className="card-body d-flex align-items-center gap-3">
+              <div
+                className="bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center"
+                style={{ width: 55, height: 55 }}
+              >
+                <i className="bi bi-upload fs-4"></i>
+              </div>
+
+              <div>
+                <small className="text-muted">Upload This Year</small>
+                <h4 className="text-muted mb-0">
+                  {summary.uploads_this_month}
+                </h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-md-3">
+          <div className="card border-0 shadow-sm h-100">
+            <div className="card-body d-flex align-items-center gap-3">
+              <div
+                className="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center"
+                style={{ width: 55, height: 55 }}
+              >
+                <i className="bi bi-download fs-4"></i>
+              </div>
+
+              <div>
+                <small className="text-muted">Downloads</small>
+                <h4 className="text-muted mb-0">
+                  {summary.downloads_this_month}
+                </h4>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="col-md-3">
+          <div className="card border-0 shadow-sm h-100">
+            <div className="card-body d-flex align-items-center gap-3">
+              <div
+                className="bg-secondary bg-opacity-10 text-secondary rounded-circle d-flex align-items-center justify-content-center"
+                style={{ width: 55, height: 55 }}
+              >
+                <i className="bi bi-hdd fs-4"></i>
+              </div>
+
+              <div>
+                <small className="text-muted">Storage Consumed</small>
+                <h4 className="text-muted mb-0">
+                  {(summary.total_storage / 1024 / 1024).toFixed(2)}
+                </h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       {/* CHARTS */}

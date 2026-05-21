@@ -136,7 +136,7 @@ const ProgramsPage = () => {
         </div>
 
         <button
-          className="btn btn-info text-white rounded-pill px-4 shadow-sm"
+          className="btn bg-success-subtle text-success rounded-pill px-4"
           onClick={() => setShowModal(true)}
         >
           <i className="bi bi-plus-lg me-2"></i>
@@ -194,27 +194,27 @@ const ProgramsPage = () => {
                               )}
                             </td>
 
-                                                      {/* ACTION BUTTONS */}
-                          <td>
-                            <div className="d-flex justify-content-center gap-2 flex-nowrap">
-                              <button
-                                className="btn btn-sm btn-dark rounded-pill px-3"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  navigate(`/department/programs/${p.id}`);
-                                }}
-                              >
-                                <i className="bi bi-eye me-1"></i> View
-                              </button>
+                            {/* ACTION BUTTONS */}
+                            <td>
+                              <div className="d-flex justify-content-center gap-2 flex-nowrap">
+                                <button
+                                  className="btn btn-sm btn-secondary rounded-pill px-3"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigate(`/department/programs/${p.id}`);
+                                  }}
+                                >
+                                  <i className="bi bi-eye me-1"></i> View
+                                </button>
 
-                              <button
-                                className="btn btn-sm btn-outline-warning"
-                                onClick={() => openEdit(p)}
-                              >
-                                <i className="bi bi-pencil"></i>
-                              </button>
-                            </div>
-                          </td>
+                                <button
+                                  className="btn btn-sm btn-outline-warning"
+                                  onClick={() => openEdit(p)}
+                                >
+                                  <i className="bi bi-pencil"></i>
+                                </button>
+                              </div>
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -325,7 +325,9 @@ const ProgramsPage = () => {
 
                     <div className="fw-semibold text-dark">
                       <p className="p-0 m-0">Kwara_state_MR_2026_REPORT.pdf</p>
-                      <p className="p-0 m-0">Kano_state_IEV_2026_PHASE1_REPORT.pdf</p>
+                      <p className="p-0 m-0">
+                        Kano_state_IEV_2026_PHASE1_REPORT.pdf
+                      </p>
                     </div>
                   </div>
 

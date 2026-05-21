@@ -103,89 +103,126 @@ const ManageDocumentDFP = () => {
 
   return (
     <div className="container-fluid py-4">
-      {/* Header */}
-      <div className="d-flex justify-content-between align-items-center flex-wrap mb-4">
-        <h3 className="text-success">
-          <i className="bi bi-files me-2"></i> Department Documents
-        </h3>
+      {/* ================= PAGE HEADER ================= */}
+      <div className="mb-4">
+        {/* HEADER TOP */}
+        <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+          {/* TITLE BLOCK */}
+          <div>
+            <div className="d-flex align-items-center gap-2 mb-1">
+              <i className="bi bi-folder2-open fs-4"></i>
 
-        <div className="d-flex gap-2 flex-wrap align-items-center">
-          {/* Category */}
-          <select
-            className="form-select"
-            style={{ width: "160px" }}
-            value={category}
-            onChange={(e) => {
-              setPage(1);
-              setCategory(e.target.value);
-            }}
-          >
-            <option value="">All Categories</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
+              <h3 className="fw-bold mb-0 text-dark">Department Documents</h3>
+            </div>
 
-          {/* Classification */}
-          <select
-            className="form-select"
-            style={{ width: "160px" }}
-            value={classification}
-            onChange={(e) => {
-              setPage(1);
-              setClassification(e.target.value);
-            }}
-          >
-            <option value="">All Classification</option>
-            <option>Public</option>
-            <option>Internal</option>
-            <option>Confidential</option>
-            <option>Restricted</option>
-          </select>
+            <p className="text-muted mb-0" style={{ fontSize: "0.95rem" }}>
+              Manage, review and access departmental document records
+            </p>
+          </div>
 
-          {/* Dynamic Year */}
-          <select
-            className="form-select"
-            style={{ width: "140px" }}
-            value={year}
-            onChange={(e) => {
-              setPage(1);
-              setYear(e.target.value);
-            }}
+          {/* STATS CARD */}
+          <div
+            className="border rounded-3 px-4 py-3 text-center"
+            style={{ backgroundColor: "#109090" }}
           >
-            <option value="">All Years</option>
-            {years.map((yr) => (
-              <option key={yr} value={yr}>
-                {yr}
-              </option>
-            ))}
-          </select>
+            <div className="text-white small">Total Documents</div>
+            <div className="fw-bold fs-3 text-white lh-1">
+              {documents.length}
+            </div>
+          </div>
+        </div>
 
-          {/* Search Modal Button */}
-          <button
-            className="btn btn-outline-success"
-            data-bs-toggle="modal"
-            data-bs-target="#keywordModal"
-          >
-            <i className="bi bi-search"></i>
-          </button>
+        {/* ================= FILTER TOOLBAR ================= */}
+        <div className="card border rounded-2">
+          <div className="card-body py-3">
+            <div className="row g-3 align-items-end">
+              {/* CATEGORY */}
+              <div className="col-lg-3 col-md-6">
+                <select
+                  className="form-select"
+                  value={category}
+                  onChange={(e) => {
+                    setPage(1);
+                    setCategory(e.target.value);
+                  }}
+                >
+                  <option value="">All Categories</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-          {/* 🔥 Clear Button */}
-          <button
-            className="btn btn-danger"
-            onClick={() => {
-              setCategory("");
-              setClassification("");
-              setYear("");
-              setSearch("");
-              setPage(1);
-            }}
-          >
-            <i className="bi bi-x-circle me-1"></i>
-            Clear
-          </button>
+              {/* CLASSIFICATION */}
+              <div className="col-lg-3 col-md-6">
+                <select
+                  className="form-select"
+                  value={classification}
+                  onChange={(e) => {
+                    setPage(1);
+                    setClassification(e.target.value);
+                  }}
+                >
+                  <option value="">All Classification</option>
+                  <option>Public</option>
+                  <option>Internal</option>
+                  <option>Confidential</option>
+                  <option>Restricted</option>
+                </select>
+              </div>
+
+              {/* YEAR */}
+              <div className="col-lg-2 col-md-6">
+                <select
+                  className="form-select"
+                  value={year}
+                  onChange={(e) => {
+                    setPage(1);
+                    setYear(e.target.value);
+                  }}
+                >
+                  <option value="">All Years</option>
+                  {years.map((yr) => (
+                    <option key={yr} value={yr}>
+                      {yr}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* ACTIONS */}
+              <div className="col-lg-4">
+                <div className="d-flex gap-2 flex-wrap justify-content-lg-end">
+                  {/* SEARCH */}
+                  <button
+                    className="btn btn-outline-success px-3 d-flex align-items-center gap-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#keywordModal"
+                  >
+                    <i className="bi bi-search"></i>
+                    Search
+                  </button>
+
+                  {/* CLEAR */}
+                  <button
+                    className="btn btn-outline-secondary px-3 d-flex align-items-center gap-2"
+                    onClick={() => {
+                      setCategory("");
+                      setClassification("");
+                      setYear("");
+                      setSearch("");
+                      setPage(1);
+                    }}
+                  >
+                    <i className="bi bi-x-circle"></i>
+                    Reset
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -214,11 +251,10 @@ const ManageDocumentDFP = () => {
               <table className="table table-hover table-bordered align-middle">
                 <thead className="table-light">
                   <tr>
-                    <th>TITLE</th>
+                    <th>DOCUMENT TITLE</th>
                     <th>CATEGORY</th>
                     <th>SUB CATEGORY</th>
                     <th className="text-center">CLASSIFICATION</th>
-                    <th>STATUS</th>
                     <th>UPLOADED AT</th>
                   </tr>
                 </thead>
@@ -228,25 +264,19 @@ const ManageDocumentDFP = () => {
                       key={doc.id}
                       role="button"
                       className="cursor-pointer"
-                      onClick={() =>
-                        navigate(
-                          `/department/document/${doc.id}`
-                        )
-                      }
+                      onClick={() => navigate(`/department/document/${doc.id}`)}
                     >
                       <td>
                         <div className="fw-semibold" title={doc.title}>
                           {truncate(doc.title, 45)}
                         </div>
-                        <small className="text-muted">
+                        <small className="text-muted small">
                           {truncate(doc.description || "No description", 60)}
                         </small>
                       </td>
 
                       <td>
-                        <span className="">
-                          {doc.category_name}
-                        </span>
+                        <span className="">{doc.category_name}</span>
                       </td>
 
                       <td>
@@ -256,20 +286,9 @@ const ManageDocumentDFP = () => {
                       </td>
 
                       <td className="text-center">
-                        <span
-                          className={`badge ${
-                            classificationColors[doc.classification] ||
-                            "bg-secondary"
-                          }`}
-                        >
-                          {doc.classification}
-                        </span>
-                      </td>
-
-                      <td>
-                        <small className="text-muted">
-                          {doc.document_status}
-                        </small>
+                        <span className="badge bg-light text-dark border px-3 py-2 rounded-pill">
+                            {doc.classification}
+                          </span>
                       </td>
 
                       <td>

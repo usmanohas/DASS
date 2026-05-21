@@ -193,7 +193,8 @@ const ProgramDetails = () => {
           {/* RIGHT BUTTON */}
           <div>
             <button
-              className="btn btn-info text-white rounded-pill px-4 shadow-sm"
+              className="btn bg-success-subtle text-success rounded-pill px-4"
+              style={{ backgroundColor: "#0b8585" }}
               onClick={() => setShowModal(true)}
             >
               <i className="bi bi-person-plus me-2"></i>

@@ -18,6 +18,7 @@ const DepartmentStaff = () => {
   const [selectedStaff, setSelectedStaff] = useState(null);
 
   const [uploadFile, setUploadFile] = useState(null);
+  const [openActionId, setOpenActionId] = useState(null);
 
   const [form, setForm] = useState({
     title: "",
@@ -129,11 +130,13 @@ const DepartmentStaff = () => {
     const action = staff.is_active ? "Deactivate" : "Activate";
 
     const confirm = await Swal.fire({
-      title: `${action} User?`,
+      title: `${action} User`,
       text: `Are you sure you want to ${action.toLowerCase()} this staff account?`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: `Yes, ${action}`,
+      confirmButtonColor: "#09582d",
+      cancelButtonColor: "#6c757d",
     });
 
     if (!confirm.isConfirmed) return;
@@ -330,45 +333,55 @@ const DepartmentStaff = () => {
 
   return (
     <div className="container py-4">
-      {/* HEADER */}
+      {/* ================= HEADER ================= */}
+      <div className="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3">
+        {/* TITLE */}
+        <div>
+          <h3 className="mb-3 fw-bold">
+            <i className="bi bi-people me-2"></i>
+            Department Staff
+          </h3>
+          <div className="text-muted small">
+            Manage staff records, access, and account status
+          </div>
+        </div>
 
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h3 className="">
-          <i className="bi bi-people me-2"></i>Department Staff
-        </h3>
-
-        <div className="d-flex gap-2">
+        {/* ACTION BUTTONS */}
+        <div className="d-flex gap-2 flex-wrap">
           <button className="btn btn-outline-dark btn-sm" onClick={lookupStaff}>
-            <i className="bi bi-search"></i> Lookup Staff
+            <i className="bi bi-search me-1"></i> Lookup
           </button>
 
           <button
             className="btn btn-outline-secondary btn-sm"
             onClick={() => setShowImportModal(true)}
           >
-            <i className="bi bi-upload"></i> Import xlsx
+            <i className="bi bi-upload me-1"></i> Import
           </button>
 
           <button
-            className="btn btn-sm text-white"
+            className="btn text-success bg-success-subtle btn-sm border px-3 py-2 rounded-pill "
             onClick={() => {
               setSelectedStaff(null);
               setForm({});
               setShowAddModal(true);
             }}
-            style={{ backgroundColor: "#00c2c1" }}
           >
-            <i className="bi bi-plus-circle me-1"></i>Add Staff
+            <i className="bi bi-plus-circle me-1"></i> Add Staff
           </button>
         </div>
       </div>
 
-      {/* SEARCH + FILTER */}
-
-      {/* TABLE TOOLBAR */}
-
-      <div className="card shadow-sm mb-3 border-0">
-        <div className="card-body d-flex justify-content-between align-items-center">
+      {/* ================= FILTER BAR ================= */}
+      <div
+        className="card border-0 shadow-sm mb-3"
+        style={{
+          background:
+            "linear-gradient(135deg, rgb(11, 133, 133) 0%, rgb(44, 210, 210) 100%)",
+        }}
+      >
+        <div className="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
+          {/* SEARCH */}
           <div className="d-flex align-items-center gap-2">
             <button
               className="btn btn-light border"
@@ -380,8 +393,8 @@ const DepartmentStaff = () => {
             {showSearch && (
               <input
                 className="form-control"
-                style={{ width: "250px" }}
-                placeholder="Search staff..."
+                style={{ width: "260px" }}
+                placeholder="Search staff by name, email..."
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
@@ -391,153 +404,158 @@ const DepartmentStaff = () => {
             )}
           </div>
 
-          <div className="text-muted small">Showing {staff.length} staff</div>
+          {/* SUMMARY */}
+          <div className="d-flex align-items-center gap-2">
+            <span className="text-white small">Total Records:</span>
+            <span className="badge bg-white text-dark fw-bold px-3 py-2">{staff.length}</span>
+          </div>
         </div>
       </div>
 
-      {/* TABLE */}
-
-      <div className="card shadow-sm">
-        <div className="card-body">
+      {/* ================= TABLE ================= */}
+      <div className="card shadow-sm border-0">
+        <div className="card-body p-0">
           <div className="table-responsive">
-            <table className="table table-hover align-middle">
+            <table className="table table-hover align-middle mb-0">
               <thead className="table-light">
                 <tr>
-                  <th>#</th>
+                  <th className="text-center">#</th>
                   <th>Name</th>
                   <th>Designation</th>
                   <th>Email</th>
                   <th>Phone</th>
                   <th>Status</th>
-                  <th>Actions</th>
+                  <th className="text-center">Actions</th>
                 </tr>
               </thead>
 
               <tbody>
                 {staff.map((s, index) => (
-                  <tr key={s.id}>
-                    <td>{((page - 1) * 10) + (index + 1)}</td>
+                  <React.Fragment key={s.id}>
+                    {/* MAIN ROW */}
+                    <tr>
+                      <td className="text-muted text-center">
+                        {(page - 1) * 10 + index + 1}
+                      </td>
 
-                    <td>{s.title}{" "}{s.full_name}</td>
+                      <td className="text-muted fw-semibold">
+                        {s.title} {s.full_name}
+                      </td>
 
-                    <td>{s.designation}</td>
+                      <td className="text-muted">{s.designation || "—"}</td>
 
-                    <td>{s.email}</td>
+                      <td className="text-muted">{s.email}</td>
 
-                    <td>{s.phone_number}</td>
+                      <td className="text-muted">{s.phone_number || "—"}</td>
 
-                    <td>
-                      {s.is_active === 1 && (
-                        <span className="badge bg-success">
-                          <i className="bi bi-check-circle me-1"></i> Active
-                        </span>
-                      )}
+                      <td>
+                        {s.is_active === 1 ? (
+                          <span className="badge bg-success-subtle text-success me-1 px-3 py-2 rounded-pill">
+                            <i className="bi bi-person-check me-1"></i>Active
+                          </span>
+                        ) : (
+                          <span className="badge bg-danger-subtle text-danger me-1 px-3 py-2 rounded-pill">
+                            <i className="bi bi-person-x me-1"></i>Not Active
+                          </span>
+                        )}
 
-                      {s.is_active === 0 && (
-                        <span className="badge bg-secondary">
-                          <i className="bi bi-slash-circle me-1"></i> Inactive
-                        </span>
-                      )}
+                        {s.is_locked === 1 && (
+                          <span className="badge bg-danger px-3 py-2 rounded-pill">
+                            <i className="bi bi-person-lock"></i>
+                          </span>
+                        )}
+                      </td>
 
-                      {s.is_locked === 1 && (
-                        <span className="badge bg-danger ms-2">
-                          <i className="bi bi-lock-fill me-1"></i> Locked
-                        </span>
-                      )}
-                    </td>
-
-                    <td>
-                      <div className="dropdown">
+                      <td className="text-center">
                         <button
-                          className="btn btn-sm btn-light dropdown-toggle"
-                          data-bs-toggle="dropdown"
+                          className="btn btn-sm btn-light border"
+                          onClick={() =>
+                            setOpenActionId(openActionId === s.id ? null : s.id)
+                          }
                         >
-                          Action
+                          <i className="bi bi-three-dots-vertical"></i>
                         </button>
+                      </td>
+                    </tr>
 
-                        <ul className="dropdown-menu">
-                          <li>
+                    {/* ACTION EXPANDED ROW */}
+                    {openActionId === s.id && (
+                      <tr className="action-row">
+                        <td colSpan="7">
+                          <div className="action-panel d-flex flex-wrap gap-2 p-3">
                             <button
-                              className="dropdown-item"
+                              className="btn btn-sm btn-outline-primary"
                               onClick={() =>
                                 navigate(`/department/staff/${s.id}/dashboard`)
                               }
                             >
-                              <i className="bi bi-speedometer2 me-2"></i>
+                              <i className="bi bi-speedometer2 me-1"></i>
                               Dashboard
                             </button>
-                          </li>
-                          <li>
+
                             <button
-                              className="dropdown-item"
+                              className="btn btn-sm btn-outline-warning"
                               onClick={() => openEditModal(s)}
                             >
-                              Edit Record
+                              <i className="bi bi-pen me-1"></i>
+                              Edit
                             </button>
-                          </li>
 
-                          <li>
                             <button
-                              className="dropdown-item"
+                              className="btn btn-sm btn-outline-secondary"
                               onClick={() => resetPassword(s.id)}
                             >
+                              <i className="bi bi-lock me-1"></i>
                               Reset Password
                             </button>
-                          </li>
-                          <li>
+
                             <button
-                              className="dropdown-item"
+                              className="btn btn-sm btn-outline-success"
                               onClick={() => toggleActive(s)}
                             >
-                              {s.is_active
-                                ? "Deactivate User"
-                                : "Activate User"}
+                              {s.is_active ? "Deactivate" : "Activate"}
                             </button>
-                          </li>
 
-                          <li>
                             <button
-                              className="dropdown-item"
+                              className="btn btn-sm btn-outline-dark"
                               onClick={() => toggleLock(s)}
                             >
-                              {s.is_locked ? "Unlock User" : "Lock User"}
+                              {s.is_locked ? "Unlock" : "Lock"}
                             </button>
-                          </li>
-                          <li>
+
                             <button
-                              className="dropdown-item text-danger"
+                              className="btn btn-sm btn-outline-danger"
                               onClick={() => removeStaff(s)}
                             >
-                              <i className="bi bi-trash3 me-2"></i>
+                              <i className="bi bi-trash me-1"></i>
                               Remove
                             </button>
-                          </li>
-                        </ul>
-                      </div>
-                    </td>
-                  </tr>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>
           </div>
 
-          {/* PAGINATION */}
-
-          <div className="d-flex justify-content-center mt-3">
+          {/* ================= PAGINATION ================= */}
+          <div className="d-flex justify-content-center align-items-center gap-3 py-3">
             <button
-              className="btn btn-outline-secondary me-2"
+              className="btn btn-outline-secondary btn-sm"
               disabled={page === 1}
               onClick={() => setPage(page - 1)}
             >
-              Previous
+              Prev
             </button>
 
-            <span className="align-self-center">
-              Page {page} of {totalPages}
+            <span className="text-muted small">
+              Page <b>{page}</b> of {totalPages}
             </span>
 
             <button
-              className="btn btn-outline-secondary ms-2"
+              className="btn btn-outline-secondary btn-sm"
               disabled={page === totalPages}
               onClick={() => setPage(page + 1)}
             >

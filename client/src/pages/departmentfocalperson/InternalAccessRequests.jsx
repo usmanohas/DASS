@@ -67,7 +67,7 @@ const InternalAccessRequests = () => {
   // ✅ APPROVE
   const handleApprove = async (req) => {
     const { value: expiry } = await Swal.fire({
-      title: "Approve Access",
+      title: "Approve Request",
       input: "datetime-local",
       inputLabel: "Select Expiry Date",
       inputAttributes: { required: true },
@@ -145,10 +145,10 @@ const InternalAccessRequests = () => {
 
   return (
     <div className="container mt-3">
-      <h4 className="mb-3">
+      <h3 className="mb-3 fw-bold">
         <i className="bi bi-folder-check me-2"></i>
-        Internal Document Access Requests
-      </h4>
+        Internal Document Requests
+      </h3>
 
       {/* FILTER */}
       <div className="row mb-3">
@@ -208,8 +208,8 @@ const InternalAccessRequests = () => {
                         </h6>
 
                         <p className="text-muted mb-0">
-                          Department staff have not submitted any document access requests
-                          yet.
+                          Department staff have not submitted any document
+                          access requests yet.
                         </p>
 
                         <small className="text-muted">
@@ -227,7 +227,11 @@ const InternalAccessRequests = () => {
                       <td>{r.full_name}</td>
                       <td>{r.division_unit_state}</td>
                       <td>{r.title}</td>
-                      <td className="fw-bold"><small>{r.classification}</small></td>
+                      <td className="fw-bold">
+                        <span className="badge bg-light text-dark border px-3 py-2 rounded-pill">
+                          {r.classification}
+                        </span>
+                      </td>
                       <td>
                         <span
                           className={`badge ${
@@ -284,43 +288,43 @@ const InternalAccessRequests = () => {
 
           {/* ✅ PAGINATION UI */}
           {requests.length > 0 && (
-          <div className="card-footer d-flex justify-content-between align-items-center">
-            <span>
-              Page {currentPage} of {totalPages || 1}
-            </span>
+            <div className="card-footer d-flex justify-content-between align-items-center">
+              <span>
+                Page {currentPage} of {totalPages || 1}
+              </span>
 
-            <div>
-              <button
-                className="btn btn-sm btn-outline-secondary me-2"
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage((p) => p - 1)}
-              >
-                Previous
-              </button>
-
-              {[...Array(totalPages)].map((_, i) => (
+              <div>
                 <button
-                  key={i}
-                  className={`btn btn-sm me-1 ${
-                    currentPage === i + 1
-                      ? "btn-primary"
-                      : "btn-outline-primary"
-                  }`}
-                  onClick={() => setCurrentPage(i + 1)}
+                  className="btn btn-sm btn-outline-secondary me-2"
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((p) => p - 1)}
                 >
-                  {i + 1}
+                  Previous
                 </button>
-              ))}
 
-              <button
-                className="btn btn-sm btn-outline-secondary ms-2"
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage((p) => p + 1)}
-              >
-                Next
-              </button>
+                {[...Array(totalPages)].map((_, i) => (
+                  <button
+                    key={i}
+                    className={`btn btn-sm me-1 ${
+                      currentPage === i + 1
+                        ? "btn-primary"
+                        : "btn-outline-primary"
+                    }`}
+                    onClick={() => setCurrentPage(i + 1)}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+
+                <button
+                  className="btn btn-sm btn-outline-secondary ms-2"
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((p) => p + 1)}
+                >
+                  Next
+                </button>
+              </div>
             </div>
-          </div>
           )}
         </div>
       </div>
@@ -353,9 +357,14 @@ const InternalAccessRequests = () => {
                 </p>
                 <p>
                   <b>Reason:</b> {selected.reason}
-                </p><hr/>
+                </p>
+                <hr />
                 <p>
-                  <b><i className="bi bi-card-text me-2 text-info"></i>Approve/Decline Note:</b><br/> <small>{selected.review_note}</small>
+                  <b>
+                    <i className="bi bi-card-text me-2 text-info"></i>
+                    Approve/Decline Note:
+                  </b>
+                  <br /> <small>{selected.review_note}</small>
                 </p>
               </div>
             </div>

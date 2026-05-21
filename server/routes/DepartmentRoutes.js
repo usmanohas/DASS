@@ -662,7 +662,8 @@ router.post(
 /* ===========================
    FETCH DEPARTMENTS
 =========================== */
-router.get("/departments", verifyToken, async (req, res) => {
+/*
+router.get("/department", verifyToken, async (req, res) => {
   try {
     const connection = await connectToDatabase();
 
@@ -676,6 +677,37 @@ router.get("/departments", verifyToken, async (req, res) => {
     });
   } catch (err) {
     res.json({ Status: false });
+  }
+});
+*/
+
+router.get("/departments", verifyToken, async (req, res) => {
+  try {
+    const connection = await connectToDatabase();
+
+    const [rows] = await connection.query(
+      `
+      SELECT 
+        id, 
+        name, 
+        name_abbreviation 
+      FROM departments
+      WHERE name != 'Partner'
+      ORDER BY name ASC
+      `,
+    );
+
+    res.json({
+      Status: true,
+      Departments: rows,
+    });
+  } catch (err) {
+    console.error(err);
+
+    res.json({
+      Status: false,
+      Error: "Failed to fetch departments",
+    });
   }
 });
 /* ===========================

@@ -95,7 +95,7 @@ const ReviewDepartmentDocRequests = () => {
     switch (status) {
       case "Pending_Department_Review":
         return (
-          <span className="badge bg-warning text-white">
+          <span className="badge bg-warning text-white border px-3 py-2 rounded-pill">
             <i className="bi bi-hourglass-split me-1"></i>
             Awaiting Department Review
           </span>
@@ -103,27 +103,27 @@ const ReviewDepartmentDocRequests = () => {
 
       case "Pending_Admin_Approval":
         return (
-          <span className="badge bg-info text-white">
+          <span className="badge bg-info text-white border px-3 py-2 rounded-pill">
             Awaiting Admin Approval
           </span>
         );
 
       case "Approved":
-        return <span className="badge bg-success">Approved</span>;
+        return <span className="badge bg-success border px-3 py-2 rounded-pill">Approved</span>;
 
       case "Rejected":
-        return <span className="badge bg-danger">Declined</span>;
+        return <span className="badge bg-danger border px-3 py-2 rounded-pill">Declined</span>;
 
       default:
-        return <span className="badge bg-secondary">{status}</span>;
+        return <span className="badge bg-secondary border px-3 py-2 rounded-pill">{status}</span>;
     }
   };
 
   return (
     <div className="container py-4">
-      <h3 className="mb-3">
-        <i className="bi bi-shield-check me-2 text-success"></i>
-        Review Cross Department Access Requests
+      <h3 className="mb-3 fw-bold">
+        <i className="bi bi-building me-2"></i>
+        Review Inter-Departmental Document Requests
       </h3>
 
       {/* FILTERS */}
@@ -163,7 +163,7 @@ const ReviewDepartmentDocRequests = () => {
             <thead className="table-light">
               <tr>
                 <th>Requested By</th>
-                <th>Document</th>
+                <th>Document Title</th>
                 <th>Status</th>
                 <th>Date</th>
                 <th></th>
@@ -177,7 +177,9 @@ const ReviewDepartmentDocRequests = () => {
                     <div className="text-center py-5 text-muted">
                       <i className="bi bi-inbox fs-1"></i>
                       <div className="mt-2 mb-2">
-                        <span className="fw-semibold">No Access Requests Found</span>
+                        <span className="fw-semibold">
+                          No Access Requests Found
+                        </span>
                       </div>
                       <p className="text-muted mb-0">
                         There are currently no document access requests from
@@ -202,18 +204,18 @@ const ReviewDepartmentDocRequests = () => {
                       {/* REQUESTER */}
                       <td>
                         <div className="d-flex align-items-center gap-2">
+                          
                           <div
-                            className=" text-success d-flex justify-content-center align-items-center"
-                            style={{
-                              width: "32px",
-                              height: "32px",
-                              borderRadius: "50%",
-                              fontWeight: "600",
-                              backgroundColor: "#d1e7dd",
-                            }}
-                          >
-                            {r.staff_name?.charAt(0)?.toUpperCase()}
-                          </div>
+                              className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
+                              style={{
+                                width: "48px",
+                                height: "48px",
+                                backgroundColor: "#109090",
+                                fontSize: "0.95rem",
+                              }}
+                            >
+                              {r.staff_name?.charAt(0)?.toUpperCase()}
+                            </div>
 
                           <div>
                             <div className="fw-semibold small">
@@ -293,8 +295,12 @@ const ReviewDepartmentDocRequests = () => {
                                   <i className="bi bi-bookmarks me-1"></i>
                                   Document Classification
                                 </small>
-                                <div className="text-muted small">
-                                  {r.document_classification}
+                                <div className="">
+                                  <span className="mt-2 badge text-white border px-3 py-2 rounded-pill"
+                                  style={{backgroundColor: "#109090"}}
+                                  >
+                                    {r.document_classification}
+                                  </span>
                                 </div>
                               </div>
 

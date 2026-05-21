@@ -88,7 +88,7 @@ const DocumentDetail = () => {
   };
 
   const classificationColors = {
-    Public: "bg-success",
+    Public: "bg-dark",
     Internal: "bg-info",
     Confidential: "bg-warning text-dark",
     Restricted: "bg-danger",
@@ -507,68 +507,139 @@ const DocumentDetail = () => {
 
   return (
     <div className="container py-4">
-      <h3 className="mb-4">
-        <i className="bi bi-file-earmark-text me-2"></i> Document Details
-      </h3>
-      {/* ===== DOCUMENT HEADER ===== */}
-      <div className="card shadow-sm border-0 mb-4">
-        <div className="card-body position-relative">
-          <div className="d-flex justify-content-between align-items-start mb-3">
-            {/* LEFT SIDE */}
-            <div>
-              <h3 className="fw-bold mb-1">{doc.title}</h3>
-              <div className="text-muted small">
-                <i className="bi bi-file-earmark-text me-1"></i>
-                {doc.document_code}
+      {/* ================= PAGE HEADER ================= */}
+      <div className="mb-3">
+        <h3 className="fw-bold mb-1 d-flex align-items-center">
+          <i className="bi bi-file-earmark-richtext me-2"></i>
+          Document Details
+        </h3>
+
+        <small className="text-muted">
+          Manage document metadata, versions and downloads
+        </small>
+      </div>
+
+      {/* ================= DOCUMENT HEADER CARD ================= */}
+      <div
+        className="card border-0 mb-4"
+        style={{
+          borderRadius: "12px",
+          boxShadow: "0 10px 35px rgba(0,0,0,0.06)",
+          overflow: "hidden",
+        }}
+      >
+        <div className="card-body p-4 position-relative">
+          {/* TOP HEADER */}
+          <div className="d-flex justify-content-between align-items-start gap-4 mb-4">
+            {/* LEFT */}
+            <div
+              style={{
+                flex: 1,
+                minWidth: 0,
+              }}
+            >
+              <h4
+                className="mb-2 text-dark"
+                style={{
+                  overflowWrap: "break-word",
+                  wordBreak: "break-word",
+                  lineHeight: "1.4",
+                }}
+              >
+                {doc.title}
+              </h4>
+
+              <div className="text-muted small d-flex align-items-center">
+                <i className="bi bi-upc-scan me-2"></i>
+
+                <span
+                  style={{
+                    overflowWrap: "break-word",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {doc.document_code}
+                </span>
               </div>
             </div>
 
-            {/* RIGHT SIDE */}
-            <div className="d-flex align-items-center gap-3">
-              {/* Classification Badge */}
+            {/* RIGHT */}
+            <div
+              className="d-flex flex-column align-items-end gap-3"
+              style={{
+                flexShrink: 0,
+                whiteSpace: "nowrap",
+              }}
+            >
+              {/* Classification */}
               <span
-                className={`badge px-3 py-2 ${
+                className={`badge px-4 py-2 rounded-pill fw-semibold ${
                   classificationColors[doc.classification] || "bg-secondary"
                 }`}
+                style={{
+                  fontSize: "0.85rem",
+                  letterSpacing: "0.3px",
+                }}
               >
                 {doc.classification}
               </span>
-              {/* Edit Button */}
-              <button
-                className="btn btn-light rounded-circle shadow-sm"
-                style={{ width: 40, height: 40 }}
-                onClick={() => {
-                  setAllowChangeVersion(false);
 
-                  // ✅ Format keywords before opening modal
-                  setEditData((prev) => ({
-                    ...prev,
-                    doc_keywords: formatKeywords(
-                      doc?.document_search_keywords || "",
-                    ),
-                  }));
-
-                  setShowEdit(true);
+              {/* ACTION TOOLBAR */}
+              <div
+                className="d-flex align-items-center gap-2 p-2"
+                style={{
+                  backdropFilter: "blur(10px)",
                 }}
               >
-                <i className="bi bi-pencil"></i>
-              </button>
+                {/* Edit */}
+                <button
+                  className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 px-3"
+                  onClick={() => {
+                    setAllowChangeVersion(false);
+
+                    setEditData((prev) => ({
+                      ...prev,
+                      doc_keywords: formatKeywords(
+                        doc?.document_search_keywords || "",
+                      ),
+                    }));
+
+                    setShowEdit(true);
+                  }}
+                >
+                  <i className="bi bi-pencil-square"></i>
+                  Edit
+                </button>
+
+                {/* Add Version */}
+                <button
+                  className="btn btn-sm d-flex align-items-center gap-2 px-3"
+                  onClick={() => setShowUploadVersion(true)}
+                  style={{backgroundColor: "#0b8585", color: "#badfdf"}}
+                >
+                  <i className="bi bi-cloud-upload"></i>
+                  Add Version
+                </button>
+              </div>
             </div>
           </div>
 
           <hr />
 
-          <div className="row g-4">
-            <div className="col-md-8">
+          {/* ================= BODY ================= */}
+          <div className="row g-4 mt-1">
+            {/* LEFT SECTION */}
+            <div className="col-lg-8">
               {/* KEYWORDS */}
-              <div className="mb-3">
+              <div className="mb-4">
                 <div
-                  className="d-flex justify-content-between"
+                  className="d-flex justify-content-between align-items-center"
                   style={{ cursor: "pointer" }}
                   onClick={() => setShowKeywords(!showKeywords)}
                 >
-                  <strong>
-                    <i className="bi bi-tags me-2"></i> Search Keywords
+                  <strong className="d-flex align-items-center">
+                    <i className="bi bi-tags me-2"></i>
+                    Search Keywords
                   </strong>
 
                   <i
@@ -585,10 +656,13 @@ const DocumentDetail = () => {
                     transition: "max-height 0.3s ease",
                   }}
                 >
-                  <div className="mt-2 d-flex flex-wrap gap-2">
+                  <div className="mt-3 d-flex flex-wrap gap-2">
                     {keywords.length > 0 ? (
                       keywords.map((k, i) => (
-                        <span key={i} className="badge bg-light text-dark">
+                        <span
+                          key={i}
+                          className="badge rounded-pill bg-light text-dark border px-3 py-2"
+                        >
                           {k}
                         </span>
                       ))
@@ -596,21 +670,43 @@ const DocumentDetail = () => {
                       <small className="text-muted">No keywords</small>
                     )}
                   </div>
-                  <hr />
                 </div>
               </div>
-              <div className="text-muted small mb-1">Description</div>
-              <div>
-                {doc.description || <span className="text-muted">—</span>}
+
+              {/* DESCRIPTION */}
+              <div className="mb-4">
+                <div className="text-muted small mb-2 fw-semibold">
+                  Description
+                </div>
+
+                <div
+                  className="p-3 rounded-2 border bg-light"
+                  style={{
+                    lineHeight: "1.7",
+                  }}
+                >
+                  {doc.description || (
+                    <span className="text-muted">No description available</span>
+                  )}
+                </div>
               </div>
-              <div className="mb-3 mt-4 p-3 rounded border bg-light">
-                <div className="text-muted small mb-1">Expiry Date</div>
+
+              {/* EXPIRY */}
+              <div
+                className="p-3 rounded-2 border bg-light mb-4"
+                style={{
+                  boxShadow: "0 5px 15px rgba(0,0,0,0.03)",
+                }}
+              >
+                <div className="text-muted small mb-2 fw-semibold">
+                  Retention Expiry Date
+                </div>
 
                 {doc.retention_expiry_date ? (
                   <div className="d-flex align-items-center gap-2">
                     <i className="bi bi-calendar-x text-danger"></i>
 
-                    <span className="fw-semibold small">
+                    <span className="fw-semibold">
                       {new Date(doc.retention_expiry_date).toLocaleDateString(
                         "en-GB",
                         {
@@ -625,66 +721,43 @@ const DocumentDetail = () => {
                   <span className="text-muted">No expiry set</span>
                 )}
               </div>
-              {/* ===== VERSION STATS ===== */}
-              <div className="row g-3 mb-4 mt-4">
-                <div className="col-md-4">
-                  <div className="card border-0 shadow-sm text-center p-3">
-                    <div className="fs-4 fw-bold">{versions.length}</div>
-                    <small className="text-muted">Total Versions</small>
-                  </div>
-                </div>
-
-                <div className="col-md-4">
-                  <div className="card border-0 shadow-sm text-center p-3">
-                    <div className="fs-4 fw-bold">
-                      {versions.find((v) => v.is_active === 1)
-                        ?.version_number || "—"}
-                    </div>
-                    <small className="text-muted">Active Version</small>
-                  </div>
-                </div>
-
-                <div className="col-md-4">
-                  <div className="card border-0 shadow-sm text-center p-3">
-                    <div className="fs-4 fw-bold">
-                      {versions.reduce(
-                        (sum, v) => sum + (v.download_count || 0),
-                        0,
-                      )}
-                    </div>
-                    <small className="text-muted">Total Downloads</small>
-                  </div>
-                </div>
-              </div>
             </div>
 
-            <div className="col-md-4">
-              <div className="mt-4 p-3 rounded border bg-light">
-                {/* Header */}
-                <div className="fw-semibold text-danger mb-2 d-flex align-items-center">
+            {/* ================= RIGHT SECTION ================= */}
+            <div className="col-lg-4">
+              <div
+                className="p-4 rounded-2 border bg-light h-100"
+                style={{
+                  boxShadow: "0 8px 20px rgba(0,0,0,0.04)",
+                }}
+              >
+                {/* TITLE */}
+                <div className="fw-semibold text-danger mb-3 d-flex align-items-center">
                   <i className="bi bi-exclamation-triangle-fill me-2"></i>
                   Document Deletion
                 </div>
 
-                {/* Policy Note */}
+                {/* NOTE */}
                 <div
-                  className="small text-muted mb-3"
-                  style={{ lineHeight: "1.5" }}
+                  className="small text-muted mb-4"
+                  style={{
+                    lineHeight: "1.7",
+                  }}
                 >
-                  Documents are typically deleted only after they have expired.
-                  However, in exceptional cases, early deletion may be
-                  requested. This action does not require administrator
-                  approval; however, a valid reason must be provided.
+                  Documents are usually deleted only after expiration. However,
+                  early deletion may be requested in exceptional circumstances
+                  with a valid reason.
                 </div>
 
-                {/* Action Button */}
+                {/* BUTTON */}
                 <button
                   className="btn btn-danger w-100 d-flex align-items-center justify-content-center"
                   disabled={saving}
                   onClick={handleDeleteDocument}
                   style={{
-                    borderRadius: "8px",
-                    fontWeight: "500",
+                    borderRadius: "12px",
+                    fontWeight: "600",
+                    height: "48px",
                   }}
                 >
                   <i className="bi bi-trash me-2"></i>
@@ -693,135 +766,196 @@ const DocumentDetail = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
+          {/* ================= STATS ================= */}
+          <div className="row g-3 mb-4 mt-3">
+            <div className="col-md-4">
+              <div className="card border shadow-sm h-100">
+                <div className="card-body d-flex align-items-center gap-3">
+                  <div
+                    className="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center"
+                    style={{ width: 55, height: 55 }}
+                  >
+                    <i className="bi bi-file-earmark-pdf fs-4"></i>
+                  </div>
 
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h5 className="fw-bold mb-0">Version History</h5>
+                  <div>
+                    <small className="text-muted">Total Versions</small>
+                    <h4 className="text-muted mb-0">{versions.length}</h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="card border shadow-sm h-100">
+                <div className="card-body d-flex align-items-center gap-3">
+                  <div
+                    className="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center"
+                    style={{ width: 55, height: 55 }}
+                  >
+                    <i className="bi bi-file-earmark-check fs-4"></i>
+                  </div>
 
-        <button
-          className="btn rounded-circle shadow"
-          style={{
-            width: 48,
-            height: 48,
-            backgroundColor: "#00c2c1",
-            color: "#fff",
-            fontSize: "22px",
-          }}
-          onClick={() => setShowUploadVersion(true)}
-        >
-          <i className="bi bi-plus-circle-dotted"></i>
-        </button>
-      </div>
+                  <div>
+                    <small className="text-muted">Active Version</small>
+                    <h4 className="text-muted mb-0">
+                      {versions.find((v) => v.is_active === 1)
+                        ?.version_number || "—"}
+                    </h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="card border shadow-sm h-100">
+                <div className="card-body d-flex align-items-center gap-3">
+                  <div
+                    className="bg-dark bg-opacity-10 text-dark rounded-circle d-flex align-items-center justify-content-center"
+                    style={{ width: 55, height: 55 }}
+                  >
+                    <i className="bi bi-download fs-4"></i>
+                  </div>
 
-      {/* ===== VERSION HISTORY TABLE ===== */}
-      <div className="card shadow-sm border-0">
-        <div className="card-body">
-          <div className="table-responsive">
-            <table className="table table-hover table-bordered align-middle">
-              <thead className="table-light">
-                <tr>
-                  <th className="text-center">#</th>
-                  <th className="text-center">Version</th>
-                  <th className="text-center">Type</th>
-                  <th className="text-center">Size</th>
-                  <th className="text-center">Version Notes</th>
-                  <th className="text-center">Download Count</th>
-                  <th className="text-center">Status</th>
-                  <th className="text-center">Uploaded</th>
-                  <th className="text-center">Actions</th>
-                </tr>
-              </thead>
+                  <div>
+                    <small className="text-muted">Total Downloads</small>
+                    <h4 className="text-muted mb-0">
+                      {versions.reduce(
+                        (sum, v) => sum + (v.download_count || 0),
+                        0,
+                      )}
+                    </h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* ================= VERSION HEADER ================= */}
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h5 className="fw-bold mb-1">Version History</h5>
 
-              <tbody>
-                {versions.map((v, index) => {
-                  const canPreview = PREVIEWABLE_TYPES.includes(
-                    v.type.toLowerCase(),
-                  );
+              <small className="text-muted">
+                Track document revisions, downloads and activity
+              </small>
+            </div>
+          </div>
+          {/* ================= VERSION TABLE ================= */}
+          <div
+            className="card border-0"
+            style={{
+              borderRadius: "10px",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
+            }}
+          >
+            <div className="card-body">
+              <div className="table-responsive">
+                <table className="table table-hover align-middle">
+                  <thead
+                    style={{
+                      backgroundColor: "#f8f9fa",
+                    }}
+                  >
+                    <tr>
+                      <th className="text-center">#</th>
+                      <th className="text-center">Version</th>
+                      <th className="text-center">Type</th>
+                      <th className="text-center">Size</th>
+                      <th className="text-center">Version Notes</th>
+                      <th className="text-center">Downloads</th>
+                      <th className="text-center">Status</th>
+                      <th className="text-center">Uploaded</th>
+                      <th className="text-center">Actions</th>
+                    </tr>
+                  </thead>
 
-                  return (
-                    <tr key={v.id}>
-                      <td className="fw-semibold text-center">{index + 1}</td>
-                      <td className="fw-semibold text-center">
-                        v{v.version_number}
-                      </td>
+                  <tbody>
+                    {versions.map((v, index) => (
+                      <tr key={v.id}>
+                        <td className="text-center fw-semibold">{index + 1}</td>
 
-                      <td className="text-center">{v.type.toUpperCase()}</td>
+                        <td className="text-center fw-semibold">
+                          {v.version_number}
+                        </td>
 
-                      <td className="text-center">
-                        {(v.file_size / (1024 * 1024)).toFixed(2)} MB
-                      </td>
-
-                      <td className="text-center">
-                        {v.version_notes ? (
-                          <button
-                            className="btn btn-outline-secondary btn-sm"
-                            title="View version note"
-                            onClick={() => {
-                              setSelectedNote({
-                                version: v.version_number,
-                                note: v.version_notes,
-                                verifiedBy: v.version_verified_by,
-                              });
-                              setShowNoteModal(true);
-                            }}
-                          >
-                            <i className="bi bi-eye-fill "></i>
-                          </button>
-                        ) : (
-                          <span className="text-muted">—</span>
-                        )}
-                      </td>
-
-                      <td className="text-center">{v.download_count}</td>
-
-                      <td className="text-center">
-                        {v.is_active === 1 ? (
-                          <span className="badge bg-success rounded-pill px-3">
-                            Active
+                        <td className="text-center">
+                          <span className="badge bg-light text-dark border">
+                            {v.type.toUpperCase()}
                           </span>
-                        ) : (
-                          <span className="badge bg-secondary-subtle text-secondary px-3">
-                            Archived
-                          </span>
-                        )}
-                      </td>
+                        </td>
 
-                      <td className="text-muted small text-center">
-                        {new Intl.DateTimeFormat("en-GB", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          hour12: true,
-                        }).format(new Date(v.created_at))}
-                      </td>
+                        <td className="text-center">
+                          {(v.file_size / (1024 * 1024)).toFixed(2)} MB
+                        </td>
 
-                      <td className="text-center">
-                        <div className="btn-group btn-group-sm">
+                        <td className="text-center">
+                          {v.version_notes ? (
+                            <button
+                              className="btn btn-outline-secondary btn-sm rounded-pill"
+                              onClick={() => {
+                                setSelectedNote({
+                                  version: v.version_number,
+                                  note: v.version_notes,
+                                  verifiedBy: v.version_verified_by,
+                                });
+
+                                setShowNoteModal(true);
+                              }}
+                            >
+                              <i className="bi bi-eye me-1"></i>
+                              View
+                            </button>
+                          ) : (
+                            <span className="text-muted">—</span>
+                          )}
+                        </td>
+
+                        <td className="text-center">{v.download_count}</td>
+
+                        <td className="text-center">
+                          {v.is_active === 1 ? (
+                            <span className="badge bg-success rounded-pill px-3">
+                              Active
+                            </span>
+                          ) : (
+                            <span className="badge bg-secondary-subtle text-secondary rounded-pill px-3">
+                              Archived
+                            </span>
+                          )}
+                        </td>
+
+                        <td className="text-center small text-muted">
+                          {new Intl.DateTimeFormat("en-GB", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true,
+                          }).format(new Date(v.created_at))}
+                        </td>
+
+                        <td className="text-center">
                           <button
-                            className="btn btn-danger"
-                            title="Download"
+                            className="btn btn-outline-secondary btn-sm rounded-pill px-3"
                             onClick={() => handleDownload(v.id)}
                           >
-                            <i className="bi bi-download "></i>
+                            <i className="bi bi-download me-1"></i>
+                            Download
                           </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
+                        </td>
+                      </tr>
+                    ))}
 
-                {versions.length === 0 && (
-                  <tr>
-                    <td colSpan="8" className="text-center text-muted py-4">
-                      No versions available
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                    {versions.length === 0 && (
+                      <tr>
+                        <td colSpan="9" className="text-center text-muted py-5">
+                          No versions available
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </div>

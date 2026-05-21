@@ -9,6 +9,7 @@ const Upload = () => {
   const [subcategories, setSubcategories] = useState([]);
   const [step, setStep] = useState(1);
   const [file, setFile] = useState(null);
+  const [dragActive, setDragActive] = useState(false);
   const [errors, setErrors] = useState({});
 
   //format search keywords
@@ -166,8 +167,8 @@ const Upload = () => {
   };
 
   const handleDuplicateCheck = async () => {
-    if (!file || !form.title) {
-      return Swal.fire("Missing", "File and title required", "warning");
+    if (!file || !form.title  || !form.description ) {
+      return Swal.fire("Missing", "File, title and description required", "warning");
     }
 
     try {
@@ -233,6 +234,24 @@ const Upload = () => {
     }
   };
 
+  /* ================= DRAG DROP ================= */
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragActive(false);
+
+    const dropped = e.dataTransfer.files[0];
+    if (!dropped) return;
+    if (!validateFile(dropped)) return;
+
+    setFile(dropped);
+  };
+
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(e.type !== "dragleave");
+  };
+
   /* ===================== STEPPER ===================== */
   const StepIndicator = () => (
     <div className="d-flex justify-content-between mb-4">
@@ -242,7 +261,7 @@ const Upload = () => {
           <div key={num} className="text-center flex-fill">
             <div
               className={`rounded-circle mx-auto mb-1 ${
-                step >= num ? "bg-info" : "bg-secondary"
+                step >= num ? "bg-danger text-white" : "bg-secondary text-white"
               }`}
               style={{
                 width: 35,
@@ -263,19 +282,21 @@ const Upload = () => {
   /* ===================== UI ===================== */
   return (
     <div className="container-fluid py-4">
-      <div className="row g-12">
-        <h3 className="mb-4">
-          <i className="bi bi-files me-2"></i> Upload Document
+      <div className="mb-2">
+        <h3 className="fw-bold">
+          <i className="bi bi-cloud-upload me-2"></i>
+          Upload Document
         </h3>
-        <StepIndicator />
+        <div className="text-muted">Secure document upload workflow</div>
       </div>
+      <StepIndicator />
       <div className="card shadow rounded-4 p-4 mx-auto">
         {/* STEP 1 */}
         {step === 1 && (
           <div className="row g-4">
             <h4 className="mb-3">
-              <i class="bi bi-upload me-2 text-success "></i> STEP 1: Document
-              Information
+              <i class="bi bi-cloud-upload me-2"></i> STEP 1:{" "}
+              <span className="text-muted">Metadata</span>
             </h4>
             {/* LEFT: FORM */}
             <div className="col-md-8">
@@ -283,140 +304,163 @@ const Upload = () => {
                 <label className="form-label">
                   Document Title <span className="text-danger">*</span>
                 </label>
-                <input
-                  className="form-control mb-3"
-                  value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
-                />
-
-                <label className="form-label">Short Description</label>
                 <textarea
                   className="form-control mb-3"
-                  placeholder="Enter document short description"
+                  placeholder=""
+                  rows="2"
+                  value={form.title}
+                  onChange={(e) =>
+                    setForm({ ...form, title: e.target.value })
+                  }
+                />
+
+                <label className="form-label">Short Description <span className="text-danger">*</span></label>
+                <textarea
+                  className="form-control mb-3"
+                  placeholder=""
                   rows="3"
                   value={form.description}
                   onChange={(e) =>
                     setForm({ ...form, description: e.target.value })
                   }
                 />
+                <div className="row g-2 mb-3">
+                  <div className="col-md-6">
+                    <label className="form-label">
+                      Category <span className="text-danger">*</span>
+                    </label>
+                    <select
+                      className="form-select mb-3"
+                      value={form.category}
+                      onChange={(e) => {
+                        const selectedId = e.target.value;
+                        setForm({
+                          ...form,
+                          category: selectedId,
+                          subcategory: "",
+                        });
 
-                <label className="form-label">
-                  Category <span className="text-danger">*</span>
-                </label>
-                <select
-                  className="form-select mb-3"
-                  value={form.category}
-                  onChange={(e) => {
-                    const selectedId = e.target.value;
-                    setForm({
-                      ...form,
-                      category: selectedId,
-                      subcategory: "",
-                    });
+                        if (selectedId) {
+                          fetchSubcategories(selectedId);
+                        } else {
+                          setSubcategories([]);
+                        }
+                      }}
+                    >
+                      <option value="">...Select Category...</option>
+                      {categories.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label">
+                      Sub-category <span className="text-danger">*</span>
+                    </label>
+                    <select
+                      className="form-select mb-3"
+                      disabled={!form.category}
+                      value={form.subcategory}
+                      onChange={(e) =>
+                        setForm({ ...form, subcategory: e.target.value })
+                      }
+                    >
+                      <option value="">...Select Subcategory...</option>
+                      {subcategories.map((sub) => (
+                        <option key={sub.id} value={sub.id}>
+                          {sub.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div className="row g-2 mb-3">
+                  <div className="col-md-6">
+                    <label className="form-label">
+                      Document Retention Period (Year)
+                      <span className="text-danger">*</span>
+                    </label>
+                    <select
+                      className="form-select mb-2"
+                      value={form.retention}
+                      onChange={(e) =>
+                        setForm({ ...form, retention: e.target.value })
+                      }
+                    >
+                      <option value="">Select year</option>
+                      <option value="5">5 Years</option>
+                      <option value="6">6 Years</option>
+                      <option value="7">7 Years</option>
+                      <option value="8">8 Years</option>
+                      <option value="9">9 Years</option>
+                      <option value="10">10 Years</option>
+                    </select>
+                    <small className="text-danger mb-3 d-block">
+                      <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                      Documents must be retained for a minimum of 5 years before
+                      archival or disposal.
+                    </small>
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label">
+                      Document Classification{" "}
+                      <span className="text-danger">*</span>
+                    </label>
+                    <select
+                      className="form-select mb-3"
+                      value={form.visibility}
+                      onChange={(e) =>
+                        setForm({ ...form, visibility: e.target.value })
+                      }
+                    >
+                      <option value="">...Select visibility...</option>
+                      <option>Public</option>
+                      <option>Internal</option>
+                      <option>Confidential</option>
+                      <option>Restricted</option>
+                    </select>
+                  </div>
+                </div>
 
-                    if (selectedId) {
-                      fetchSubcategories(selectedId);
-                    } else {
-                      setSubcategories([]);
-                    }
-                  }}
+                
+                {/* DRAG DROP */}
+                <div
+                  onDrop={handleDrop}
+                  onDragOver={handleDrag}
+                  className={`border rounded-4 p-4 text-center ${
+                    dragActive ? "bg-light border-primary" : ""
+                  }`}
+                  style={{ borderStyle: "dashed", cursor: "pointer" }}
                 >
-                  <option value="">...Select Category...</option>
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
+                  <i className="bi bi-cloud-upload display-6"></i>
+                  <div className="fw-semibold">Drag & Drop File</div>
+                  <div className="text-muted small">or click to select</div>
 
-                <label className="form-label">
-                  Sub-category <span className="text-danger">*</span>
-                </label>
-                <select
-                  className="form-select mb-3"
-                  disabled={!form.category}
-                  value={form.subcategory}
-                  onChange={(e) =>
-                    setForm({ ...form, subcategory: e.target.value })
-                  }
-                >
-                  <option value="">...Select Subcategory...</option>
-                  {subcategories.map((sub) => (
-                    <option key={sub.id} value={sub.id}>
-                      {sub.name}
-                    </option>
-                  ))}
-                </select>
+                  <input
+                    type="file"
+                    className="form-control mt-2"
+                    onChange={handleFileChange}
+                  />
 
-                <label className="form-label">
-                  Document Retention Period (Year)
-                  <span className="text-danger">*</span>
-                </label>
-
-                <select
-                  className="form-select mb-2"
-                  value={form.retention}
-                  onChange={(e) =>
-                    setForm({ ...form, retention: e.target.value })
-                  }
-                >
-                  <option value="">Select year</option>
-                  <option value="5">5 Years</option>
-                  <option value="6">6 Years</option>
-                  <option value="7">7 Years</option>
-                  <option value="8">8 Years</option>
-                  <option value="9">9 Years</option>
-                  <option value="10">10 Years</option>
-                </select>
-
-                <small className="text-muted mb-3 d-block">
-                  <i className="bi bi-info-circle me-2 text-info"></i>
-                  Documents must be retained for a minimum of 5 years before
-                  archival or disposal.
-                </small>
-
-                <label className="form-label">
-                  Document Classification <span className="text-danger">*</span>
-                </label>
-                <select
-                  className="form-select mb-3"
-                  value={form.visibility}
-                  onChange={(e) =>
-                    setForm({ ...form, visibility: e.target.value })
-                  }
-                >
-                  <option value="">...Select visibility...</option>
-                  <option>Public</option>
-                  <option>Internal</option>
-                  <option>Confidential</option>
-                  <option>Restricted</option>
-                </select>
-
-                <label className="form-label">
-                  Upload File <span className="text-danger">*</span>
-                </label>
-                <input
-                  type="file"
-                  className="form-control"
-                  onChange={handleFileChange}
-                />
+                  {file && (
+                    <div className="alert alert-success mt-3 py-2">
+                      {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* RIGHT: GUIDELINES */}
             <div className="col-md-4">
-              <div className="card bg-light border-0 p-4 h-100">
-                <h4>📌 Upload Guidelines</h4>
-                <ul className=" mb-0">
-                  <li>
-                    All document, image, video and audio formats are allowed
-                  </li>
-                  <li>
-                    Compressed files (.zip, .rar, .7z, .tar, .gz) are NOT
-                    allowed
-                  </li>
-                  <li>Maximum file size: 50MB</li>
-                  <li>Use clear and descriptive titles</li>
+              <div className="p-3 rounded-3" style={{backgroundColor: "#0b8585"}}>
+                <h5 style={{color: "#badfdf"}}>Rules</h5>
+                <ul className="small text-white mb-0">
+                  <li>No zip/rar files</li>
+                  <li>Max 50MB</li>
+                  <li>Clear titles required</li>
                 </ul>
               </div>
             </div>
@@ -424,7 +468,7 @@ const Upload = () => {
             {/* PROCEED */}
             {isStep1Complete && (
               <div className="col-12 text-end">
-                <button className="btn btn-success px-4" onClick={nextStep}>
+                <button className="btn text-white px-4" onClick={nextStep} style={{backgroundColor: "#0b8585"}}>
                   Proceed to Validation →
                 </button>
               </div>
@@ -436,8 +480,7 @@ const Upload = () => {
         {step === 2 && (
           <div className="row g-4">
             <h4 className="mb-3">
-              <i class="bi bi-arrow-repeat me-2 text-success "></i> STEP 2:
-              Document Validation
+              <i class="bi bi-database me-2 "></i> STEP 2: <span className="text-muted">Validation</span>
             </h4>
             {/* LEFT: DUPLICATE CHECK */}
             <div className="col-md-4">
@@ -466,13 +509,13 @@ const Upload = () => {
             {/* RIGHT: KEYWORDS & VERIFY */}
             <div className="col-md-8">
               <div className="card shadow-sm border-0 p-4">
-                <label className="form-label">
+                <label className="form-label fw-bold">
                   Enter document search keywords{" "}
                   <span className="text-danger">*</span>
                 </label>
 
                 <textarea
-                  className="form-control mb-1"
+                  className="form-control mb-2"
                   rows="3"
                   placeholder="e.g. Strategy, Budget, Audit"
                   value={form.keywords}
@@ -487,20 +530,20 @@ const Upload = () => {
                   }
                 />
 
-                <small className="text-muted">
-                  <i className="bi bi-info-circle me-2 text-info"></i>
+                <small className="text-danger mb-3">
+                  <i className="bi bi-exclamation-triangle-fill me-2"></i>
                   Keywords must be separated by comma and single space. Each
                   word must start with capital letter (e.g. Strategy, Budget)
                 </small>
-                <h5 className="mt-3">Quality Assurance</h5>
+                <h5 className="mt-3">For Quality Assurance</h5>
 
                 <label className="form-label mt-2">
-                  Reviewed and Verified By{" "}
+                  Document Reviewed and Verified By{" "}
                   <span className="text-danger">*</span>
                 </label>
 
                 <input
-                  className="form-control"
+                  className="form-control mb-2"
                   placeholder="Enter full name of reviewing officer/staff"
                   value={form.verified_by}
                   onChange={(e) =>
@@ -508,7 +551,8 @@ const Upload = () => {
                   }
                 />
 
-                <small className="text-muted">
+                <small className="text-danger">
+                  <i className="bi bi-exclamation-triangle-fill me-2"></i>
                   Please enter the name of the staff member who reviewed and
                   confirmed the accuracy of this document before upload.
                 </small>
@@ -517,12 +561,12 @@ const Upload = () => {
 
             {/* ACTIONS */}
             <div className="col-12 d-flex justify-content-between">
-              <button className="btn btn-secondary" onClick={prevStep}>
+              <button className="btn btn-outline-secondary" onClick={prevStep}>
                 ← Back
               </button>
 
               {isStep2Complete && (
-                <button className="btn btn-success px-4" onClick={nextStep}>
+                <button className="btn text-white px-4" onClick={nextStep} style={{backgroundColor: "#0b8585"}}>
                   Proceed to Preview →
                 </button>
               )}
@@ -534,8 +578,7 @@ const Upload = () => {
         {step === 3 && (
           <div className="card shadow-sm border-0 p-4">
             <h4 className="mb-4">
-              <i class="bi bi-eye-fill me-2 text-success "></i> STEP 3: Document
-              Details
+              <i class="bi  bi-journal-medical me-2"></i> STEP 3: <span className="text-muted">Preview Detail</span>
             </h4>
             <hr />
 
@@ -589,11 +632,11 @@ const Upload = () => {
             </div>
 
             <div className="d-flex justify-content-between mt-4">
-              <button className="btn btn-secondary" onClick={prevStep}>
+              <button className="btn btn-outline-secondary" onClick={prevStep}>
                 ← Back
               </button>
               <button className="btn btn-success px-4" onClick={handleSubmit}>
-                <i class="bi bi-upload"></i> Final Upload
+                <i class="bi bi-floppy2-fill me-2"></i>Upload
               </button>
             </div>
           </div>

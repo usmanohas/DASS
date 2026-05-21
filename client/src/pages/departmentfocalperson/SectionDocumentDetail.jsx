@@ -316,7 +316,7 @@ const SectionDocumentDetail = () => {
           <div className="d-flex gap-2">
             {/* BACK */}
             <button
-              className="btn btn-secondary"
+              className="btn btn-outline-secondary"
               onClick={() => navigate("/department/document/section")}
             >
               <i className="bi bi-arrow-left me-1"></i>
