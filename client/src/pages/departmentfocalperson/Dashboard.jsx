@@ -634,7 +634,7 @@ const DfpDashboard = () => {
 
       {/* FILE TYPES + RECENT */}
       <div className="row g-4">
-        <div className="col-lg-5">
+        <div className="col-lg-4">
           <div className="card shadow-sm p-3 h-100">
             {/* HEADER */}
             <div className="d-flex justify-content-between align-items-center mb-2">
@@ -667,7 +667,7 @@ const DfpDashboard = () => {
             </p>
 
             {/* CHART */}
-            <div style={{ height: "250px" }}>
+            <div>
               <Doughnut data={fileTypeData} />
             </div>
 
@@ -681,7 +681,7 @@ const DfpDashboard = () => {
           </div>
         </div>
 
-        <div className="col-lg-7">
+        <div className="col-lg-8">
           <div className="card shadow-sm p-3 h-100">
             <div className="d-flex justify-content-between align-items-center mb-2">
               <h6 className="mb-0">

@@ -4572,90 +4572,156 @@ router.post(
 =========================== */
 router.get("/staff/:id/dashboard", verifyToken, async (req, res) => {
   const connection = await connectToDatabase();
+
   const staffId = req.params.id;
 
   try {
-    /* STAFF INFO */
-    const [[staff]] = await connection.query(
-      "SELECT full_name, department_id FROM users WHERE id=?",
-      [staffId],
-    );
-
-    /* BASIC STATS */
-    const [[downloads]] = await connection.query(
-      `SELECT COUNT(*) total 
-       FROM audit_logs 
-       WHERE user_id=? AND action="DOWNLOAD" AND status="SUCCESS"`,
-      [staffId],
-    );
-
-    const [[logins]] = await connection.query(
-      `SELECT COUNT(*) total 
-       FROM audit_logs 
-       WHERE user_id=? AND action="USER_LOGIN"`,
-      [staffId],
-    );
-
-    const [[requestStats]] = await connection.query(
+    /* =========================================
+       GET CURRENT LOGGED-IN USER DEPARTMENT
+    ========================================= */
+    const [[loggedInUser]] = await connection.query(
       `
-  SELECT
-    SUM(CASE 
-        WHEN status = 'Approved' THEN 1 
-        ELSE 0 
-    END) AS approved,
-
-    SUM(CASE 
-        WHEN status = 'Rejected' THEN 1 
-        ELSE 0 
-    END) AS rejected,
-
-    SUM(CASE 
-        WHEN status IN ('Pending_Department_Review', 'Pending_Admin_Approval') 
-        THEN 1 
-        ELSE 0 
-    END) AS pending
-
-  FROM document_access_requests
-  WHERE requested_by = ?
-  `,
-      [staffId],
-    );
-
-    /* WEEKLY ACTIVITY */
-    const [weeklyActivity] = await connection.query(
-      `
-      SELECT DAYNAME(created_at) day, COUNT(*) total
-      FROM audit_logs
-      WHERE user_id=? 
-      GROUP BY DAYNAME(created_at)
+      SELECT id, department_id
+      FROM users
+      WHERE id=?
       `,
-      [staffId],
+      [req.user.id],
     );
 
-    /* TODAY DOWNLOADS */
-    const [[todayDownloads]] = await connection.query(
+    if (!loggedInUser) {
+      return res.json({
+        Status: false,
+        Error: "Unauthorized access",
+      });
+    }
+
+    /* =========================================
+       FETCH STAFF ONLY INSIDE SAME DEPARTMENT
+    ========================================= */
+    const [[staff]] = await connection.query(
+      `
+      SELECT id, full_name, department_id
+      FROM users
+      WHERE id=? AND department_id=?
+      `,
+      [staffId, loggedInUser.department_id],
+    );
+
+    if (!staff) {
+      return res.json({
+        Status: false,
+        Error: "Staff record not found in your department",
+      });
+    }
+
+    /* =========================================
+       TOTAL DOWNLOADS
+    ========================================= */
+    const [[downloads]] = await connection.query(
       `
       SELECT COUNT(*) total
       FROM audit_logs
-      WHERE user_id=? AND action="DOWNLOAD"
-      AND DATE(created_at)=CURDATE()
+      WHERE user_id=?
+      AND action="DOWNLOAD"
+      AND status="SUCCESS"
       `,
       [staffId],
     );
 
-    /* MULTIPLE IP CHECK */
+    /* =========================================
+       TOTAL LOGINS
+    ========================================= */
+    const [[logins]] = await connection.query(
+      `
+      SELECT COUNT(*) total
+      FROM audit_logs
+      WHERE user_id=?
+      AND action="USER_LOGIN"
+      `,
+      [staffId],
+    );
+
+    /* =========================================
+       REQUEST STATS
+    ========================================= */
+    const [[requestStats]] = await connection.query(
+      `
+      SELECT
+        SUM(CASE
+          WHEN status='Approved' THEN 1
+          ELSE 0
+        END) approved,
+
+        SUM(CASE
+          WHEN status='Rejected' THEN 1
+          ELSE 0
+        END) rejected,
+
+        SUM(CASE
+          WHEN status IN (
+            'Pending_Department_Review',
+            'Pending_Admin_Approval'
+          )
+          THEN 1
+          ELSE 0
+        END) pending
+
+      FROM document_access_requests
+      WHERE requested_by=?
+      `,
+      [staffId],
+    );
+
+    /* =========================================
+       CURRENT YEAR MONTHLY ACTIVITIES
+    ========================================= */
+    const [monthlyActivity] = await connection.query(
+      `SELECT
+        MONTH(created_at) month_num,
+        MONTHNAME(created_at) month,
+        COUNT(*) total
+      FROM audit_logs
+      WHERE user_id=?
+      AND YEAR(created_at)=YEAR(CURDATE())
+      GROUP BY MONTH(created_at), MONTHNAME(created_at)
+      ORDER BY MONTH(created_at)
+      `,
+      [staffId],
+    );
+
+    /* =========================================
+       CURRENT MONTH DOWNLOADS
+    ========================================= */
+    const [[monthlyDownloads]] = await connection.query(
+      `
+      SELECT COUNT(*) total
+      FROM audit_logs
+      WHERE user_id=?
+      AND action="DOWNLOAD"
+      AND MONTH(created_at)=MONTH(CURDATE())
+      AND YEAR(created_at)=YEAR(CURDATE())
+      `,
+      [staffId],
+    );
+
+    /* =========================================
+       MULTIPLE IP CHECK
+    ========================================= */
     const [[ipCheck]] = await connection.query(
       `
       SELECT COUNT(DISTINCT ip_address) total
       FROM audit_logs
-      WHERE user_id=? AND action="USER_LOGIN"
+      WHERE user_id=?
+      AND action="USER_LOGIN"
       `,
       [staffId],
     );
 
     const multipleIPs = ipCheck.total > 3;
 
-    /* RECENT ACTIVITIES */
+    /* =========================================
+       RECENT ACTIVITIES
+    ========================================= */
     const [recentActivities] = await connection.query(
       `
       SELECT action, description, created_at
@@ -4667,40 +4733,65 @@ router.get("/staff/:id/dashboard", verifyToken, async (req, res) => {
       [staffId],
     );
 
-    /* LOGIN LOGS */
+    /* =========================================
+       LOGIN LOGS
+    ========================================= */
     const [loginLogs] = await connection.query(
       `
-      SELECT ip_address, device, browser, created_at,
-      COUNT(*) OVER (PARTITION BY ip_address) ip_count
+      SELECT
+        ip_address,
+        device,
+        browser,
+        created_at,
+        COUNT(*) OVER (PARTITION BY ip_address) ip_count
+
       FROM audit_logs
-      WHERE user_id=? AND action="USER_LOGIN"
+      WHERE user_id=?
+      AND action="LOGIN"
+
       ORDER BY created_at DESC
-      LIMIT 10
+      LIMIT 5
       `,
       [staffId],
     );
 
+    /* =========================================
+       RESPONSE
+    ========================================= */
     res.json({
       Status: true,
+
       staff,
+
       stats: {
         downloads: downloads.total,
         logins: logins.total,
+
         approved: requestStats.approved || 0,
         pending: requestStats.pending || 0,
         rejected: requestStats.rejected || 0,
-        today_downloads: todayDownloads.total,
+
+        monthly_downloads: monthlyDownloads.total,
+
         multiple_ips: multipleIPs,
       },
-      weeklyActivity,
+
+      monthlyActivity,
+
       recentActivities,
+
       logins: loginLogs,
     });
   } catch (err) {
     console.error(err);
-    res.json({ Status: false });
+
+    res.json({
+      Status: false,
+      Error: "Failed to load dashboard",
+    });
   }
 });
+
 
 /* ===========================
    DEPARTMENT DASHBOARD
