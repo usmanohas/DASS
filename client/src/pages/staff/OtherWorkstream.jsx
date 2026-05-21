@@ -124,8 +124,8 @@ const OtherWorkstreamDocument = () => {
   return (
     <div className="container-fluid py-4">
       {/* Header */}
-      <h3 className="">
-        <i className="bi bi-diagram-3"></i> Documents from Other Departments
+      <h3 className="mb-3 fw-bold">
+        <i className="bi bi-building"></i> Inter-Departmental Documents
       </h3>
       {/* ================= FILTER BAR ================= */}
       <div className="card shadow-sm border-0 mb-4">
@@ -320,14 +320,9 @@ const OtherWorkstreamDocument = () => {
                       </td>
 
                       <td className="text-center">
-                        <span
-                          className={`badge ${
-                            classificationColors[doc.classification] ||
-                            "bg-secondary"
-                          }`}
-                        >
-                          {doc.classification}
-                        </span>
+                        <span className="badge bg-light text-dark border px-3 py-2 rounded-pill">
+                            {doc.classification}
+                          </span>
                       </td>
 
                       <td className="text-center">

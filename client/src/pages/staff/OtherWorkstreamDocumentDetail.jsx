@@ -229,18 +229,18 @@ const startDownload = async (versionId) => {
 
   return (
     <div className="container py-4">
-      <h3 className="mb-4">
+      <h3 className="mb-4 fw-bold">
         <i className="bi bi-file-earmark-text me-2"></i> Document Details
       </h3>
       <div className="card shadow border-0">
         <div className="card-body">
           <div className="d-flex justify-content-between align-items-center">
             <div>
-              <h4 className="fw-bold">{doc.title}</h4>
+              <h4 className="fw-semibold">{doc.title}</h4>
               <small className="text-muted">{doc.document_code}</small>
             </div>
 
-            <span className="badge bg-secondary px-3 py-2">
+            <span className="badge bg-dark-subtle text-dark border px-3 py-2 rounded-pill">
               {doc.classification}
             </span>
           </div>
@@ -288,7 +288,7 @@ const startDownload = async (versionId) => {
 
           <div className="row g-4">
             <div className="col-md-6">
-              <h6 className="text-muted"><i className="bi bi-info-circle me-2"></i>Document Information</h6>
+              <h6 className="text-muted mb-3"><i className="bi bi-info-circle me-2"></i>Document Information</h6>
 
               <p>
                 <strong>Owner Department:</strong> {doc.department_name}
@@ -302,7 +302,7 @@ const startDownload = async (versionId) => {
             </div>
 
             <div className="col-md-6">
-              <h6 className="text-muted"><i className="bi bi-info-circle me-2"></i>Metadata</h6>
+              <h6 className="text-muted mb-3"><i className="bi bi-info-circle me-2"></i>Metadata</h6>
 
               <p>
                 <strong>Status:</strong> {doc.document_status}
@@ -321,7 +321,7 @@ const startDownload = async (versionId) => {
           <div className="d-flex gap-2 mt-4">
             {/* BACK */}
             <button
-              className="btn btn-secondary"
+              className="btn btn-outline-secondary"
               onClick={() => navigate("/staff/document/other_workstreams")}
             >
               <i className="bi bi-arrow-left me-1"></i>

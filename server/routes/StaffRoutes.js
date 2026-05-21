@@ -207,6 +207,7 @@ const verifyToken = (req, res, next) => {
 /* ===========================
    FETCH DEPARTMENTS
 =========================== */
+/*
 router.get("/departments", verifyToken, async (req, res) => {
   try {
     const connection = await connectToDatabase();
@@ -221,6 +222,36 @@ router.get("/departments", verifyToken, async (req, res) => {
     });
   } catch (err) {
     res.json({ Status: false });
+  }
+});
+*/
+router.get("/departments", verifyToken, async (req, res) => {
+  try {
+    const connection = await connectToDatabase();
+
+    const [rows] = await connection.query(
+      `
+      SELECT 
+        id, 
+        name, 
+        name_abbreviation 
+      FROM departments
+      WHERE name != 'Partner'
+      ORDER BY name ASC
+      `,
+    );
+
+    res.json({
+      Status: true,
+      Departments: rows,
+    });
+  } catch (err) {
+    console.error(err);
+
+    res.json({
+      Status: false,
+      Error: "Failed to fetch departments",
+    });
   }
 });
 /* ===========================
@@ -2387,13 +2418,13 @@ router.get("/requests-by-department", verifyToken, async (req, res) => {
         COUNT(*) AS total,
 
         SUM(status = 'Approved') AS approved,
-        SUM(status = 'Rejected') AS rejected,
+        SUM(status = 'Declined') AS rejected,
 
         SUM(
           status IN (
             'Pending_Department_Review',
             'Pending_Admin_Approval',
-            'Pending' -- for internal table
+            'Pending'
           )
         ) AS pending
 

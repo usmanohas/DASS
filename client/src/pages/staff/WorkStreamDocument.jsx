@@ -102,136 +102,160 @@ const WorkStreamDocument = () => {
 
   return (
     <div className="container-fluid py-4">
-      {/* Header */}
-      <h3 className="mb-4">
-        <i className="bi bi-files me-2"></i> Department Documents 
-      </h3>
-      <div className="d-flex justify-content-between align-items-center flex-wrap mb-4">
-        <h6 className="text-muted">
-          <i className="bi bi-filter me-2"></i> Filter
-        </h6>
-        <div className="d-flex gap-2 flex-wrap align-items-center">
-          {/* Category */}
-          <select
-            className="form-select"
-            style={{ width: "160px" }}
-            value={category}
-            onChange={(e) => {
-              setPage(1);
-              setCategory(e.target.value);
-            }}
-          >
-            <option value="">All Categories</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
+      {/* ================= HEADER ================= */}
+      <div className="mb-4">
+        <h3 className="fw-bold mb-1">
+          <i className="bi bi-files me-2"></i>
+          Department Documents
+        </h3>
+        <small className="text-muted">
+          Browse, filter, and manage workstream documents efficiently
+        </small>
+      </div>
 
-          {/* Classification */}
-          <select
-            className="form-select"
-            style={{ width: "160px" }}
-            value={classification}
-            onChange={(e) => {
-              setPage(1);
-              setClassification(e.target.value);
-            }}
-          >
-            <option value="">All Classification</option>
-            <option>Public</option>
-            <option>Internal</option>
-            <option>Confidential</option>
-            <option>Restricted</option>
-          </select>
+      {/* ================= FILTER CARD ================= */}
+      <div className="card border-0 shadow-sm rounded-4 mb-4">
+        <div className="card-body">
+          <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+              <h6 className="mb-1 fw-bold">
+                <i className="bi bi-funnel me-2 text-secondary"></i>
+                Filters
+              </h6>
+              <small className="text-muted">
+                Refine documents by category, classification and year
+              </small>
+            </div>
 
-          {/* Dynamic Year */}
-          <select
-            className="form-select"
-            style={{ width: "140px" }}
-            value={year}
-            onChange={(e) => {
-              setPage(1);
-              setYear(e.target.value);
-            }}
-          >
-            <option value="">All Years</option>
-            {years.map((yr) => (
-              <option key={yr} value={yr}>
-                {yr}
-              </option>
-            ))}
-          </select>
+            <div className="d-flex gap-2 flex-wrap align-items-center">
+              {/* CATEGORY */}
+              <select
+                className="form-select form-select-sm shadow-sm"
+                style={{ width: "170px" }}
+                value={category}
+                onChange={(e) => {
+                  setPage(1);
+                  setCategory(e.target.value);
+                }}
+              >
+                <option value="">All Categories</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
 
-          {/* Search Modal Button */}
-          <button
-            className="btn btn-outline-secondary"
-            data-bs-toggle="modal"
-            data-bs-target="#keywordModal"
-          >
-            <i className="bi bi-search"></i>
-          </button>
+              {/* CLASSIFICATION */}
+              <select
+                className="form-select form-select-sm shadow-sm"
+                style={{ width: "170px" }}
+                value={classification}
+                onChange={(e) => {
+                  setPage(1);
+                  setClassification(e.target.value);
+                }}
+              >
+                <option value="">All Classification</option>
+                <option>Public</option>
+                <option>Internal</option>
+                <option>Confidential</option>
+                <option>Restricted</option>
+              </select>
 
-          {/* 🔥 Clear Button */}
-          <button
-          title="Reset"
-            className="btn btn-outline-secondary"
-            onClick={() => {
-              setCategory("");
-              setClassification("");
-              setYear("");
-              setSearch("");
-              setPage(1);
-            }}
-          >
-            <i className="bi bi-arrow-repeat"></i>
-          </button>
+              {/* YEAR */}
+              <select
+                className="form-select form-select-sm shadow-sm"
+                style={{ width: "130px" }}
+                value={year}
+                onChange={(e) => {
+                  setPage(1);
+                  setYear(e.target.value);
+                }}
+              >
+                <option value="">Year</option>
+                {years.map((yr) => (
+                  <option key={yr} value={yr}>
+                    {yr}
+                  </option>
+                ))}
+              </select>
+
+              {/* SEARCH */}
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#keywordModal"
+                title="Search"
+              >
+                <i className="bi bi-search"></i>
+              </button>
+
+              {/* RESET */}
+              <button
+                className="btn btn-danger btn-sm"
+                title="Reset filters"
+                onClick={() => {
+                  setCategory("");
+                  setClassification("");
+                  setYear("");
+                  setSearch("");
+                  setPage(1);
+                }}
+              >
+                <i className="bi bi-arrow-repeat"></i>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Document Table */}
+      {/* ================= TABLE CARD ================= */}
       <div className="card shadow-sm border-0">
         <div className="card-body">
-          {/* Loading */}
+          {/* LOADING */}
           {loading && (
             <div className="text-center py-5">
-              <div className="spinner-border text-success"></div>
-              <p className="mt-2">Loading documents...</p>
+              <div className="spinner-border text-primary"></div>
+              <p className="mt-2 text-muted">Loading documents...</p>
             </div>
           )}
 
-          {/* Empty */}
+          {/* EMPTY STATE */}
           {!loading && documents.length === 0 && (
             <div className="text-center py-5 text-muted">
-              <i className="bi bi-folder-x fs-1"></i>
-              <p className="mt-2">No document available</p>
+              <i className="bi bi-folder2-open fs-1 d-block mb-2"></i>
+              No documents found
             </div>
           )}
 
-          {/* Table */}
+          {/* TABLE */}
           {!loading && documents.length > 0 && (
             <div className="table-responsive">
-              <table className="table table-hover table-bordered align-middle">
+              <table className="table table-hover align-middle mb-0">
                 <thead className="table-light">
                   <tr>
-                    <th>Title</th>
+                    <th>Document Title</th>
                     <th>Category</th>
                     <th>Sub-category</th>
                     <th className="text-center">Classification</th>
-                    <th>Uploaded At</th>
+                    <th>Uploaded</th>
                   </tr>
                 </thead>
+
                 <tbody>
                   {documents.map((doc) => (
                     <tr
                       key={doc.id}
-                      role="button"
-                      className="cursor-pointer"
                       onClick={() => navigate(`/staff/document/${doc.id}`)}
+                      style={{
+                        cursor: "pointer",
+                        transition: "0.2s",
+                      }}
+                      className="hover-row"
                     >
                       <td>
-                        <div className="fw-semibold" title={doc.title}>
+                        <div className="fw-semibold">
                           {truncate(doc.title, 45)}
                         </div>
                         <small className="text-muted">
@@ -239,34 +263,24 @@ const WorkStreamDocument = () => {
                         </small>
                       </td>
 
-                      <td>
-                        <span className="">{doc.category_name}</span>
-                      </td>
+                      <td className="text-muted">{doc.category_name}</td>
 
-                      <td>
-                        <small className="text-muted">
-                          {doc.subcategory_name}
-                        </small>
+                      <td className="text-muted small">
+                        {doc.subcategory_name}
                       </td>
 
                       <td className="text-center">
-                        <span
-                          className={`badge ${
-                            classificationColors[doc.classification] ||
-                            "bg-secondary"
-                          }`}
-                        >
-                          {doc.classification}
-                        </span>
+                        <span className="badge bg-light text-dark border px-3 py-2 rounded-pill">
+                            {doc.classification}
+                          </span>
                       </td>
-                      <td>
-                        <small className="text-muted">
-                          {new Intl.DateTimeFormat("en-GB", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          }).format(new Date(doc.created_at))}
-                        </small>
+
+                      <td className="text-muted small">
+                        {new Intl.DateTimeFormat("en-GB", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        }).format(new Date(doc.created_at))}
                       </td>
                     </tr>
                   ))}
@@ -275,23 +289,23 @@ const WorkStreamDocument = () => {
             </div>
           )}
 
-          {/* Pagination */}
+          {/* PAGINATION */}
           {!loading && documents.length > 0 && (
-            <div className="d-flex justify-content-between align-items-center mt-3">
+            <div className="d-flex justify-content-between align-items-center p-3 border-top">
               <button
-                className="btn btn-outline-secondary"
+                className="btn btn-outline-secondary btn-sm"
                 disabled={page <= 1}
                 onClick={() => setPage((p) => p - 1)}
               >
                 ← Previous
               </button>
 
-              <span className="fw-semibold">
+              <span className="fw-semibold text-muted">
                 Page {page} of {totalPages}
               </span>
 
               <button
-                className="btn btn-outline-secondary"
+                className="btn btn-outline-secondary btn-sm"
                 disabled={page >= totalPages}
                 onClick={() => setPage((p) => p + 1)}
               >
@@ -301,12 +315,14 @@ const WorkStreamDocument = () => {
           )}
         </div>
       </div>
+
+      {/* ================= MODAL ================= */}
       <div className="modal fade" id="keywordModal" tabIndex="-1">
         <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content">
+          <div className="modal-content rounded-4">
             <div className="modal-header">
               <h5 className="modal-title">
-                <i className="bi bi-search me-2"></i> Search by Keyword
+                <i className="bi bi-search me-2"></i> Search Documents
               </h5>
               <button
                 type="button"
@@ -319,14 +335,15 @@ const WorkStreamDocument = () => {
               <input
                 type="text"
                 className="form-control"
-                placeholder="Enter keywords..."
+                placeholder="Enter keyword..."
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
 
             <div className="modal-footer">
               <button
-                className="btn btn-success"
+                className="btn text-white"
+                style={{ background: "#ef6c00" }}
                 data-bs-dismiss="modal"
                 onClick={() => {
                   setPage(1);
@@ -339,6 +356,14 @@ const WorkStreamDocument = () => {
           </div>
         </div>
       </div>
+
+      <style>
+        {`
+        .hover-row:hover {
+          background-color: #f8f9fa;
+        }
+      `}
+      </style>
     </div>
   );
 };

@@ -226,7 +226,7 @@ const WorkstreamDocumentDetail = () => {
 
   return (
     <div className="container py-4">
-      <h3 className="mb-4">
+      <h3 className="mb-4 fw-bold">
         <i className="bi bi-file-earmark-text me-2"></i> Document Details
       </h3>
       <div className="card shadow border-0">
@@ -234,11 +234,11 @@ const WorkstreamDocumentDetail = () => {
           {/* HEADER */}
           <div className="d-flex justify-content-between align-items-center">
             <div>
-              <h4 className="fw-bold">{doc.title}</h4>
+              <h4 className="fw-semibold">{doc.title}</h4>
               <small className="text-muted">{doc.document_code}</small>
             </div>
 
-            <span className="badge bg-secondary text-white px-3 py-2">
+            <span className="badge bg-danger-subtle text-danger border px-3 py-2 rounded-pill">
               {doc.classification}
             </span>
           </div>
@@ -325,7 +325,7 @@ const WorkstreamDocumentDetail = () => {
           <div className="mt-4 d-flex gap-2 flex-wrap">
             {/* Back Button */}
             <button
-              className="btn btn-secondary me-2"
+              className="btn btn-outline-secondary me-2"
               onClick={() => navigate("/staff/document/workstream")}
             >
               <i className="bi bi-arrow-left me-2"></i>

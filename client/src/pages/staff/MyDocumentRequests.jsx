@@ -118,44 +118,45 @@ const WorkstreamDocumentRequests = () => {
   /* =========================
      VIEW MODAL (NEW)
   ========================= */
+
   const viewDetails = (r) => {
     Swal.fire({
-      title: `<div class="fs-7 fw-bold">${r.title}</div>`,
+      title: `<div class="fs-4 fw-bold"><span class="bi bi-file-earmark-pdf-fill text-danger me-2"></span>${r.title}</div>`,
       html: `
-      <div class="text-start small">
-
-        <div class="mb-2">
-          <div class="text-muted fw-bold">Ownership</div>
-          <div><span class="bi bi-building me-2"></span>${r.owner_department_name}</div>
+        <div class="text-start small">
+  
+          <div class="mb-2">
+            <div class="text-muted fw-bold mb-1">Ownership</div>
+            <div><span class="bi bi-building me-2"></span>${r.owner_department_name}</div>
+          </div>
+  
+          <div class="mb-2">
+            <div class="text-muted fw-bold mb-1">Request Justification</div>
+            <div class="text-break">${r.reason}</div>
+          </div>
+  
+          <div class="mb-2">
+            <div class="text-muted fw-bold mb-2">Status</div>
+            <span class="badge bg-warning text-dark border px-3 py-2 rounded-pill">${r.status}</span>
+          </div>
+  
+          <div class="mb-2">
+            <div class="text-muted fw-bold">Requested At</div>
+            <div><small><span class="bi bi-clock-history me-2"></span>${new Date(r.created_at).toLocaleString()}</small></div>
+          </div>
+  
+          ${
+            r.expires_at
+              ? `
+          <div class="mb-2">
+            <div class="text-muted fw-bold">Expires At</div>
+            <div><small><span class="bi bi-calendar4-event me-2"></span>${new Date(r.expires_at).toLocaleString()}</small></div>
+          </div>`
+              : ""
+          }
+  
         </div>
-
-        <div class="mb-2">
-          <div class="text-muted fw-bold">Request Justification</div>
-          <div class="text-break">${r.reason}</div>
-        </div>
-
-        <div class="mb-2">
-          <div class="text-muted fw-bold">Status</div>
-          <span class="badge bg-secondary">${r.status}</span>
-        </div>
-
-        <div class="mb-2">
-          <div class="text-muted fw-bold">Requested At</div>
-          <div><small><span class="bi bi-clock-history me-2"></span>${new Date(r.created_at).toLocaleString()}</small></div>
-        </div>
-
-        ${
-          r.expires_at
-            ? `
-        <div class="mb-2">
-          <div class="text-muted fw-bold">Expires At</div>
-          <div><small><span class="bi bi-calendar4-event me-2"></span>${new Date(r.expires_at).toLocaleString()}</small></div>
-        </div>`
-            : ""
-        }
-
-      </div>
-    `,
+      `,
       width: 600,
       confirmButtonText: "Close",
       confirmButtonColor: "#ef6c00",
@@ -230,7 +231,7 @@ const WorkstreamDocumentRequests = () => {
     switch (status) {
       case "Pending_Department_Review":
         return (
-          <span className="badge bg-warning text-white">
+          <span className="badge bg-warning-subtle text-warning border px-3 py-2 rounded-pill">
             <i className="bi bi-hourglass-bottom me-1"></i>
             Awaiting Department Review
           </span>
@@ -238,7 +239,7 @@ const WorkstreamDocumentRequests = () => {
 
       case "Pending_Admin_Approval":
         return (
-          <span className="badge bg-info text-white">
+          <span className="badge bg-info-subtle text-info border px-3 py-2 rounded-pill">
             <i className="bi bi-hourglass-top me-1"></i>
             Awaiting Admin Approval
           </span>
@@ -246,7 +247,7 @@ const WorkstreamDocumentRequests = () => {
 
       case "Approved":
         return (
-          <span className="badge bg-success">
+          <span className="badge bg-success-subtle text-success border px-3 py-2 rounded-pill">
             <i className="bi bi-check-circle me-1"></i>
             Approved
           </span>
@@ -254,7 +255,7 @@ const WorkstreamDocumentRequests = () => {
 
       case "Rejected":
         return (
-          <span className="badge bg-danger">
+          <span className="badge bg-danger-subtle text-danger border px-3 py-2 rounded-pill">
             <i className="bi bi-x-circle me-1"></i>
             Denied
           </span>
@@ -267,9 +268,8 @@ const WorkstreamDocumentRequests = () => {
 
   return (
     <div className="container py-4">
-      <h3 className="mb-4">
-        <span className="bi bi-building me-2"></span>My Cross-Department Access
-        Requests
+      <h3 className="mb-4 fw-bold">
+        <span className="bi bi-building me-2"></span>Inter-Departmental Requests
       </h3>
 
       {/* 🔍 SEARCH */}

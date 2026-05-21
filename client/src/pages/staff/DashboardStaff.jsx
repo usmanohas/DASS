@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Bar, Doughnut, Line } from "react-chartjs-2";
+import { Bar, Line } from "react-chartjs-2";
 import "chart.js/auto";
 import { useOutletContext } from "react-router-dom";
 import RecentActivities from "./RecentActivities";
@@ -15,308 +15,489 @@ const MainStaffDashboard = () => {
   const [summary, setSummary] = useState(null);
   const [deptData, setDeptData] = useState([]);
   const [downloadData, setDownloadData] = useState([]);
-  const [dateRange, setDateRange] = useState({ start: "", end: "" });
+  const [dateRange, setDateRange] = useState({
+    start: "",
+    end: "",
+  });
 
   const toNum = (val) => Number(val || 0);
 
-  // Fetch initial data
+  /* =========================================
+     FETCH DATA
+  ========================================= */
   useEffect(() => {
     fetchSummary();
     fetchDeptChart();
-    fetchDownloadStats(); // default last 3 months
+    fetchDownloadStats();
   }, []);
 
-  // ✅ FETCH SUMMARY
   const fetchSummary = async () => {
     try {
       const res = await axios.get(
         "http://localhost:3000/staff/dashboard-summary",
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         },
       );
+
       setSummary(res.data.Data);
     } catch (err) {
       console.error(err);
     }
   };
 
-  // ✅ FETCH DEPARTMENT CHART
   const fetchDeptChart = async () => {
     try {
       const res = await axios.get(
         "http://localhost:3000/staff/requests-by-department",
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         },
       );
+
       setDeptData(res.data.Data || []);
     } catch (err) {
       console.error(err);
     }
   };
 
-  // ✅ FETCH DOWNLOAD STATS
   const fetchDownloadStats = async () => {
     try {
       const res = await axios.get(
         "http://localhost:3000/staff/download-stats",
         {
           params: dateRange,
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         },
       );
+
       setDownloadData(res.data.Data || []);
     } catch (err) {
       console.error(err);
     }
   };
 
-  // ✅ DOUGHNUT CHART - Request Status
-  const requestChart = summary && {
-    labels: ["Approved", "Pending", "Rejected"],
-    datasets: [
-      {
-        data: [
-          toNum(summary.internal.approved) + toNum(summary.external.approved),
-          toNum(summary.internal.pending) + toNum(summary.external.pending),
-          toNum(summary.internal.rejected) + toNum(summary.external.rejected),
-        ],
-        backgroundColor: ["#28a745", "#ffc107", "#dc3545"],
-      },
-    ],
-  };
+  /* =========================================
+     CHART DATA
+  ========================================= */
 
-  // ✅ STACKED DEPARTMENT CHART
   const deptChart = {
     labels: deptData.map((d) => d.department),
+
     datasets: [
       {
         label: "Approved",
         data: deptData.map((d) => toNum(d.approved)),
-        backgroundColor: "#28a745",
+        backgroundColor: "#198754",
+        borderRadius: 8,
       },
+
       {
         label: "Pending",
         data: deptData.map((d) => toNum(d.pending)),
-        backgroundColor: "#ffc107",
+        backgroundColor: "#ef6c00",
+        borderRadius: 8,
       },
+
       {
         label: "Rejected",
         data: deptData.map((d) => toNum(d.rejected)),
         backgroundColor: "#dc3545",
+        borderRadius: 8,
       },
     ],
   };
 
   const deptChartOptions = {
     responsive: true,
+
     plugins: {
-      legend: { position: "top" },
-      tooltip: {
-        callbacks: {
-          footer: (items) =>
-            `Total: ${items.reduce((sum, i) => sum + i.raw, 0)}`,
+      legend: {
+        position: "top",
+      },
+    },
+
+    scales: {
+      x: {
+        stacked: true,
+        grid: {
+          display: false,
+        },
+      },
+
+      y: {
+        stacked: true,
+        beginAtZero: true,
+        ticks: {
+          precision: 0,
         },
       },
     },
-    scales: {
-      x: { stacked: true },
-      y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } },
-    },
   };
 
-  // ✅ DOWNLOAD LINE CHART
   const downloadChart = {
-    labels: downloadData.map((d) => d.date),
-    datasets: [
-      {
-        label: "Downloads",
-        data: downloadData.map((d) => toNum(d.total)),
-        borderColor: "#0d6efd",
-        backgroundColor: "rgba(13,110,253,0.2)",
-        borderWidth: 2,
-        tension: 0.3,
-        fill: true,
-      },
-    ],
-  };
+  labels: downloadData.map((d) => d.date),
+  datasets: [
+    {
+      label: "Downloads",
+      data: downloadData.map((d) => toNum(d.total)),
+      borderColor: "#0d6efd",
+      borderWidth: 2,
+      tension: 0.3,
+      fill: false, // ✅ REMOVE background shading
+    },
+  ],
+};
 
   return (
-    <div className="container">
-      {/* HEADER */}
-      <div className="card border-0 shadow-sm mb-3">
-        <div className="card-body d-flex justify-content-between flex-wrap">
-          <div>
-            <h4>
-              <i className="bi bi-person me-2"></i>
-              Welcome Back,{" "}
-              <small className="text-muted">{user?.full_name}</small>
-            </h4>
-            <div className="text-muted">
-              <i className="bi bi-building me-2"></i>
-              {user?.department}
+    <div className="container-fluid py-4">
+      {/* =========================================
+          HEADER
+      ========================================= */}
+      <div
+        className="card border-0 shadow-sm rounded-4 mb-3 overflow-hidden"
+        style={{
+          background: "linear-gradient(135deg, #ef6c00, #ff8f00)",
+        }}
+      >
+        <div className="card-body p-3 p-md-4">
+          <div className="row align-items-center">
+            <div className="col-lg-8">
+              <div className="d-flex align-items-center gap-3 mb-3">
+                <div
+                  className="rounded-circle bg-white bg-opacity-25 d-flex align-items-center justify-content-center"
+                  style={{
+                    width: "70px",
+                    height: "70px",
+                  }}
+                >
+                  <i
+                    className="bi bi-person text-white"
+                    style={{ fontSize: "2rem" }}
+                  ></i>
+                </div>
+
+                <div>
+                  <h2 className="fw-bold text-white mb-1">Welcome Back</h2>
+
+                  <h5 className="text-white mb-0">{user?.full_name}</h5>
+                </div>
+              </div>
+
+              <div className="d-flex flex-wrap gap-4 text-white">
+                <div>
+                  <small className="opacity-75 d-block">Department</small>
+
+                  <strong>{user?.department}</strong>
+                </div>
+
+                <div>
+                  <small className="opacity-75 d-block">Last Login</small>
+
+                  <strong>{formattedLastLogin}</strong>
+                </div>
+              </div>
             </div>
-            <small className="text-muted">
-              Last Login: {formattedLastLogin}
-            </small>
+
+            <div className="col-lg-4 text-lg-end mt-4 mt-lg-0">
+              <div
+                className="bg-white bg-opacity-10 rounded-4 p-3 d-inline-block"
+                style={{
+                  backdropFilter: "blur(6px)",
+                }}
+              >
+                <small className="text-white opacity-75 d-block mb-1">
+                  System Access Level
+                </small>
+
+                <h5 className="text-white fw-bold mb-0">Staff Dashboard</h5>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* SUMMARY CARDS */}
+      {/* =========================================
+          KPI CARDS
+      ========================================= */}
       {summary && (
-        <div className="row g-3 mb-4">
-          <Card
+        <div className="row g-4 mb-4">
+          <StatCard
             title="Active Staff"
-            value={toNum(summary.activeStaff)}
-            icon="people"
+            value={summary.activeStaff}
+            icon="people-fill"
+            color="primary"
           />
-          <Card title="Total Documents" value={toNum(summary.documents)} icon="files" />
-          <Card
+
+          <StatCard
+            title="Documents"
+            value={summary.documents}
+            icon="file-earmark-text"
+            color="success"
+          />
+
+          <StatCard
             title="Total Requests"
             value={
               toNum(summary.internal.total) + toNum(summary.external.total)
             }
-            icon="shield-lock"
+            icon="shield-lock-fill"
+            color="warning"
           />
-          <Card
+
+          <StatCard
             title="Approved"
             value={
               toNum(summary.internal.approved) +
               toNum(summary.external.approved)
             }
-            icon="file-earmark-check"
+            icon="check-circle-fill"
+            color="success"
           />
-          <Card
+
+          <StatCard
             title="Pending"
             value={
               toNum(summary.internal.pending) + toNum(summary.external.pending)
             }
-            icon="file-earmark-arrow-up"
+            icon="clock-history"
+            color="warning"
           />
-          <Card
+
+          <StatCard
             title="Rejected"
             value={
               toNum(summary.internal.rejected) +
               toNum(summary.external.rejected)
             }
-            icon="file-earmark-excel"
+            icon="x-circle-fill"
+            color="danger"
           />
-          <Card title="Total Downloads" value={toNum(summary.downloads)} icon="download" />
-          <Card title="Support Tickets" value={toNum(summary.tickets)} icon="ticket" />
+
+          <StatCard
+            title="Downloads"
+            value={summary.downloads}
+            icon="download"
+            color="info"
+          />
+
+          <StatCard
+            title="Support Tickets"
+            value={summary.tickets}
+            icon="ticket-detailed-fill"
+            color="dark"
+          />
         </div>
       )}
 
-      {/* CHARTS */}
+      {/* =========================================
+          CHARTS
+      ========================================= */}
       <div className="row g-4">
-        {/* Department Stacked Bar */}
-        <div className="col-md-6">
-          <div className="card shadow-sm p-3">
-            <h6 className=""><i className="bi bi-bar-chart-line me-2"></i>Requests by Department</h6>
+        {/* REQUESTS CHART */}
+        <div className="col-xl-6">
+          <div className="card border-0 shadow-sm rounded-4 h-100">
+            <div className="card-body p-4">
+              <div className="mb-4">
+                <h5 className="fw-bold mb-1">
+                  <i className="bi bi-bar-chart-line me-2 text-primary"></i>
+                  Document Requests
+                </h5>
 
-            {/* Description */}
-            <small className="text-muted d-block mb-3">
-              Displays the number of document access requests grouped by
-              department, categorized into approved, pending, and rejected
-              statuses.
-            </small>
-
-            {deptData.length === 0 ? (
-              <div className="text-muted text-center py-4">
-                No department data available
+                <small className="text-muted">
+                  Document Access requests grouped by department
+                </small>
               </div>
-            ) : (
-              <Bar data={deptChart} options={deptChartOptions} />
-            )}
+
+              {deptData.length === 0 ? (
+                <div className="text-center py-5 text-muted">
+                  <i className="bi bi-bar-chart fs-1 d-block mb-3"></i>
+                  No department analytics available
+                </div>
+              ) : (
+                <Bar data={deptChart} options={deptChartOptions} />
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Download Line Chart */}
-        <div className="col-md-6">
-          <div className="card shadow-sm p-3">
-            <h6><i className="bi bi-graph-up-arrow me-2"></i>Document Download Statistics</h6>
-            <small className="text-muted d-block mb-3">
-              Shows the number of documents downloaded by you. Default view is
-              the last 3 months including the current month.
-            </small>
+        {/* DOWNLOAD CHART */}
+        <div className="col-xl-6">
+          <div className="card border-0 shadow-sm rounded-4 h-100">
+            <div className="card-body p-4">
+              <div className="d-flex justify-content-between flex-wrap gap-3 mb-4">
+                <div>
+                  <h5 className="fw-bold mb-1">
+                    <i className="bi bi-graph-up-arrow me-2 text-success"></i>
+                    Download Analytics
+                  </h5>
 
-            {/* Date Range Inputs */}
-            <div className="d-flex flex-wrap align-items-end gap-2 mb-3">
-              <div className="d-flex flex-column">
-                <label className="form-label mb-1">Start Date</label>
-                <input
-                  type="date"
-                  className="form-control form-control-sm"
-                  value={dateRange.start}
-                  onChange={(e) =>
-                    setDateRange({ ...dateRange, start: e.target.value })
-                  }
-                />
-              </div>
-              <div className="d-flex flex-column">
-                <label className="form-label mb-1">End Date</label>
-                <input
-                  type="date"
-                  className="form-control form-control-sm"
-                  value={dateRange.end}
-                  onChange={(e) =>
-                    setDateRange({ ...dateRange, end: e.target.value })
-                  }
-                />
-              </div>
-              <button
-                className="btn btn-secondary btn-sm mt-2"
-                onClick={fetchDownloadStats}
-              >
-                Load
-              </button>
-            </div>
+                  <small className="text-muted">
+                    Monitor document download activity
+                  </small>
+                </div>
 
-            {downloadData.length === 0 ? (
-              <div className="text-muted text-center py-5">
-                No download data available
+                <div className="d-flex gap-3 flex-wrap align-items-end">
+                  {/* START DATE */}
+                  <div className="d-flex flex-column">
+                    <label className="form-label small text-muted mb-1">
+                      Start Date
+                    </label>
+                    <input
+                      type="date"
+                      className="form-control form-control-sm"
+                      value={dateRange.start}
+                      onChange={(e) =>
+                        setDateRange({
+                          ...dateRange,
+                          start: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  {/* END DATE */}
+                  <div className="d-flex flex-column">
+                    <label className="form-label small text-muted mb-1">
+                      End Date
+                    </label>
+                    <input
+                      type="date"
+                      className="form-control form-control-sm"
+                      value={dateRange.end}
+                      onChange={(e) =>
+                        setDateRange({
+                          ...dateRange,
+                          end: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  {/* BUTTON */}
+                  <div>
+                    <button
+                      className="btn btn-sm text-white px-3"
+                      style={{
+                        background: "#ef6c00",
+                        height: "38px",
+                      }}
+                      onClick={fetchDownloadStats}
+                    >
+                      Load
+                    </button>
+                  </div>
+                </div>
               </div>
-            ) : (
-              <Line
-                data={downloadChart}
-                options={{
-                  responsive: true,
-                  plugins: {
-                    legend: { position: "top" },
-                    tooltip: { mode: "index", intersect: false },
-                  },
-                  scales: {
-                    x: { title: { display: true, text: "Date" } },
-                    y: {
-                      title: { display: true, text: "Number of Downloads" },
-                      beginAtZero: true,
-                      ticks: { precision: 0 },
+
+              {downloadData.length === 0 ? (
+                <div className="text-center py-5 text-muted">
+                  <i className="bi bi-download fs-1 d-block mb-3"></i>
+                  No download statistics available
+                </div>
+              ) : (
+                <Line
+                  data={downloadChart}
+                  options={{
+                    responsive: true,
+
+                    plugins: {
+                      legend: {
+                        position: "top",
+                      },
                     },
-                  },
-                }}
-              />
-            )}
+
+                    scales: {
+                      x: {
+                        grid: {
+                          display: false,
+                        },
+                      },
+
+                      y: {
+                        beginAtZero: true,
+                        ticks: {
+                          precision: 0,
+                        },
+                      },
+                    },
+                  }}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>
-      <div className="row g-4 mt-3">
+
+      {/* =========================================
+          RECENT ACTIVITIES
+      ========================================= */}
+      <div className="row mt-4">
         <div className="col-12">
-          <RecentActivities />
+          <div className="card border-0 shadow-sm rounded-4">
+            <div className="card-body p-4">
+              <div className="mb-3">
+                <h5 className="fw-bold mb-1">
+                  <i className="bi bi-clock-history me-2 text-dark"></i>
+                  Recent Activities
+                </h5>
+
+                <small className="text-muted">
+                  Latest system and access activities
+                </small>
+              </div>
+
+              <RecentActivities />
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-const Card = ({ title, value, icon }) => (
-  <div className="col-md-3 col-lg-3">
-    <div className="card shadow-sm h-100 text-center p-3">
-      <i className={`bi bi-${icon} fs-4 text-muted`}></i>
-      <small className="text-muted">{title}</small>
-      <div className="fw-bold fs-5">{Number(value) || 0}</div>
+/* =========================================
+   KPI CARD COMPONENT
+========================================= */
+
+const StatCard = ({ title, value, icon, color }) => {
+  return (
+    <div className="col-6 col-md-4 col-xl-3">
+      <div
+        className="card border-0 shadow-sm rounded-4 h-100"
+        style={{
+          transition: "0.25s ease",
+        }}
+      >
+        <div className="card-body p-4">
+          <div className="d-flex justify-content-between align-items-start">
+            <div>
+              <small className="text-muted d-block mb-2">{title}</small>
+
+              <h3 className="fw-bold mb-0">{Number(value) || 0}</h3>
+            </div>
+
+            <div
+              className={`bg-${color} bg-opacity-10 text-${color} rounded-4 d-flex align-items-center justify-content-center`}
+              style={{
+                width: "56px",
+                height: "56px",
+              }}
+            >
+              <i className={`bi bi-${icon} fs-4`}></i>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default MainStaffDashboard;

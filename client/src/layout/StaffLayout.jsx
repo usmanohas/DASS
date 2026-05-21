@@ -8,13 +8,14 @@ const StaffLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [user, setUser] = useState(null);
 
-  // 🔐 access request alerts (from Cross-Department) 
+  // 🔐 access request alerts (from Cross-Department)
   const [accessAlerts, setAccessAlerts] = useState([]);
   const [loadingAccessAlerts, setLoadingAccessAlerts] = useState(true);
 
-    // 🔐 access request alerts (from Internal staff)
+  // 🔐 access request alerts (from Internal staff)
   const [internalAccessAlerts, setInternalAccessAlerts] = useState([]);
-  const [loadingInternalAccessAlerts, setLoadingInternalAccessAlerts] = useState(true);
+  const [loadingInternalAccessAlerts, setLoadingInternalAccessAlerts] =
+    useState(true);
 
   const toggleSidebar = () => setCollapsed(!collapsed);
 
@@ -36,7 +37,7 @@ const StaffLayout = () => {
       });
   }, []);
 
-    /* ==========================
+  /* ==========================
      FETCH ACCESS ALERTS (NEW)
   ========================== */
   const fetchAccessAlerts = async () => {
@@ -45,7 +46,7 @@ const StaffLayout = () => {
 
       const res = await axios.get(
         "http://localhost:3000/staff/document-access-notification/pending",
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       if (res.data.Status) {
@@ -58,11 +59,11 @@ const StaffLayout = () => {
     }
   };
 
-   useEffect(() => {
-     fetchAccessAlerts();
-   }, []);
+  useEffect(() => {
+    fetchAccessAlerts();
+  }, []);
 
-    /* ==========================
+  /* ==========================
      FETCH INTERNAL ACCESS REQUEST ALERTS
   ========================== */
   const fetchInternalAccessAlerts = async () => {
@@ -71,7 +72,7 @@ const StaffLayout = () => {
 
       const res = await axios.get(
         "http://localhost:3000/staff/document-internal-access-notification/pending",
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       if (res.data.Status) {
@@ -89,27 +90,72 @@ const StaffLayout = () => {
   }, []);
 
   return (
-    <div className="d-flex vh-100">
-      <StaffSidebar collapsed={collapsed} user={user} />
-      <div className="flex-grow-1 d-flex flex-column">
-        <StaffTopbar
-          toggleSidebar={toggleSidebar}
-          user={user}
-          accessAlerts={accessAlerts}               
-          loadingAccessAlerts={loadingAccessAlerts}
-          accessInternalAlerts={internalAccessAlerts}               
-          loadingInternalAccessAlerts={loadingInternalAccessAlerts} 
-        />
+    <div
+      className="d-flex"
+      style={{ minHeight: "100vh", background: "#f4f6fb" }}
+    >
+      {/* ================= SIDEBAR ================= */}
+      <aside
+        style={{
+          width: collapsed ? "80px" : "260px",
+          transition: "all 0.25s ease",
+          background: "#ef6c00",
+          color: "#fff",
+          minHeight: "100vh",
+          position: "sticky",
+          top: 0,
+          boxShadow: "2px 0 10px rgba(0,0,0,0.05)",
+        }}
+      >
+        <StaffSidebar collapsed={collapsed} user={user} />
+      </aside>
 
-        <div className="flex-grow-1 overflow-auto bg-light p-4">
-          <Outlet context={{ user }} />
+      {/* ================= MAIN ================= */}
+      <div className="flex-grow-1 d-flex flex-column">
+        {/* TOPBAR */}
+        <div
+          style={{
+            position: "sticky",
+            top: 0,
+            zIndex: 1000,
+            backdropFilter: "blur(10px)",
+            background: "rgba(255,255,255,0.85)",
+            borderBottom: "1px solid rgba(0,0,0,0.05)",
+          }}
+        >
+          <StaffTopbar
+            toggleSidebar={toggleSidebar}
+            user={user}
+            accessAlerts={accessAlerts}
+            loadingAccessAlerts={loadingAccessAlerts}
+            accessInternalAlerts={internalAccessAlerts}
+            loadingInternalAccessAlerts={loadingInternalAccessAlerts}
+          />
         </div>
 
-        <footer className="bg-white text-center py-2 shadow-sm">
-          <span className="text-muted">
-           © {new Date().getFullYear()} NPHCDA Archive Document & Sharing System.
-        All Rights Reserved.
-          </span>
+        {/* PAGE CONTENT */}
+        <main
+          className="overflow-auto bg-light"
+          style={{
+            flexGrow: 1,
+            padding: "24px",
+          }}
+        >
+          <Outlet context={{ user }} />
+        </main>
+
+        {/* FOOTER */}
+        <footer
+          style={{
+            padding: "12px",
+            textAlign: "center",
+            borderTop: "1px solid #eee",
+            background: "#f8f9fa",
+          }}
+        >
+          <small className="text-secondary">
+            © {new Date().getFullYear()} NPHCDA-DASS
+          </small>
         </footer>
       </div>
     </div>

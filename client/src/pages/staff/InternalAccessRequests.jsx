@@ -210,9 +210,9 @@ const StaffDocumentAccess = () => {
 
   return (
     <div className="container mt-4">
-      <h3 className="mb-4">
+      <h3 className="mb-4 fw-bold">
         <i className="bi bi-shield-lock me-2"></i>
-        My Requested Document Access
+        Internal Document Requests
       </h3>
 
       {/* Filters */}
@@ -285,15 +285,19 @@ const StaffDocumentAccess = () => {
                     <tr key={r.id}>
                       <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
                       <td>{r.title}</td>
-                      <td>{r.classification}</td>
+                      <td>
+                        <span className="badge bg-light text-dark border px-3 py-2 rounded-pill">
+                          {r.classification}
+                        </span>
+                      </td>
                       <td>
                         <span
                           className={`badge ${
                             r.status === "approved"
-                              ? "bg-success"
+                              ? "bg-success-subtle text-success border px-3 py-2 rounded-pill"
                               : r.status === "declined"
-                                ? "bg-danger"
-                                : "bg-warning text-dark"
+                                ? "bg-danger-subtle text-danger border px-3 py-2 rounded-pill"
+                                : "bg-warning-subtle text-warning border px-3 py-2 rounded-pill"
                           }`}
                         >
                           {r.status.toUpperCase()}
@@ -308,7 +312,7 @@ const StaffDocumentAccess = () => {
                       <td className="text-end text-center">
                         {canDownload(r) ? (
                           <button
-                            className="btn btn-sm btn-danger"
+                            className="btn btn-sm btn-success"
                             onClick={() => handleDownload(r.current_version_id)}
                           >
                             <i className="bi bi-download" title="Download"></i>
