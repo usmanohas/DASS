@@ -3523,4 +3523,241 @@ router.put("/storage-dashboard", verifyToken, async (req, res) => {
   }
 });
 
+/* ===========================
+   AUDIT TRAIT
+=========================== */
+router.get("/audit-actions", verifyToken, async (req, res) => {
+  try {
+    const connection = await connectToDatabase();
+
+    const [actions] = await connection.query(`
+      SELECT DISTINCT action FROM audit_logs ORDER BY action ASC
+    `);
+
+    res.json({ Status: true, Data: actions });
+  } catch (err) {
+    console.error(err);
+    res.json({ Status: false });
+  }
+});
+
+router.get("/audit-logs", verifyToken, async (req, res) => {
+  try {
+    const connection = await connectToDatabase();
+
+    const { user_id, action, entity_type, document_code, from_date, to_date } =
+      req.query;
+
+    let query = `
+      SELECT al.*, u.full_name, d.document_code
+      FROM audit_logs al
+      LEFT JOIN users u ON u.id = al.user_id
+      LEFT JOIN documents d ON d.id = al.entity_id AND al.entity_type = 'DOCUMENT'
+      WHERE 1=1
+    `;
+
+    const params = [];
+
+    if (user_id) {
+      query += " AND al.user_id = ?";
+      params.push(user_id);
+    }
+
+    if (action) {
+      query += " AND al.action = ?";
+      params.push(action);
+    }
+
+    if (entity_type) {
+      query += " AND al.entity_type = ?";
+      params.push(entity_type);
+    }
+
+    if (document_code) {
+      query += " AND d.document_code LIKE ?";
+      params.push(`%${document_code}%`);
+    }
+
+    if (from_date && to_date) {
+      query += " AND DATE(al.created_at) BETWEEN ? AND ?";
+      params.push(from_date, to_date);
+    }
+
+    query += " ORDER BY al.created_at DESC LIMIT 200";
+
+    const [logs] = await connection.query(query, params);
+
+    res.json({ Status: true, Data: logs });
+  } catch (err) {
+    console.error(err);
+    res.json({ Status: false });
+  }
+});
+
+router.get("/audit-document-summary", verifyToken, async (req, res) => {
+  try {
+    const connection = await connectToDatabase();
+
+    const { document_code, action } = req.query;
+    //console.log(document_code)
+    //console.log(action)
+    
+    if (!document_code) {
+      return res.json({
+        Status: false,
+        Error: "Document code required",
+      });
+    }
+
+    let query = `
+      SELECT
+        al.id,
+        al.action,
+        al.description,
+        al.created_at,
+
+        u.id AS user_id,
+        u.full_name,
+
+        r.name AS role_name,
+
+        d.document_code,
+        d.title
+
+      FROM audit_logs al
+
+      INNER JOIN users u
+        ON u.id = al.user_id
+
+      LEFT JOIN roles r
+        ON r.id = u.role_id
+
+      INNER JOIN documents d
+        ON d.id = al.entity_id
+
+      WHERE d.document_code LIKE ?
+    `;
+
+    const params = [`%${document_code}%`];
+
+    if (action) {
+      query += ` AND al.action = ?`;
+      params.push(action);
+    }
+
+    query += `
+      ORDER BY al.created_at DESC
+    `;
+
+    const [logs] = await connection.query(query, params);
+
+    res.json({
+      Status: true,
+      Data: logs,
+    });
+  } catch (err) {
+    console.error(err);
+
+    res.json({
+      Status: false,
+      Error: "Server error",
+    });
+  }
+});
+
+router.get("/audit-document-users", verifyToken, async (req, res) => {
+  const { document_code } = req.query;
+
+  const [users] = await connection.query(
+    `
+    SELECT DISTINCT
+      u.id,
+      u.full_name
+    FROM audit_logs al
+    JOIN users u
+      ON u.id = al.user_id
+    JOIN documents d
+      ON d.id = al.entity_id
+    WHERE d.document_code = ?
+    `,
+    [document_code]
+  );
+
+  res.json({
+    Status: true,
+    Data: users,
+  });
+});
+
+router.get("/document-tracker", verifyToken, async (req, res) => {
+  try {
+    const connection = await connectToDatabase();
+
+    const { document_code } = req.query;
+
+    if (!document_code) {
+      return res.status(400).json({
+        Status: false,
+        Error: "Document code is required",
+      });
+    }
+
+    const [logs] = await connection.query(
+      `
+      SELECT
+        al.id,
+        al.session_id,
+        al.action,
+        al.description,
+        al.old_values,
+        al.new_values,
+        al.browser,
+        al.os,
+        al.ip_address,
+        al.created_at,
+
+        u.id AS user_id,
+        u.full_name,
+        u.email,
+
+        r.name AS role_name,
+
+        d.id AS document_id,
+        d.document_code,
+        d.title
+
+      FROM audit_logs al
+
+      INNER JOIN users u
+        ON u.id = al.user_id
+
+      LEFT JOIN roles r
+        ON r.id = u.role_id
+
+      INNER JOIN documents d
+        ON d.id = al.entity_id
+
+      WHERE
+        al.entity_type = 'DOCUMENT'
+        AND d.document_code = ?
+
+      ORDER BY al.created_at DESC
+      `,
+      [document_code]
+    );
+
+    return res.json({
+      Status: true,
+      Data: logs,
+    });
+  } catch (err) {
+    console.error("Document Tracker Error:", err);
+
+    return res.status(500).json({
+      Status: false,
+      Error: "Server Error",
+    });
+  }
+});
+
 export { router as SuperAdminRouter };

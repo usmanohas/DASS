@@ -6,6 +6,8 @@ const SuperAdminAuditTrail = () => {
   const [users, setUsers] = useState([]);
   const [actions, setActions] = useState([]);
   const [expandedSessions, setExpandedSessions] = useState({});
+  const [documentSummary, setDocumentSummary] = useState([]);
+  const [documentCode, setDocumentCode] = useState("");
 
   const [filters, setFilters] = useState({
     user_id: "",
@@ -25,7 +27,7 @@ const SuperAdminAuditTrail = () => {
 
   /* ================= FETCH USERS ================= */
   const fetchUsers = async () => {
-    const res = await axios.get("http://localhost:3000/admin/staff-directory", {
+    const res = await axios.get("http://localhost:3000/superadmin/audit-users", {
       withCredentials: true,
     });
     if (res.data.Status) setUsers(res.data.Data);
@@ -33,7 +35,7 @@ const SuperAdminAuditTrail = () => {
 
   /* ================= FETCH ACTIONS ================= */
   const fetchActions = async () => {
-    const res = await axios.get("http://localhost:3000/admin/audit-actions", {
+    const res = await axios.get("http://localhost:3000/superadmin/audit-actions", {
       withCredentials: true,
     });
     if (res.data.Status) setActions(res.data.Data);
@@ -44,7 +46,7 @@ const SuperAdminAuditTrail = () => {
     setLoading(true);
 
     try {
-      const res = await axios.get("http://localhost:3000/admin/audit-logs", {
+      const res = await axios.get("http://localhost:3000/superadmin/audit-logs", {
         params: filters,
         withCredentials: true,
       });
@@ -57,6 +59,32 @@ const SuperAdminAuditTrail = () => {
     }
 
     setLoading(false);
+  };
+
+  const fetchDocumentSummary = async () => {
+    if (!filters.document_code.trim()) {
+      setDocumentSummary([]);
+      return;
+    }
+
+    try {
+      const res = await axios.get(
+        "http://localhost:3000/superadmin/audit-document-summary",
+        {
+          params: {
+            document_code: filters.document_code,
+            action: filters.action,
+          },
+          withCredentials: true,
+        },
+      );
+
+      if (res.data.Status) {
+        setDocumentSummary(res.data.Data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   /* ================= GROUP ================= */
@@ -94,6 +122,8 @@ const SuperAdminAuditTrail = () => {
 
     if (!role || role === "staff") return "";
     if (role === "focal_person") return " (DFP)";
+    if (role === "super_admin") return " (Super Administrator)";
+    if (role === "admin") return " (System Administrator)";
 
     return ` (${role.charAt(0).toUpperCase() + role.slice(1)})`;
   };
@@ -140,24 +170,43 @@ const SuperAdminAuditTrail = () => {
   return (
     <div className="container py-4">
       {/* HEADER */}
-      <div className="mb-4">
-        <h3 className="">
-          <i className="bi bi-shield-check me-2"></i>
-          Audit Trail
-        </h3>
-        <small className="text-muted">Monitor system activities and logs</small>
+      <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+          <h3 className="fw-bold mb-1">
+            <i className="bi bi-shield-check me-2"></i>
+            Audit Trail
+          </h3>
+
+          <p className="text-muted mb-0">
+            Monitor system activities, user actions and operational logs.
+          </p>
+        </div>
+
+        <button
+          className="btn bg-success-subtle text-success border px-3 py-2 rounded-pill"
+          data-bs-toggle="modal"
+          data-bs-target="#trackDocumentModal"
+        >
+          <i className="bi bi-file-earmark-search me-2"></i>
+          Track Document
+        </button>
       </div>
 
       {/* ================= FILTER ================= */}
-      <div className="card border shadow-sm mb-4">
+      <div className="card shadow-sm border-0 mb-4">
         <div className="card-body">
           <div className="row g-3 align-items-end">
             <div className="col-md-3">
               <label className="form-label small fw-semibold">User</label>
+
               <select
                 className="form-select"
+                value={filters.user_id}
                 onChange={(e) =>
-                  setFilters({ ...filters, user_id: e.target.value })
+                  setFilters({
+                    ...filters,
+                    user_id: e.target.value,
+                  })
                 }
               >
                 <option value="">All Users</option>
@@ -170,58 +219,97 @@ const SuperAdminAuditTrail = () => {
               </select>
             </div>
 
-            <div className="col-md-2">
+            <div className="col-md-3">
               <label className="form-label small fw-semibold">Action</label>
+
               <select
                 className="form-select"
+                value={filters.action}
                 onChange={(e) =>
-                  setFilters({ ...filters, action: e.target.value })
+                  setFilters({
+                    ...filters,
+                    action: e.target.value,
+                  })
                 }
               >
-                <option value="">All</option>
+                <option value="">All Actions</option>
+
                 {actions.map((a, i) => (
-                  <option key={i}>{a.action}</option>
+                  <option key={i} value={a.action}>
+                    {a.action}
+                  </option>
                 ))}
               </select>
             </div>
 
             <div className="col-md-2">
-              <label className="form-label small fw-semibold">Document</label>
-              <input
-                className="form-control"
-                placeholder="DOC-001"
-                onChange={(e) =>
-                  setFilters({ ...filters, document_code: e.target.value })
-                }
-              />
-            </div>
-
-            <div className="col-md-2">
               <label className="form-label small fw-semibold">From</label>
+
               <input
                 type="date"
                 className="form-control"
+                value={filters.from_date}
                 onChange={(e) =>
-                  setFilters({ ...filters, from_date: e.target.value })
+                  setFilters({
+                    ...filters,
+                    from_date: e.target.value,
+                  })
                 }
               />
             </div>
 
             <div className="col-md-2">
               <label className="form-label small fw-semibold">To</label>
+
               <input
                 type="date"
                 className="form-control"
+                value={filters.to_date}
                 onChange={(e) =>
-                  setFilters({ ...filters, to_date: e.target.value })
+                  setFilters({
+                    ...filters,
+                    to_date: e.target.value,
+                  })
                 }
               />
             </div>
 
-            <div className="col-md-1 d-grid">
-              <button className="btn btn-danger" onClick={fetchLogs}>
-                <i className="bi bi-search"></i>
-              </button>
+            <div className="col-md-2">
+              <div className="d-flex gap-2">
+                <button
+                  className="btn btn-danger flex-fill"
+                  onClick={fetchLogs}
+                >
+                  <i className="bi bi-search"></i>
+                </button>
+
+                <button
+                  className="btn btn-outline-secondary"
+                  title="Reset Filters"
+                  onClick={() => {
+                    const reset = {
+                      user_id: "",
+                      action: "",
+                      from_date: "",
+                      to_date: "",
+                    };
+
+                    setFilters(reset);
+
+                    axios
+                      .get("http://localhost:3000/admin/audit-logs", {
+                        withCredentials: true,
+                      })
+                      .then((res) => {
+                        if (res.data.Status) {
+                          groupBySession(res.data.Data);
+                        }
+                      });
+                  }}
+                >
+                  <i className="bi bi-arrow-clockwise"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -284,7 +372,13 @@ const SuperAdminAuditTrail = () => {
                         </div>
 
                         <small className="text-muted">
-                          {new Date(log.created_at).toLocaleString()}
+                          {new Date(log.created_at).toLocaleString("en-GB", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
                         </small>
                       </div>
 
@@ -322,6 +416,50 @@ const SuperAdminAuditTrail = () => {
           );
         })
       )}
+
+      <div className="modal fade" id="trackDocumentModal" tabIndex="-1">
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content border-0 shadow">
+            <div className="modal-header">
+              <h5 className="modal-title">
+                <i className="bi bi-file-earmark-search me-2"></i>
+                Track Document Activity
+              </h5>
+
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+
+            <div className="modal-body">
+              <label className="form-label fw-semibold">Document Code</label>
+
+              <input
+                className="form-control"
+                placeholder="DOC-2025-001"
+                value={documentCode}
+                onChange={(e) => setDocumentCode(e.target.value)}
+              />
+            </div>
+
+            <div className="modal-footer">
+              <button
+                className="btn btn-success"
+                onClick={() => {
+                  if (!documentCode.trim()) return;
+
+                  window.location.href = `/superadmin/document-tracker/${documentCode}`;
+                }}
+              >
+                <i className="bi bi-search me-1"></i>
+                Track Activity
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

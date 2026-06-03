@@ -13,7 +13,7 @@ const TicketManagement = () => {
     try {
       const res = await axios.get(
         `http://localhost:3000/superadmin/tickets?page=${pageNum}&limit=10&status=${statusFilter}`,
-        { withCredentials: true },
+        { withCredentials: true }
       );
 
       if (res.data.Status) {
@@ -35,12 +35,12 @@ const TicketManagement = () => {
       const res = await axios.put(
         `http://localhost:3000/superadmin/tickets/update-status/${selectedTicket.id}`,
         { status: selectedTicket.status },
-        { withCredentials: true },
+        { withCredentials: true }
       );
 
       if (res.data.Status) {
         Swal.fire("Success", res.data.Message, "success");
-        fetchTickets(page); // ✅ refresh
+        fetchTickets(page);
       }
     } catch {
       Swal.fire("Error", "Update failed", "error");
@@ -52,182 +52,206 @@ const TicketManagement = () => {
   };
 
   const getStatusBadge = (status) => {
-    return status === "Resolved"
-      ? "badge bg-success"
-      : status === "In Progress"
-        ? "badge bg-warning text-dark"
-      : status === "Closed"
-      ? "badge bg-danger text-white"
-        : "badge bg-secondary";
+    switch (status) {
+      case "Resolved":
+        return "bg-success";
+      case "In Progress":
+        return "bg-warning text-dark";
+      case "Closed":
+        return "bg-danger";
+      default:
+        return "bg-secondary";
+    }
   };
 
   return (
-    <div className="container py-3">
+    <div className="container py-4">
+
       {/* HEADER */}
       <div className="mb-4">
-        <h3 className="">
+        <h3 className="fw-bold mb-1">
           <i className="bi bi-ticket-perforated me-2"></i>
           Support Tickets
         </h3>
-        <small className="text-muted">Review and resolve user issues</small>
+        <small className="text-muted">
+          Manage, track and resolve user-reported issues
+        </small>
       </div>
 
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <div>
-          <label className="me-2 fw-semibold">Filter:</label>
-          <select
-            className="form-select d-inline-block w-auto"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <option>All</option>
-            <option>Open</option>
-            <option>In Progress</option>
-            <option>Resolved</option>
-            <option>Closed</option>
-          </select>
+      {/* FILTER BAR */}
+      <div className="card border-0 shadow-sm mb-4">
+        <div className="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+          <div className="d-flex align-items-center gap-2">
+            <span className="fw-semibold">Filter:</span>
+
+            <select
+              className="form-select form-select-sm"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              style={{ width: 180 }}
+            >
+              <option>All</option>
+              <option>Open</option>
+              <option>In Progress</option>
+              <option>Resolved</option>
+              <option>Closed</option>
+            </select>
+          </div>
+
+          <span className="text-muted small">
+            Showing page {page} of {totalPages}
+          </span>
         </div>
       </div>
 
-      <div className="card shadow-sm">
-        <div className="card-body">
-          <div className="row g-3">
-            {tickets.length === 0 && (
-              <div className="text-muted text-center">No tickets found</div>
-            )}
+      {/* TICKETS GRID */}
+      <div className="row g-3">
+        {tickets.length === 0 && (
+          <div className="text-center text-muted py-5">
+            No tickets found
+          </div>
+        )}
 
-            {tickets.map((t) => (
-              <div className="col-md-6 col-lg-6" key={t.id}>
-                <div className="card border shadow-sm h-100 ticket-card">
-                  <div className="card-body d-flex flex-column">
-                    {/* HEADER */}
-                    <div className="d-flex justify-content-between align-items-start mb-2">
-                      <div className="me-2">
-                        <h6 className="fw-bold mb-1 text-dark">
-                          #{t.ticket_number}
-                        </h6>
-                        <div
-                          className="text-muted small text-truncate"
-                          style={{ maxWidth: 180 }}
-                        >
-                          {t.subject}
-                        </div>
-                      </div>
+        {tickets.map((t) => (
+          <div className="col-md-6 col-lg-6" key={t.id}>
+            <div className="card border-0 shadow-sm h-100 ticket-card">
 
-                      <span className={getStatusBadge(t.status)}>
-                        {t.status}
-                      </span>
+              <div className="card-body d-flex flex-column">
+
+                {/* HEADER */}
+                <div className="d-flex justify-content-between align-items-start mb-2">
+                  <div>
+                    <div className="fw-bold text-dark">
+                      #{t.ticket_number}
                     </div>
-
-                    {/* DESCRIPTION */}
-                    <p
-                      className="text-muted small mb-3"
-                      style={{ minHeight: 50 }}
+                    <div
+                      className="text-muted small"
+                      style={{
+                        maxWidth: 220,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
                     >
-                      {t.description?.length > 100
-                        ? t.description.slice(0, 100) + "..."
-                        : t.description}
-                    </p>
-
-                    {/* USER INFO */}
-                    <div className="bg-light rounded p-2 small mb-3">
-                      <div className="d-flex align-items-center mb-1">
-                        <i className="bi bi-person text-primary me-2"></i>
-                        <span className="fw-semibold">{t.full_name}</span>
-                      </div>
-
-                      <div className="d-flex align-items-center mb-1">
-                        <i className="bi bi-telephone text-muted me-2"></i>
-                        <span>{t.phone_number || "N/A"}</span>
-                      </div>
-
-                      <div className="d-flex align-items-center">
-                        <i className="bi bi-envelope text-muted me-2"></i>
-                        <span>{t.email}</span>
-                      </div>
-                    </div>
-
-                    {/* FOOTER */}
-                    <div className="mt-auto d-flex justify-content-between align-items-center">
-                      <small className="text-muted">
-                        <i className="bi bi-clock me-1"></i>
-                        {new Date(t.created_at).toLocaleString()}
-                      </small>
-
-                      <button
-                        className="btn btn-sm btn-outline-secondary"
-                        onClick={() => openDetails(t)}
-                        data-bs-toggle="modal"
-                        data-bs-target="#ticketModal"
-                      >
-                        <i className="bi bi-eye me-1"></i>
-                        View
-                      </button>
+                      {t.subject}
                     </div>
                   </div>
-                </div>
-              </div>
-            ))}
-            {tickets.length !== 0 && (
-              <>
-                {/* PAGINATION */}
-                <hr />
-                <div className="d-flex justify-content-center mt-2 gap-2">
-                  <button
-                    className="btn btn-outline-secondary btn-sm"
-                    disabled={page === 1}
-                    onClick={() => fetchTickets(page - 1)}
-                  >
-                    Previous
-                  </button>
 
-                  <span className="align-self-center">
-                    Page {page} of {totalPages}
+                  <span className={`badge ${getStatusBadge(t.status)}`}>
+                    {t.status}
                   </span>
+                </div>
+
+                {/* DESCRIPTION */}
+                <p className="text-muted small mb-3">
+                  {t.description?.length > 120
+                    ? t.description.slice(0, 120) + "..."
+                    : t.description}
+                </p>
+
+                {/* USER INFO */}
+                <div className="bg-light rounded p-2 small mb-3">
+                  <div className="d-flex align-items-center mb-1">
+                    <i className="bi bi-person text-primary me-2"></i>
+                    <strong>{t.full_name}</strong>
+                  </div>
+
+                  <div className="text-muted">
+                    <i className="bi bi-envelope me-2"></i>
+                    {t.email}
+                  </div>
+                </div>
+
+                {/* FOOTER */}
+                <div className="mt-auto d-flex justify-content-between align-items-center">
+                  <small className="text-muted">
+                    <i className="bi bi-clock me-1"></i>
+                    {new Date(t.created_at).toLocaleString("en-GB", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </small>
 
                   <button
-                    className="btn btn-outline-secondary btn-sm"
-                    disabled={page === totalPages}
-                    onClick={() => fetchTickets(page + 1)}
+                    className="btn btn-sm btn-outline-primary"
+                    onClick={() => openDetails(t)}
+                    data-bs-toggle="modal"
+                    data-bs-target="#ticketModal"
                   >
-                    Next
+                    <i className="bi bi-eye me-1"></i>
+                    View
                   </button>
                 </div>
-              </>
-            )}
+
+              </div>
+            </div>
           </div>
-        </div>
+        ))}
       </div>
 
-      {/* DETAILS MODAL */}
-      <div
-        className="modal fade"
-        id="ticketModal"
-        tabIndex="-1"
-        onHidden={() => setSelectedTicket(null)}
-      >
+      {/* PAGINATION */}
+      {tickets.length > 0 && (
+        <div className="d-flex justify-content-center align-items-center gap-3 mt-4">
+
+          <button
+            className="btn btn-outline-secondary btn-sm"
+            disabled={page === 1}
+            onClick={() => fetchTickets(page - 1)}
+          >
+            Prev
+          </button>
+
+          <span className="small text-muted">
+            Page <strong>{page}</strong> of {totalPages}
+          </span>
+
+          <button
+            className="btn btn-outline-secondary btn-sm"
+            disabled={page === totalPages}
+            onClick={() => fetchTickets(page + 1)}
+          >
+            Next
+          </button>
+        </div>
+      )}
+
+      {/* MODAL */}
+      <div className="modal fade" id="ticketModal" tabIndex="-1">
         <div className="modal-dialog modal-lg modal-dialog-centered">
-          <div className="modal-content">
+
+          <div className="modal-content border-0 shadow">
+
+            {/* HEADER */}
             <div className="modal-header">
-              <h5 className="modal-title">
-                Ticket #{selectedTicket?.ticket_number}
-              </h5>
+              <div>
+                <h5 className="modal-title mb-0">
+                  Ticket #{selectedTicket?.ticket_number}
+                </h5>
+                <small className="text-muted">
+                  {selectedTicket?.subject}
+                </small>
+              </div>
               <button className="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
+            {/* BODY */}
             <div className="modal-body">
+
               {selectedTicket && (
                 <>
-                  <h6 className="fw-bold mb-2">{selectedTicket.subject}</h6>
+                  <div className="d-flex justify-content-between align-items-center mb-3">
 
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <span className={getStatusBadge(selectedTicket.status)}>
+                    <span className={`badge ${getStatusBadge(selectedTicket.status)}`}>
                       {selectedTicket.status}
                     </span>
 
-                    {/* STATUS DROPDOWN */}
                     <select
-                      className="form-select w-auto"
+                      className="form-select form-select-sm"
+                      style={{ width: 160 }}
                       value={selectedTicket.status}
                       onChange={(e) =>
                         setSelectedTicket({
@@ -243,46 +267,44 @@ const TicketManagement = () => {
                     </select>
                   </div>
 
-                  <hr />
+                  <p className="text-muted">{selectedTicket.description}</p>
 
-                  <p>{selectedTicket.description}</p>
-
-                  {/* SCREENSHOT */}
                   {selectedTicket.screenshot && (
                     <div className="mt-3">
-                      <h6>Screenshot</h6>
-
+                      <h6 className="mb-2">Screenshot</h6>
                       <img
                         src={`http://localhost:3000${selectedTicket.screenshot}`}
-                        alt="screenshot"
                         className="img-fluid rounded border"
-                        style={{
-                          maxHeight: "400px",
-                          objectFit: "contain",
-                        }}
+                        alt="screenshot"
+                        style={{ maxHeight: 400 }}
                       />
                     </div>
                   )}
 
-                  <div className="mt-3 text-muted small">
+                  <div className="text-muted small mt-3">
                     Created:{" "}
                     {new Date(selectedTicket.created_at).toLocaleString()}
                   </div>
                 </>
               )}
+
             </div>
+
+            {/* FOOTER */}
             <div className="modal-footer">
               <button className="btn btn-light" data-bs-dismiss="modal">
                 Close
               </button>
 
-              <button className="btn btn-success" onClick={updateStatus}>
+              <button className="btn btn-primary" onClick={updateStatus}>
                 Save Changes
               </button>
             </div>
+
           </div>
         </div>
       </div>
+
     </div>
   );
 };
