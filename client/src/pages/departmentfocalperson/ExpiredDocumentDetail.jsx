@@ -31,6 +31,53 @@ const ExpiredDocumentDetail = () => {
     Restricted: "bg-danger",
   };
 
+  // Inject spinner CSS globally (FIXED)
+  useEffect(() => {
+    const style = document.createElement("style");
+
+    style.innerHTML = `
+          .swal2-html-container .custom-spinner {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            border-top: 5px solid #198754;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: auto;
+          }
+        
+          .swal2-html-container .spinner-logo {
+            position: absolute;
+            width: 30px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+          }
+        
+          /* REMOVE SCROLLBAR */
+          .swal2-html-container {
+            overflow: hidden !important;
+          }
+        
+          .swal2-popup {
+            overflow: hidden !important;
+          }
+        
+          @keyframes spin {
+            to {
+              transform: rotate(360deg);
+            }
+          }
+        `;
+
+    document.head.appendChild(style);
+
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -77,7 +124,49 @@ const ExpiredDocumentDetail = () => {
     loadData();
   }, [id]);
 
-  const handleDownload = async (versionId) => {
+  // DOWNLOAD WITH 5-SEC SPINNER
+  const handleDownload = (versionId) => {
+    let timerInterval;
+
+    Swal.fire({
+      title: "Preparing Download...",
+      html: `
+          <p class="mb-2">Your download will start in <b>5</b> seconds.</p>
+          <small class="text-muted">Securing your file...</small>
+    
+          <div class="d-flex justify-content-center mt-3">
+            <div class="custom-spinner">
+              <img src="/assets/images/logo.png" class="spinner-logo" />
+            </div>
+          </div>
+        `,
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        const content = Swal.getHtmlContainer();
+        const b = content.querySelector("b");
+
+        let timeLeft = 5;
+
+        timerInterval = setInterval(() => {
+          timeLeft--;
+          b.textContent = timeLeft;
+
+          if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            Swal.close();
+            startDownload(versionId); // ✅ pass versionId
+          }
+        }, 1000);
+      },
+      willClose: () => {
+        clearInterval(timerInterval);
+      },
+    });
+  };
+
+  // Actual download function
+  const startDownload = async (versionId) => {
     try {
       const res = await axios.get(
         `http://localhost:3000/department/documents/download/${versionId}`,
@@ -233,7 +322,7 @@ const ExpiredDocumentDetail = () => {
     <div className="container py-4">
       {/* Header */}
       <div className="mb-2">
-        <h3 className="text-success mb-2">
+        <h3 className="fw-bold mb-2">
           <i className="bi bi-files me-2"></i> Expired Document Details
         </h3>
         <small>
@@ -258,7 +347,7 @@ const ExpiredDocumentDetail = () => {
             <div className="d-flex align-items-center gap-3">
               {/* Classification Badge */}
               <span
-                className={`badge px-3 py-2 ${
+                className={`badge border px-3 py-2 rounded-pill ${
                   classificationColors[doc.classification] || "bg-secondary"
                 }`}
               >
@@ -281,7 +370,7 @@ const ExpiredDocumentDetail = () => {
               <div className="d-flex gap-2 flex-wrap align-center">
                 {/* ARCHIVE BUTTON */}
                 <button
-                  className="btn btn-sm btn-dark"
+                  className="btn btn-sm btn-secondary border px-3 py-2 rounded-pill"
                   disabled={saving}
                   onClick={handleArchiveDocument}
                 >
@@ -291,7 +380,7 @@ const ExpiredDocumentDetail = () => {
 
                 {/* DELETE BUTTON */}
                 <button
-                  className="btn btn-sm btn-danger"
+                  className="btn btn-sm btn-danger border px-3 py-2 rounded-pill"
                   disabled={saving}
                   onClick={handleDeleteDocument}
                 >
@@ -359,14 +448,16 @@ const ExpiredDocumentDetail = () => {
 
                   return (
                     <tr key={v.id}>
-                      <td className="fw-semibold text-center">{index + 1}</td>
-                      <td className="fw-semibold text-center">
+                      <td className="text-muted text-center">{index + 1}</td>
+                      <td className="text-muted text-center">
                         v{v.version_number}
                       </td>
 
-                      <td className="text-center">{v.type.toUpperCase()}</td>
+                      <td className="text-center text-muted">
+                        {v.type.toUpperCase()}
+                      </td>
 
-                      <td className="text-center">
+                      <td className="text-center text-muted">
                         {(v.file_size / (1024 * 1024)).toFixed(2)} MB
                       </td>
 
@@ -391,15 +482,17 @@ const ExpiredDocumentDetail = () => {
                         )}
                       </td>
 
-                      <td className="text-center">{v.download_count}</td>
+                      <td className="text-center text-muted">
+                        {v.download_count}
+                      </td>
 
                       <td className="text-center">
                         {v.is_active === 1 ? (
-                          <span className="badge bg-success rounded-pill px-3">
+                          <span className="badge bg-success-subtle text-success border px-3 py-2 rounded-pill">
                             Active
                           </span>
                         ) : (
-                          <span className="badge bg-secondary-subtle text-secondary px-3">
+                          <span className="badge bg-secondary-subtle text-secondary border px-3 py-2 rounded-pill">
                             Archived
                           </span>
                         )}
@@ -446,7 +539,7 @@ const ExpiredDocumentDetail = () => {
 
       <div className="text-center mt-4">
         <button
-          className="btn btn-secondary px-4"
+          className="btn btn-outline-secondary border px-3 py-2 rounded-pill"
           onClick={() => navigate("/department/retention-notifications")}
         >
           <i className="bi bi-arrow-left me-2"></i>

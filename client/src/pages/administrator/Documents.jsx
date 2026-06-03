@@ -120,133 +120,169 @@ const DocumentAdmin = () => {
 
   return (
     <div className="container-fluid py-4">
-      {/* Header */}
-      <h3 className="">
-        <i className="bi bi-files me-2"></i>Documents
-      </h3>
-      {/* ================= FILTER BAR ================= */}
-      <div className="card shadow-sm border-0 mb-4">
-        <div className="card-body">
-          <div className="d-flex justify-content-between align-items-center flex-wrap mb-3">
-            <h6 className="mb-0 text-muted">
-              <i className="bi bi-filter me-2"></i>
-              Filters
-            </h6>
+      {/* ================= PAGE HEADER ================= */}
+      <div className="mb-4">
+        {/* HEADER TOP */}
+        <div className="row align-items-center mb-4">
+          {/* LEFT SIDE */}
+          <div className="col-lg-10 col-md-10">
+            <div className="d-flex align-items-center gap-2 mb-2">
+              <i className="bi bi-files fs-4 text-success"></i>
 
-            {/* Active Filter Badge */}
-            {getActiveFilterCount() > 0 && (
-              <span className="badge bg-success">
-                {getActiveFilterCount()} Active
-              </span>
-            )}
+              <h3 className="fw-bold mb-0 text-dark">Document Management</h3>
+            </div>
+
+            <p
+              className="text-muted mb-0"
+              style={{
+                fontSize: "0.95rem",
+                maxWidth: "750px",
+                lineHeight: "1.6",
+              }}
+            >
+              Oversee, manage, and govern organizational documents across all
+              departments, ensuring secure access, compliance, and version
+              control.
+            </p>
           </div>
 
-          <div className="row g-2 align-items-center">
-            {/* Keyword */}
-            <div className="col-md-3">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Search documents..."
-                value={search}
-                onChange={(e) => {
-                  setPage(1);
-                  setSearch(e.target.value);
-                }}
-              />
+          {/* RIGHT SIDE STAT */}
+          <div className="col-lg-2 col-md-2 text-md-end mt-3 mt-md-0">
+            <div
+              className="border rounded-3 px-4 py-3 text-center"
+              style={{ backgroundColor: "#198754" }}
+            >
+              <div className="text-white small">Total Documents</div>
+              <div className="fw-bold fs-3 text-white lh-1">
+                {documents.length}
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* ================= FILTER BAR ================= */}
+        <div className="card shadow-sm border-0 mb-4">
+          <div className="card-body">
+            <div className="d-flex justify-content-between align-items-center flex-wrap mb-3">
+              <h6 className="mb-0 text-muted">
+                <i className="bi bi-filter me-2"></i>
+                Filters
+              </h6>
+
+              {/* Active Filter Badge */}
+              {getActiveFilterCount() > 0 && (
+                <span className="badge bg-success">
+                  {getActiveFilterCount()} Active
+                </span>
+              )}
             </div>
 
-            {/* Department */}
-            <div className="col-md-2">
-              <select
-                className="form-select"
-                value={department}
-                onChange={(e) => {
-                  setPage(1);
-                  setDepartment(e.target.value);
-                }}
-              >
-                <option value="">Department</option>
-                {departments.map((dep) => (
-                  <option key={dep.id} value={dep.id}>
-                    {dep.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <div className="row g-2 align-items-center">
+              {/* Keyword */}
+              <div className="col-md-3">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Search documents..."
+                  value={search}
+                  onChange={(e) => {
+                    setPage(1);
+                    setSearch(e.target.value);
+                  }}
+                />
+              </div>
 
-            {/* Category */}
-            <div className="col-md-2">
-              <select
-                className="form-select"
-                value={category}
-                onChange={(e) => {
-                  setPage(1);
-                  setCategory(e.target.value);
-                }}
-              >
-                <option value="">Category</option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+              {/* Department */}
+              <div className="col-md-2">
+                <select
+                  className="form-select"
+                  value={department}
+                  onChange={(e) => {
+                    setPage(1);
+                    setDepartment(e.target.value);
+                  }}
+                >
+                  <option value="">Department</option>
+                  {departments.map((dep) => (
+                    <option key={dep.id} value={dep.id}>
+                      {dep.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-            {/* Classification */}
-            <div className="col-md-2">
-              <select
-                className="form-select"
-                value={classification}
-                onChange={(e) => {
-                  setPage(1);
-                  setClassification(e.target.value);
-                }}
-              >
-                <option value="">Classification</option>
-                <option value="Public">Public</option>
-                <option value="Internal">Internal</option>
-                <option value="Confidential">Confidential</option>
-                <option value="Restricted">Restricted</option>
-              </select>
-            </div>
+              {/* Category */}
+              <div className="col-md-2">
+                <select
+                  className="form-select"
+                  value={category}
+                  onChange={(e) => {
+                    setPage(1);
+                    setCategory(e.target.value);
+                  }}
+                >
+                  <option value="">Category</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-            {/* Year */}
-            <div className="col-md-1">
-              <select
-                className="form-select"
-                value={year}
-                onChange={(e) => {
-                  setPage(1);
-                  setYear(e.target.value);
-                }}
-              >
-                <option value="">Year</option>
-                {years.map((yr) => (
-                  <option key={yr} value={yr}>
-                    {yr}
-                  </option>
-                ))}
-              </select>
-            </div>
+              {/* Classification */}
+              <div className="col-md-2">
+                <select
+                  className="form-select"
+                  value={classification}
+                  onChange={(e) => {
+                    setPage(1);
+                    setClassification(e.target.value);
+                  }}
+                >
+                  <option value="">Classification</option>
+                  <option value="Public">Public</option>
+                  <option value="Internal">Internal</option>
+                  <option value="Confidential">Confidential</option>
+                  <option value="Restricted">Restricted</option>
+                </select>
+              </div>
 
-            {/* Reset Button */}
-            <div className="col-md-2 d-grid">
-              <button
-                title="Reset"
-                className="btn btn-outline-secondary"
-                onClick={() => {
-                  setDepartment("");
-                  setCategory("");
-                  setClassification("");
-                  setYear("");
-                  setSearch("");
-                  setPage(1);
-                }}
-              >
-                <i className="bi bi-repeat me-1"></i> Reset
-              </button>
+              {/* Year */}
+              <div className="col-md-1">
+                <select
+                  className="form-select"
+                  value={year}
+                  onChange={(e) => {
+                    setPage(1);
+                    setYear(e.target.value);
+                  }}
+                >
+                  <option value="">Year</option>
+                  {years.map((yr) => (
+                    <option key={yr} value={yr}>
+                      {yr}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Reset Button */}
+              <div className="col-md-2 d-grid">
+                <button
+                  title="Reset"
+                  className="btn btn-outline-secondary"
+                  onClick={() => {
+                    setDepartment("");
+                    setCategory("");
+                    setClassification("");
+                    setYear("");
+                    setSearch("");
+                    setPage(1);
+                  }}
+                >
+                  <i className="bi bi-repeat me-1"></i> Reset
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -279,10 +315,10 @@ const DocumentAdmin = () => {
                   <tr>
                     <th className="text-center">#</th>
                     <th>Ownership</th>
-                    <th>Document</th>
+                    <th>Document Title</th>
                     <th>Category</th>
                     <th>Sub category</th>
-                    <th className="text-center">Classification</th>
+                    <th className="text-center">Visibility</th>
                     <th className="text-center">Uploaded At</th>
                   </tr>
                 </thead>
@@ -292,9 +328,7 @@ const DocumentAdmin = () => {
                       key={doc.id}
                       role="button"
                       className="cursor-pointer"
-                      onClick={() =>
-                        navigate(`/admin/document/${doc.id}`)
-                      }
+                      onClick={() => navigate(`/admin/document/${doc.id}`)}
                     >
                       <td className="text-center">{index + 1}</td>
                       <td>
@@ -322,12 +356,7 @@ const DocumentAdmin = () => {
                       </td>
 
                       <td className="text-center">
-                        <span
-                          className={`badge ${
-                            classificationColors[doc.classification] ||
-                            "bg-secondary"
-                          }`}
-                        >
+                        <span className="badge bg-light text-dark border px-3 py-2 rounded-pill">
                           {doc.classification}
                         </span>
                       </td>

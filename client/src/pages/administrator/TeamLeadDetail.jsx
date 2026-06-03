@@ -15,11 +15,11 @@ const TeamLeadDetailsAdmin = () => {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
 
-    // Inject spinner CSS globally (FIXED)
-    useEffect(() => {
-      const style = document.createElement("style");
-  
-      style.innerHTML = `
+  // Inject spinner CSS globally (FIXED)
+  useEffect(() => {
+    const style = document.createElement("style");
+
+    style.innerHTML = `
           .swal2-html-container .custom-spinner {
             position: relative;
             width: 70px;
@@ -54,13 +54,13 @@ const TeamLeadDetailsAdmin = () => {
             }
           }
         `;
-  
-      document.head.appendChild(style);
-  
-      return () => {
-        document.head.removeChild(style);
-      };
-    }, []);
+
+    document.head.appendChild(style);
+
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
 
   /* ================= FETCH ================= */
   const fetchData = async () => {
@@ -143,7 +143,7 @@ const TeamLeadDetailsAdmin = () => {
     setUploading(false);
   };
 
-  /* ================= DOWNLOAD =================  */
+  /* ================= DOWNLOAD ================= */
   const downloadReport = (id) => {
     let timerInterval;
 
@@ -188,7 +188,7 @@ const TeamLeadDetailsAdmin = () => {
   const startDownload = async (id) => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/staff/report/download/${id}`,
+        `http://localhost:3000/admin/report/download/${id}`,
         {
           withCredentials: true,
           responseType: "blob",
@@ -264,7 +264,7 @@ const TeamLeadDetailsAdmin = () => {
               <div className="text-muted small">
                 <i className="bi bi-globe-europe-africa me-1"></i>State
               </div>{" "}
-              <span className="badge bg-info-subtle text-dark">
+              <span className="badge bg-light text-dark border rounded-pill px-3 py-2">
                 {" "}
                 {data.state}{" "}
               </span>{" "}
@@ -275,9 +275,9 @@ const TeamLeadDetailsAdmin = () => {
                 <i className="bi bi-cloud-arrow-up me-1"></i>Status
               </div>{" "}
               {data.submission_status === "submitted" ? (
-                <span className="badge bg-success">Submitted</span>
+                <span className="badge bg-success-subtle text-success rounded-pill px-3 py-2">Submitted</span>
               ) : (
-                <span className="badge bg-warning text-dark">Pending</span>
+                <span className="badge bg-warning-subtle text-warning rounded-pill px-3 py-2">Pending</span>
               )}{" "}
             </div>{" "}
           </div>{" "}

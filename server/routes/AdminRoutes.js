@@ -881,6 +881,40 @@ router.get("/staff-directory", verifyToken, async (req, res) => {
   }
 });
 
+router.get("/audit-users", verifyToken, async (req, res) => {
+  try {
+    const connection = await connectToDatabase();
+
+    const [rows] = await connection.query(
+      `
+      SELECT 
+        u.id,
+        u.full_name,
+        u.email,
+        u.role_id,
+        r.name AS role_name
+      FROM users u
+      LEFT JOIN roles r ON u.role_id = r.id
+      WHERE u.role_id != 5
+      ORDER BY u.full_name ASC
+      `
+    );
+
+    return res.json({
+      Status: true,
+      Data: rows,
+    });
+
+  } catch (err) {
+    console.error("audit-users error:", err);
+
+    return res.status(500).json({
+      Status: false,
+      Error: "Server error while fetching users",
+    });
+  }
+});
+
 /* ===========================
    PARTNERS
 =========================== */
@@ -1972,6 +2006,121 @@ router.get("/public/documents/download/:versionId", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ Error: "Download failed" });
+  }
+});
+
+// DOWNLOAD PROGRAM REPORT
+router.get("/report/download/:id", verifyToken, async (req, res) => {
+  const reportId = req.params.id;
+  const userId = req.user.id;
+  const sessionId = req.user.session_id;
+
+  const connection = await connectToDatabase();
+
+  try {
+    /* ===============================
+       GET REPORT + VALIDATE ACCESS
+    =============================== */
+    const [[report]] = await connection.query(
+      `
+      SELECT 
+        pr.*,
+        ptl.user_id AS team_lead_user_id
+      FROM program_reports pr
+      JOIN program_team_leads ptl
+        ON ptl.program_id = pr.program_id
+        AND ptl.state = pr.state
+        AND ptl.user_id = pr.uploaded_by
+      WHERE pr.id = ?
+      `,
+      [reportId],
+    );
+
+    if (!report) {
+      return res
+        .status(404)
+        .json({ Status: false, Message: "Report not found" });
+    }
+
+    // Allow ONLY the team lead who uploaded OR extend later for admin
+    if (report.uploaded_by !== userId) {
+      return res.status(403).json({ Status: false, Message: "Unauthorized" });
+    }
+
+    /* ===============================
+       RESOLVE FILE PATH
+    =============================== */
+    const filePath = path.join(
+      __dirname,
+      "..",
+      "Public",
+      report.file_url, // already includes /Reports/filename
+    );
+
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ Status: false, Message: "File not found" });
+    }
+
+    /* ===============================
+       HEADERS
+    =============================== */
+    const mimeType =
+      report.file_type || mime.lookup(filePath) || "application/octet-stream";
+
+    res.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
+
+    res.setHeader("Content-Type", mimeType);
+
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${encodeURIComponent(report.file_name)}"`,
+    );
+
+    res.setHeader("X-Content-Type-Options", "nosniff");
+
+    /* ===============================
+       OPTIONAL AUDIT LOG (simplified)
+    =============================== */
+    const parser = new UAParser(req.headers["user-agent"]);
+    const ua = parser.getResult();
+
+    const browser =
+      `${ua.browser.name || "Unknown"} ${ua.browser.version || ""}`.trim();
+    const os = `${ua.os.name || "Unknown"} ${ua.os.version || ""}`.trim();
+    const device = ua.device.vendor
+      ? `${ua.device.vendor} ${ua.device.model}`
+      : "Desktop";
+
+    const ip = req.ip === "::1" ? "127.0.0.1" : req.ip;
+
+    await connection.query(
+      `INSERT INTO audit_logs
+       (user_id, session_id, action, entity_type, entity_id, description,
+        ip_address, user_agent_raw, browser, os, device, status)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
+      [
+        userId,
+        sessionId,
+        "DOWNLOAD",
+        "PROGRAM REPORT",
+        reportId,
+        `Downloaded report "${report.report_title}"`,
+        ip,
+        req.headers["user-agent"],
+        browser,
+        os,
+        device,
+        "SUCCESS",
+      ],
+    );
+
+    /* ===============================
+       SEND FILE
+    =============================== */
+    return res.sendFile(filePath);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ Status: false, Message: "Download failed" });
   }
 });
 
@@ -3367,13 +3516,45 @@ router.get("/dashboard-metrics", verifyToken, async (req, res) => {
       WHERE doc.created_at >= DATE_SUB(NOW(), INTERVAL 90 DAY)
       GROUP BY dpt.id
     `);
+    
 
+  
     /* ================= STORAGE USED ================= */
     const [[storage]] = await connection.query(`
       SELECT 
-        SUM(dv.file_size) as totalStorage
-      FROM document_versions dv
+        COALESCE(SUM(file_size), 0) AS totalStorage
+      FROM document_versions
     `);
+
+    const usedStorageBytes = Number(storage?.totalStorage || 0);
+
+    /* ================= STORAGE ALLOCATION ================= */
+    const [[storageAllocation]] = await connection.query(`
+      SELECT allocated_storage_mb
+      FROM system_storage_settings
+      LIMIT 1
+    `);
+
+    const allocatedStorageMB =
+      Number(storageAllocation?.allocated_storage_mb || 0);
+
+    const allocatedStorageGB =
+      allocatedStorageMB / 1024;
+
+    const allocatedStorageTB =
+      allocatedStorageMB / (1024 * 1024);
+
+    /* ================= CONVERSIONS ================= */
+    const usedStorageGB =
+      usedStorageBytes / (1024 * 1024 * 1024);
+
+    const availableStorageGB =
+      allocatedStorageGB - usedStorageGB;
+
+    const utilizationPercentage =
+      allocatedStorageGB > 0
+        ? (usedStorageGB / allocatedStorageGB) * 100
+        : 0;
 
     /* ================= TOTAL DOCUMENTS ================= */
     const [[totalDocument]] = await connection.query(`
@@ -3435,13 +3616,15 @@ router.get("/dashboard-metrics", verifyToken, async (req, res) => {
       LIMIT 5
     `);
 
-    /* ================= EXPIRING DOCUMENTS ================= */
+    /* ================= EXPIRING DOCUMENTS (2 WEEKS WINDOW) ================= */
     const [expiringDocs] = await connection.query(`
-      SELECT title, retention_expiry_date
-      FROM documents
-      WHERE retention_expiry_date <= DATE_ADD(NOW(), INTERVAL 30 DAY)
-      AND retention_expiry_date IS NOT NULL
-    `);
+  SELECT title, retention_expiry_date
+  FROM documents
+  WHERE retention_expiry_date IS NOT NULL
+    AND retention_expiry_date >= CURDATE()               -- ❌ exclude expired
+    AND retention_expiry_date <= DATE_ADD(CURDATE(), INTERVAL 14 DAY) -- ✅ next 14 days only
+  ORDER BY retention_expiry_date ASC
+`);
 
     /* ================= PENDING REQUESTS ================= */
     const [[pendingRequests]] = await connection.query(`
@@ -3466,6 +3649,24 @@ router.get("/dashboard-metrics", verifyToken, async (req, res) => {
       GROUP BY c.classification
     `);
 
+    /* ================= SUPPORT TICKETS ================= */
+    const [[ticketSummary]] = await connection.query(`
+  SELECT 
+    COUNT(*) AS total,
+    SUM(CASE WHEN status = 'Open' THEN 1 ELSE 0 END) AS open,
+    SUM(CASE WHEN status = 'Resolved' THEN 1 ELSE 0 END) AS resolved,
+    SUM(CASE WHEN status = 'Closed' THEN 1 ELSE 0 END) AS closed,
+    SUM(CASE WHEN status = 'In Progress' THEN 1 ELSE 0 END) AS inprogress
+  FROM support_tickets
+`);
+
+    /* ================= TICKET STATUS BREAKDOWN ================= */
+    const [ticketStatusBreakdown] = await connection.query(`
+  SELECT status, COUNT(*) as total
+  FROM support_tickets
+  GROUP BY status
+`);
+
     res.json({
       Status: true,
       Data: {
@@ -3482,6 +3683,18 @@ router.get("/dashboard-metrics", verifyToken, async (req, res) => {
         topDocs,
         expiringDocs,
         pendingRequests,
+        ticketSummary,
+        ticketStatusBreakdown,
+        storageAllocation: {
+          allocatedStorageMB,
+          allocatedStorageGB,
+          allocatedStorageTB,
+
+          usedStorageGB,
+          availableStorageGB,
+
+          utilizationPercentage,
+        },
       },
     });
   } catch (err) {
@@ -3558,6 +3771,172 @@ router.get("/audit-logs", verifyToken, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.json({ Status: false });
+  }
+});
+
+router.get("/audit-document-summary", verifyToken, async (req, res) => {
+  try {
+    const connection = await connectToDatabase();
+
+    const { document_code, action } = req.query;
+    //console.log(document_code)
+    //console.log(action)
+    
+    if (!document_code) {
+      return res.json({
+        Status: false,
+        Error: "Document code required",
+      });
+    }
+
+    let query = `
+      SELECT
+        al.id,
+        al.action,
+        al.description,
+        al.created_at,
+
+        u.id AS user_id,
+        u.full_name,
+
+        r.name AS role_name,
+
+        d.document_code,
+        d.title
+
+      FROM audit_logs al
+
+      INNER JOIN users u
+        ON u.id = al.user_id
+
+      LEFT JOIN roles r
+        ON r.id = u.role_id
+
+      INNER JOIN documents d
+        ON d.id = al.entity_id
+
+      WHERE d.document_code LIKE ?
+    `;
+
+    const params = [`%${document_code}%`];
+
+    if (action) {
+      query += ` AND al.action = ?`;
+      params.push(action);
+    }
+
+    query += `
+      ORDER BY al.created_at DESC
+    `;
+
+    const [logs] = await connection.query(query, params);
+
+    res.json({
+      Status: true,
+      Data: logs,
+    });
+  } catch (err) {
+    console.error(err);
+
+    res.json({
+      Status: false,
+      Error: "Server error",
+    });
+  }
+});
+
+router.get("/audit-document-users", verifyToken, async (req, res) => {
+  const { document_code } = req.query;
+
+  const [users] = await connection.query(
+    `
+    SELECT DISTINCT
+      u.id,
+      u.full_name
+    FROM audit_logs al
+    JOIN users u
+      ON u.id = al.user_id
+    JOIN documents d
+      ON d.id = al.entity_id
+    WHERE d.document_code = ?
+    `,
+    [document_code]
+  );
+
+  res.json({
+    Status: true,
+    Data: users,
+  });
+});
+
+router.get("/document-tracker", verifyToken, async (req, res) => {
+  try {
+    const connection = await connectToDatabase();
+
+    const { document_code } = req.query;
+
+    if (!document_code) {
+      return res.status(400).json({
+        Status: false,
+        Error: "Document code is required",
+      });
+    }
+
+    const [logs] = await connection.query(
+      `
+      SELECT
+        al.id,
+        al.session_id,
+        al.action,
+        al.description,
+        al.old_values,
+        al.new_values,
+        al.browser,
+        al.os,
+        al.ip_address,
+        al.created_at,
+
+        u.id AS user_id,
+        u.full_name,
+        u.email,
+
+        r.name AS role_name,
+
+        d.id AS document_id,
+        d.document_code,
+        d.title
+
+      FROM audit_logs al
+
+      INNER JOIN users u
+        ON u.id = al.user_id
+
+      LEFT JOIN roles r
+        ON r.id = u.role_id
+
+      INNER JOIN documents d
+        ON d.id = al.entity_id
+
+      WHERE
+        al.entity_type = 'DOCUMENT'
+        AND d.document_code = ?
+
+      ORDER BY al.created_at DESC
+      `,
+      [document_code]
+    );
+
+    return res.json({
+      Status: true,
+      Data: logs,
+    });
+  } catch (err) {
+    console.error("Document Tracker Error:", err);
+
+    return res.status(500).json({
+      Status: false,
+      Error: "Server Error",
+    });
   }
 });
 

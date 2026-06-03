@@ -3097,7 +3097,7 @@ router.put("/support-contacts/:id", verifyToken, async (req, res) => {
 });
 
 /* ===========================
-   DASHBOARD
+   DASHBOARD 
 =========================== */
 router.get("/dashboard-metrics", verifyToken, async (req, res) => {
   try {
@@ -3120,13 +3120,45 @@ router.get("/dashboard-metrics", verifyToken, async (req, res) => {
       WHERE doc.created_at >= DATE_SUB(NOW(), INTERVAL 90 DAY)
       GROUP BY dpt.id
     `);
+    
 
+  
     /* ================= STORAGE USED ================= */
     const [[storage]] = await connection.query(`
       SELECT 
-        SUM(dv.file_size) as totalStorage
-      FROM document_versions dv
+        COALESCE(SUM(file_size), 0) AS totalStorage
+      FROM document_versions
     `);
+
+    const usedStorageBytes = Number(storage?.totalStorage || 0);
+
+    /* ================= STORAGE ALLOCATION ================= */
+    const [[storageAllocation]] = await connection.query(`
+      SELECT allocated_storage_mb
+      FROM system_storage_settings
+      LIMIT 1
+    `);
+
+    const allocatedStorageMB =
+      Number(storageAllocation?.allocated_storage_mb || 0);
+
+    const allocatedStorageGB =
+      allocatedStorageMB / 1024;
+
+    const allocatedStorageTB =
+      allocatedStorageMB / (1024 * 1024);
+
+    /* ================= CONVERSIONS ================= */
+    const usedStorageGB =
+      usedStorageBytes / (1024 * 1024 * 1024);
+
+    const availableStorageGB =
+      allocatedStorageGB - usedStorageGB;
+
+    const utilizationPercentage =
+      allocatedStorageGB > 0
+        ? (usedStorageGB / allocatedStorageGB) * 100
+        : 0;
 
     /* ================= TOTAL DOCUMENTS ================= */
     const [[totalDocument]] = await connection.query(`
@@ -3187,7 +3219,6 @@ router.get("/dashboard-metrics", verifyToken, async (req, res) => {
       ORDER BY downloads DESC
       LIMIT 5
     `);
-
 
     /* ================= EXPIRING DOCUMENTS (2 WEEKS WINDOW) ================= */
     const [expiringDocs] = await connection.query(`
@@ -3258,6 +3289,16 @@ router.get("/dashboard-metrics", verifyToken, async (req, res) => {
         pendingRequests,
         ticketSummary,
         ticketStatusBreakdown,
+        storageAllocation: {
+          allocatedStorageMB,
+          allocatedStorageGB,
+          allocatedStorageTB,
+
+          usedStorageGB,
+          availableStorageGB,
+
+          utilizationPercentage,
+        },
       },
     });
   } catch (err) {
@@ -3300,6 +3341,185 @@ router.get("/ticket-notification/open", verifyToken, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ Status: false });
+  }
+});
+
+/* ===========================
+   SYSTEM STORAGE ALLOCATION
+=========================== */
+router.get("/storage-dashboard", verifyToken, async (req, res) => {
+  try {
+    const connection = await connectToDatabase();
+
+    /* ================= STORAGE SETTING ================= */
+
+    const [[setting]] = await connection.query(`
+        SELECT allocated_storage_mb
+        FROM system_storage_settings
+        LIMIT 1
+      `);
+
+    /* ================= STORAGE USAGE ================= */
+
+    const [[usage]] = await connection.query(`
+        SELECT
+          COUNT(*) AS total_documents,
+          COALESCE(SUM(dv.file_size),0) AS total_bytes,
+          COALESCE(AVG(dv.file_size),0) AS avg_file_size
+        FROM documents d
+        INNER JOIN document_versions dv
+          ON dv.id = d.current_version_id
+      `);
+
+    /* ================= LARGEST FILE ================= */
+
+    const [[largestFile]] = await connection.query(`
+        SELECT
+          d.title,
+          d.document_code,
+          dv.file_name,
+          dv.file_size
+        FROM documents d
+        INNER JOIN document_versions dv
+          ON dv.id = d.current_version_id
+        ORDER BY dv.file_size DESC
+        LIMIT 1
+      `);
+
+    /* ================= STORAGE BY DEPARTMENT ================= */
+
+    const [departments] = await connection.query(`
+  SELECT
+    dep.name AS department_name,
+
+    COUNT(d.id) AS total_documents,
+
+    COALESCE(
+      SUM(dv.file_size),
+      0
+    ) AS storage_used
+
+  FROM departments dep
+
+  LEFT JOIN documents d
+    ON d.department_id = dep.id
+
+  LEFT JOIN document_versions dv
+    ON dv.id = d.current_version_id
+
+  WHERE dep.name <> 'Partner'
+
+  GROUP BY dep.id, dep.name
+
+  ORDER BY storage_used DESC
+`);
+
+    /* ================= DOCUMENT STATUS BREAKDOWN ================= */
+
+    const [statusBreakdown] = await connection.query(`
+        SELECT
+          document_status,
+          COUNT(*) total
+        FROM documents
+        GROUP BY document_status
+      `);
+
+    /* ================= ARCHIVED DOCUMENTS ================= */
+
+    const [[archivedStats]] = await connection.query(`
+        SELECT
+          COUNT(*) archived_documents
+        FROM documents
+        WHERE is_archived = 1
+      `);
+
+    /* ================= DELETE FLAGGED ================= */
+
+    const [[deleteStats]] = await connection.query(`
+        SELECT
+          COUNT(*) delete_flagged_documents
+        FROM documents
+        WHERE is_delete_flagged = 1
+      `);
+
+    /* ================= CALCULATIONS ================= */
+
+    const allocatedMB = Number(setting?.allocated_storage_mb || 0);
+
+    const allocatedBytes = allocatedMB * 1024 * 1024;
+
+    const usedBytes = Number(usage.total_bytes || 0);
+
+    const availableBytes = Math.max(allocatedBytes - usedBytes, 0);
+
+    const utilization =
+      allocatedBytes > 0 ? ((usedBytes / allocatedBytes) * 100).toFixed(2) : 0;
+
+    /* ================= RESPONSE ================= */
+
+    res.json({
+      Status: true,
+
+      Data: {
+        allocatedMB,
+
+        usedBytes,
+
+        availableBytes,
+
+        utilization,
+
+        totalDocuments: usage.total_documents,
+
+        avgFileSize: usage.avg_file_size,
+
+        largestFile,
+
+        departments,
+
+        statusBreakdown,
+
+        archivedDocuments: archivedStats.archived_documents,
+
+        deleteFlaggedDocuments: deleteStats.delete_flagged_documents,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      Status: false,
+      Error: "Failed to load storage analytics",
+    });
+  }
+});
+
+router.put("/storage-dashboard", verifyToken, async (req, res) => {
+  try {
+    const connection = await connectToDatabase();
+
+    const { allocated_storage_mb } = req.body;
+
+    await connection.query(
+      `
+        UPDATE system_storage_settings
+        SET
+          allocated_storage_mb=?,
+          updated_by=?
+        WHERE id=1
+        `,
+      [allocated_storage_mb, req.user.id],
+    );
+
+    res.json({
+      Status: true,
+    });
+  } catch (err) {
+    console.error(err);
+
+    res.json({
+      Status: false,
+    });
   }
 });
 

@@ -41,7 +41,7 @@ const AdminReviewDepartmentDocRequests = () => {
     const isApprove = action === "approve";
 
     const { value: comment } = await Swal.fire({
-      title: isApprove ? "Approve Access Request" : "Reject Access Request",
+      title: isApprove ? "Approve Access Request" : "Decline Access Request",
       input: "textarea",
       inputLabel: "Review Comment",
       inputPlaceholder: "Enter your comment...",
@@ -49,7 +49,7 @@ const AdminReviewDepartmentDocRequests = () => {
         "aria-label": "Enter your comment",
       },
       showCancelButton: true,
-      confirmButtonText: isApprove ? "Approve Request" : "Reject Request",
+      confirmButtonText: isApprove ? "Approve Request" : "Decline Request",
       confirmButtonColor: isApprove ? "#198754" : "#dc3545", // green / red
       cancelButtonText: "Cancel",
 
@@ -79,8 +79,8 @@ const AdminReviewDepartmentDocRequests = () => {
         icon: "success",
         title: "Success",
         text: isApprove
-          ? "Request approved and forwarded for admin review"
-          : "Request has been rejected",
+          ? "Request approved"
+          : "Request has been declined",
         timer: 2000,
         showConfirmButton: false,
       });
@@ -95,7 +95,7 @@ const AdminReviewDepartmentDocRequests = () => {
     switch (status) {
       case "Pending_Department_Review":
         return (
-          <span className="badge bg-warning text-white">
+          <span className="badge bg-warning text-white border px-3 py-2 rounded-pill">
             <i className="bi bi-hourglass-split me-1"></i>
             Awaiting Department Review
           </span>
@@ -103,27 +103,27 @@ const AdminReviewDepartmentDocRequests = () => {
 
       case "Pending_Admin_Approval":
         return (
-          <span className="badge bg-warning text-white">
+          <span className="badge bg-warning text-white border px-3 py-2 rounded-pill">
             Pending
           </span>
         );
 
       case "Approved":
-        return <span className="badge bg-success">Approved</span>;
+        return <span className="badge bg-success border px-3 py-2 rounded-pill">Approved</span>;
 
       case "Rejected":
-        return <span className="badge bg-danger">Declined</span>;
+        return <span className="badge bg-danger border px-3 py-2 rounded-pill">Declined</span>;
 
       default:
-        return <span className="badge bg-secondary">{status}</span>;
+        return <span className="badge bg-secondary border px-3 py-2 rounded-pill">{status}</span>;
     }
   };
 
   return (
     <div className="container py-4">
-      <h3 className="mb-3">
+      <h3 className="mb-3 fw-bold">
         <i className="bi bi-shield-check me-2"></i>
-        Review Cross Department Access Requests
+        Review Inter-Departmental Document Requests 
       </h3>
 
       {/* FILTERS */}
@@ -159,8 +159,8 @@ const AdminReviewDepartmentDocRequests = () => {
           <table className="table table-hover">
             <thead className="table-light">
               <tr>
-                <th>Requested By</th>
-                <th>Document</th>
+                <th>Requester</th>
+                <th>Document Title</th>
                 <th>Status</th>
                 <th>Date</th>
                 <th></th>
@@ -274,11 +274,16 @@ const AdminReviewDepartmentDocRequests = () => {
 
                               {/* CLASSIFICATION */}
                               <div className="col-md-6 mb-3">
-                                <small className="fw-semibold"><i className="bi bi-bookmarks me-1"></i>
+                                <small className="fw-semibold">
+                                  <i className="bi bi-bookmarks me-1"></i>
                                   Document Classification
                                 </small>
-                                <div className="text-muted small">
-                                  {r.document_classification}
+                                <div className="">
+                                  <span className="mt-2 badge bg-light text-secondary border px-3 py-2 rounded-pill"
+                                  
+                                  >
+                                    {r.document_classification}
+                                  </span>
                                 </div>
                               </div>
 
@@ -301,7 +306,7 @@ const AdminReviewDepartmentDocRequests = () => {
                             {r.status === "Pending_Admin_Approval" && (
                               <div className="d-flex gap-2 mt-2">
                                 <button
-                                  className="btn btn-success btn-sm"
+                                  className="btn btn-success btn-sm border px-3 py-2 rounded-pill"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     handleReview(r.id, "approve");
@@ -312,14 +317,14 @@ const AdminReviewDepartmentDocRequests = () => {
                                 </button>
 
                                 <button
-                                  className="btn btn-outline-danger btn-sm"
+                                  className="btn btn-outline-danger btn-sm border px-3 py-2 rounded-pill"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     handleReview(r.id, "reject");
                                   }}
                                 >
                                   <i className="bi bi-x-circle me-1"></i>
-                                  Reject
+                                  Decline
                                 </button>
                               </div>
                             )}

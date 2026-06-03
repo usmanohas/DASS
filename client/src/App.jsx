@@ -22,6 +22,7 @@ import PartnerManagement from "./pages/superadministrator/Partners";
 import DepartmentManagement from "./pages/superadministrator/Department";
 import TicketManagement from "./pages/superadministrator/Tickets";
 import ManageSupportContacts from "./pages/superadministrator/SupportContact";
+import StorageDashboard from "./pages/superadministrator/StorageDashboard";
 
 //For Adminstrator (DPRS)
 import AdministratorDashboard from "./pages/administrator/AdministratorDashboard";
@@ -43,6 +44,8 @@ import AdminAuditTrail from "./pages/administrator/AuditTrait";
 import PartnerDashboardAdmin from "./pages/administrator/PartnerDashboard";
 import TeamLeadAdmin from "./pages/administrator/TeamLead";
 import TeamLeadDetailsAdmin from "./pages/administrator/TeamLeadDetail";
+import AdminDocumentTracker from "./pages/administrator/AdminDocumentTracker";
+import StorageDashboardAdmin from "./pages/administrator/StorageDashboard";
 
 //for DFP
 import DfpDashboard from "./pages/departmentfocalperson/Dashboard";
@@ -95,6 +98,7 @@ import PartnerChangePassword from "./pages/partners/ChangePassword";
 import PartnerUserGuide from "./pages/partners/PartnerUserGuide";
 import PartnerSupportTickets from "./pages/partners/SupportTicket";
 
+
 function App() {
   return (
     <BrowserRouter>
@@ -135,6 +139,7 @@ function App() {
           <Route path="department" element={<DepartmentManagement />} />
           <Route path="tickets" element={<TicketManagement />} />
           <Route path="support-contact" element={<ManageSupportContacts />} />
+          <Route path="system-storage" element={<StorageDashboard />} />
         </Route>
 
         {/* Secure Routes for Administrator start */}
@@ -174,7 +179,15 @@ function App() {
           <Route path="document/restore" element={<AdminRestoreRequests />} />
           <Route path="audit-trait" element={<AdminAuditTrail />} />
           <Route path="program/team-lead" element={<TeamLeadAdmin />} />
-          <Route path="program/team-lead/:id" element={<TeamLeadDetailsAdmin />} />
+          <Route
+            path="program/team-lead/:id"
+            element={<TeamLeadDetailsAdmin />}
+          />
+          <Route
+            path="document-tracker/:documentCode"
+            element={<AdminDocumentTracker />}
+          />
+          <Route path="system-storage" element={<StorageDashboardAdmin />} />
         </Route>
 
         {/* Secure Routes for department start */}

@@ -40,10 +40,10 @@ const DocumentSharedList = () => {
     <div className="container py-4">
       {/* HEADER */}
       <div className="mb-4">
-        <h4 className="">
-          <i className="bi bi-share me-2"></i>
+        <h3 className="fw-bold">
+          <i className="bi bi-share me-2 text-danger"></i>
           Shared Documents
-        </h4>
+        </h3>
         <small className="text-muted">
           View documents shared with partners
         </small>
@@ -86,7 +86,7 @@ const DocumentSharedList = () => {
                     </div>
 
                     <div className="d-flex align-items-center gap-3">
-                      <span className="badge bg-success-subtle text-success">
+                      <span className="badge bg-success-subtle text-success border px-3 py-2 rounded-pill">
                         <span className="badge bg-white text-success">
                           {doc.partners.length}
                         </span>{" "}
@@ -120,7 +120,7 @@ const DocumentSharedList = () => {
                         >
                           {/* LEFT NUMBER */}
                           <div
-                            className="me-3 d-flex align-items-center justify-content-center bg-success text-white rounded"
+                            className="me-3 d-flex align-items-center justify-content-center bg-success-subtle text-success rounded"
                             style={{
                               width: "35px",
                               height: "35px",
@@ -145,7 +145,7 @@ const DocumentSharedList = () => {
                           {/* RIGHT SIDE */}
                           <div className="text-end">
                             <small className="text-muted d-block">Expiry</small>
-                            <span className="badge bg-light text-dark">
+                            <span className="badge bg-light text-dark border px-3 py-2 rounded-pill">
                               {p.expiry_date
                                 ? new Date(p.expiry_date).toLocaleDateString("en-GB")
                                 : "No expiry"}

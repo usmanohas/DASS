@@ -264,7 +264,7 @@ const TeamLeadDetails = () => {
               <div className="text-muted small">
                 <i className="bi bi-globe-europe-africa me-1"></i>State
               </div>{" "}
-              <span className="badge bg-info-subtle text-dark">
+              <span className="badge bg-light text-dark border rounded-pill px-3 py-2">
                 {" "}
                 {data.state}{" "}
               </span>{" "}
@@ -275,9 +275,9 @@ const TeamLeadDetails = () => {
                 <i className="bi bi-cloud-arrow-up me-1"></i>Status
               </div>{" "}
               {data.submission_status === "submitted" ? (
-                <span className="badge bg-success">Submitted</span>
+                  <span className="badge bg-success-subtle text-success rounded-pill px-3 py-2">Submitted</span>
               ) : (
-                <span className="badge bg-warning text-dark">Pending</span>
+                <span className="badge bg-warning-subtle text-warning rounded-pill px-3 py-2">Pending</span>
               )}{" "}
             </div>{" "}
           </div>{" "}

@@ -12,7 +12,7 @@ const SuperAdminLayout = () => {
   const [ticketAlerts, setTicketAlerts] = useState([]);
   const [loadingTicketAlerts, setLoadingTicketAlerts] = useState(true);
 
-  const toggleSidebar = () => setCollapsed(!collapsed);
+  const toggleSidebar = () => setCollapsed((prev) => !prev);
 
   /* ==========================
      FETCH USER
@@ -62,26 +62,70 @@ const SuperAdminLayout = () => {
   }, []);
 
   return (
-    <div className="d-flex vh-100">
-      <SuperAdminSidebar collapsed={collapsed} user={user} />
+    <div
+      className="d-flex"
+      style={{ minHeight: "100vh", background: "#f4f6fb" }}
+    >
+      {/* ================= SIDEBAR ================= */}
+      <aside
+        className="bg-success"
+        style={{
+          width: collapsed ? "80px" : "260px",
+          transition: "all 0.25s ease",
+          color: "#fff",
+          minHeight: "100vh",
+          position: "sticky",
+          top: 0,
+          boxShadow: "2px 0 10px rgba(0,0,0,0.05)",
+        }}
+      >
+        <SuperAdminSidebar collapsed={collapsed} user={user} />
+      </aside>
 
+      {/* ================= MAIN ================= */}
       <div className="flex-grow-1 d-flex flex-column">
-        <SuperAdminTopbar
-          toggleSidebar={toggleSidebar}
-          user={user}
-          ticketAlerts={ticketAlerts}
-          loadingTicketAlerts={loadingTicketAlerts}
-        />
-
-        <div className="flex-grow-1 overflow-auto bg-light p-4">
-          <Outlet context={{ user }} />
+        {/* TOPBAR */}
+        <div
+          style={{
+            position: "sticky",
+            top: 0,
+            zIndex: 1000,
+            backdropFilter: "blur(10px)",
+            background: "rgba(255,255,255,0.85)",
+            borderBottom: "1px solid rgba(0,0,0,0.05)",
+          }}
+        >
+          <SuperAdminTopbar
+            toggleSidebar={toggleSidebar}
+            user={user}
+            ticketAlerts={ticketAlerts}
+            loadingTicketAlerts={loadingTicketAlerts}
+          />
         </div>
 
-        <footer className="bg-white text-center py-2 shadow-sm">
-          <span className="text-muted">
-            © {new Date().getFullYear()} NPHCDA Archive Document & Sharing
-            System.
-          </span>
+        {/* PAGE CONTENT */}
+        <main
+          className="overflow-auto bg-light"
+          style={{
+            flexGrow: 1,
+            padding: "24px",
+          }}
+        >
+          <Outlet context={{ user }} />
+        </main>
+
+        {/* FOOTER */}
+        <footer
+          style={{
+            padding: "12px",
+            textAlign: "center",
+            borderTop: "1px solid #eee",
+            background: "#f8f9fa",
+          }}
+        >
+          <small className="text-secondary">
+            © {new Date().getFullYear()} NPHCDA-DASS
+          </small>
         </footer>
       </div>
     </div>

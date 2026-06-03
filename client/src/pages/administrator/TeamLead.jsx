@@ -88,9 +88,9 @@ const TeamLeadAdmin = () => {
 
                       <td>
                         {p.submission_status === "submitted" ? (
-                          <span className="badge bg-success">Submitted</span>
+                          <span className="badge bg-success-subtle text-success border px-3 py-2 rounded-pill">Submitted</span>
                         ) : (
-                          <span className="badge bg-warning text-dark">
+                          <span className="badge bg-warning text-dark border px-3 py-2 rounded-pill">
                             Pending
                           </span>
                         )}

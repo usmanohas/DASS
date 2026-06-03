@@ -74,7 +74,7 @@ const ArchiveDeletePageAdmin = () => {
       {/* HEADER */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h3 className="mb-0 fw-semibold">
+          <h3 className="mb-0 fw-bold">
             <i className="bi bi-archive me-2 text-muted"></i>
             Archived & Deleted Documents
           </h3>
@@ -153,8 +153,8 @@ const ArchiveDeletePageAdmin = () => {
                   <thead className="table-light">
                     <tr>
                       <th className="text-center">#</th>
-                      <th className="text-center">Workstream</th>
-                      <th>Document</th>
+                      <th className="">Workstream</th>
+                      <th>Document Title</th>
                       <th className="text-center">Status</th>
                       <th className="text-center">Date</th>
                     </tr>
@@ -163,20 +163,20 @@ const ArchiveDeletePageAdmin = () => {
                   <tbody>
                     {filteredDocs.map((doc, index) => (
                       <tr key={doc.id}>
-                        <td className="text-center">{index + 1}</td>
-                        <td className="text-center">
+                        <td className="text-center text-muted">{index + 1}</td>
+                        <td className="text-muted">
                           {doc.department_name}
                         </td>
 
-                        <td>{doc.title}</td>
+                        <td className="text-muted">{doc.title}</td>
 
                         <td className="text-center">
                           {doc.is_delete ? (
-                            <span className="badge rounded-pill bg-danger-subtle text-danger">
+                            <span className="badge border px-3 py-2 rounded-pill bg-danger-subtle text-danger">
                               Deleted
                             </span>
                           ) : (
-                            <span className="badge rounded-pill bg-dark-subtle text-white">
+                            <span className="badge border px-3 py-2 rounded-pill bg-dark-subtle text-white">
                               Archived
                             </span>
                           )}

@@ -1,17 +1,127 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { Bar, Pie, Doughnut, Line } from "react-chartjs-2";
 import "chart.js/auto";
 import { useOutletContext } from "react-router-dom";
 
+/* ================= REUSABLE CHART CARD ================= */
+const ChartCard = ({ title, data, options = {}, defaultType = "bar" }) => {
+  const [type, setType] = useState(defaultType);
+  const [showModal, setShowModal] = useState(false);
+
+  const chartRef = useRef(null);
+
+  const renderChart = () => {
+    const props = {
+      data,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        ...options,
+      },
+      ref: chartRef,
+    };
+
+    switch (type) {
+      case "line":
+        return <Line {...props} />;
+      case "pie":
+        return <Pie {...props} />;
+      case "doughnut":
+        return <Doughnut {...props} />;
+      default:
+        return <Bar {...props} />;
+    }
+  };
+
+  const downloadChart = () => {
+    if (!chartRef.current) return;
+    const url = chartRef.current.toBase64Image();
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${title}.png`;
+    link.click();
+  };
+
+  return (
+    <>
+      <div className="card border-0 shadow-sm h-100">
+        {/* HEADER */}
+        <div className="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+          <h6 className="fw-semibold mb-0">{title}</h6>
+
+          <div className="d-flex gap-2">
+            <select
+              className="form-select form-select-sm"
+              style={{ width: 110 }}
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+            >
+              <option value="bar">Bar</option>
+              <option value="line">Line</option>
+              <option value="pie">Pie</option>
+              <option value="doughnut">Doughnut</option>
+            </select>
+
+            <button
+              className="btn btn-sm btn-outline-primary"
+              onClick={() => setShowModal(true)}
+            >
+              <i className="bi bi-arrows-fullscreen"></i>
+            </button>
+
+            <button
+              className="btn btn-sm btn-outline-success"
+              onClick={downloadChart}
+            >
+              <i className="bi bi-download"></i>
+            </button>
+          </div>
+        </div>
+
+        {/* BODY */}
+        <div className="card-body">
+          <div style={{ height: "300px" }}>{renderChart()}</div>
+        </div>
+      </div>
+
+      {/* FULLSCREEN MODAL */}
+      {showModal && (
+        <>
+          <div className="modal fade show d-block" style={{ zIndex: 1055 }}>
+            <div className="modal-dialog modal-fullscreen">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">{title}</h5>
+                  <button
+                    className="btn-close"
+                    onClick={() => setShowModal(false)}
+                  ></button>
+                </div>
+
+                <div className="modal-body">
+                  <div style={{ height: "85vh", width: "100%" }}>
+                    {renderChart()}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="modal-backdrop fade show"></div>
+        </>
+      )}
+    </>
+  );
+};
+
 const AdministratorDashboard = () => {
   const { user } = useOutletContext();
+  const [data, setData] = useState(null);
 
   const formattedLastLogin = user?.last_login
     ? new Date(user.last_login).toLocaleString()
     : "First login";
-
-  const [data, setData] = useState(null);
 
   useEffect(() => {
     fetchDashboard();
@@ -24,9 +134,7 @@ const AdministratorDashboard = () => {
         { withCredentials: true },
       );
 
-      if (res.data.Status) {
-        setData(res.data.Data);
-      }
+      if (res.data.Status) setData(res.data.Data);
     } catch (err) {
       console.error(err);
     }
@@ -40,25 +148,23 @@ const AdministratorDashboard = () => {
     );
   }
 
+  /* ================= HELPERS ================= */
+  const truncate = (text, len = 20) =>
+    text?.length > len ? text.substring(0, len) + "..." : text;
+
   /* ================= CHART DATA ================= */
 
   const docDeptChart = {
     labels: data.docCountDept.map((d) => d.name_abbreviation),
     datasets: [
-      {
-        label: "Documents",
-        data: data.docCountDept.map((d) => d.total),
-      },
+      { label: "Documents", data: data.docCountDept.map((d) => d.total) },
     ],
   };
 
   const uploadChart = {
     labels: data.uploadActivity.map((d) => d.name_abbreviation),
     datasets: [
-      {
-        label: "Uploads (Last 90 days)",
-        data: data.uploadActivity.map((d) => d.uploads),
-      },
+      { label: "Uploads", data: data.uploadActivity.map((d) => d.uploads) },
     ],
   };
 
@@ -66,147 +172,93 @@ const AdministratorDashboard = () => {
     labels: data.storageByDept.map((d) => d.name_abbreviation),
     datasets: [
       {
-        label: "Storage Used",
-        data: data.storageByDept.map((d) => d.size / 1024 / 1024), // MB
+        label: "Storage (MB)",
+        data: data.storageByDept.map((d) => d.size / 1024 / 1024),
       },
     ],
   };
 
   const usersChart = {
     labels: data.usersByDept.map((d) => d.name_abbreviation),
+    datasets: [{ label: "Users", data: data.usersByDept.map((d) => d.total) }],
+  };
+
+  const classificationChart = {
+    labels: data.documentByClassification.map((d) => d.classification),
     datasets: [
       {
-        label: "Active Users",
-        data: data.usersByDept.map((d) => d.total),
+        data: data.documentByClassification.map((d) => d.total),
+        backgroundColor: ["#198754", "#0dcaf0", "#ffc107", "#dc3545"],
       },
     ],
   };
-  /*
+
+  /* ================= TOP DOWNLOADS (RESTORED) ================= */
   const topDocsChart = {
-    labels: data.topDocs.map((d) => d.title),
+    labels: data.topDocs.map((d) => truncate(d.title, 20)),
     datasets: [
       {
         label: "Downloads",
         data: data.topDocs.map((d) => d.downloads),
-      },
-    ],
-  };
-  */
-
-  const truncate = (text, len = 20) =>
-    text.length > len ? text.substring(0, len) + "..." : text;
-
-  /* ================= TOP DOWNLOADS CHART ================= */
-  const topDocsChart = {
-    labels: data.topDocs.map((d) => truncate(d.title, 20)), // ✅ X-axis truncated only
-
-    datasets: [
-      {
-        label: "Downloads",
-        data: data.topDocs.map((d) => d.downloads),
-        backgroundColor: "#5cb874",
+        backgroundColor: "#9ad0f5",
         borderRadius: 6,
-
-        // ✅ STORE FULL TITLE HERE (KEY FIX)
         fullTitles: data.topDocs.map((d) => d.title),
       },
     ],
   };
 
-  /* ================= OPTIONS (IMPORTANT FIX) ================= */
   const topDocsOptions = {
+    indexAxis: "y",
     responsive: true,
     maintainAspectRatio: false,
-
-    indexAxis: "y",
-
     plugins: {
-      legend: {
-        display: false,
-      },
-
+      legend: { display: false },
       tooltip: {
         callbacks: {
-          title: (context) => {
-            const index = context[0].dataIndex;
-
-            // ✅ FULL TITLE FROM DATASET (SAFE & RELIABLE)
-            return context[0].dataset.fullTitles[index];
+          title: (ctx) => {
+            const i = ctx[0].dataIndex;
+            return ctx[0].dataset.fullTitles[i];
           },
-
-          label: (context) => {
-            return `Downloads: ${context.raw}`;
-          },
+          label: (ctx) => `Downloads: ${ctx.raw}`,
         },
       },
     },
-
     scales: {
-      x: {
-        beginAtZero: true,
-        ticks: {
-          precision: 0,
-        },
-      },
-
-      y: {
-        ticks: {
-          autoSkip: false,
-        },
-      },
+      x: { beginAtZero: true, ticks: { precision: 0 } },
+      y: { ticks: { autoSkip: false } },
     },
   };
 
-  const totalDocs = data.documentByClassification.reduce(
-    (sum, d) => sum + d.total,
-    0,
-  );
-
-  const classificationChart = {
-    labels: data.documentByClassification.map((d) => {
-      const percent =
-        totalDocs > 0 ? ((d.total / totalDocs) * 100).toFixed(1) : 0;
-
-      return `${d.classification} (${percent}%)`;
-    }),
-
+  const ticketChart = {
+    labels: ["Open","In progress", "Resolved", "Closed"],
     datasets: [
       {
-        label: "Documents",
-        data: data.documentByClassification.map((d) => d.total),
-        backgroundColor: [
-          "#198754", // Public
-          "#0dcaf0", // Internal
-          "#ffc107", // Confidential
-          "#dc3545", // Restricted
+        label: "Tickets",
+        data: [
+          data.ticketSummary.open,
+          data.ticketSummary.inprogress,
+          data.ticketSummary.resolved,
+          data.ticketSummary.closed
         ],
-        borderWidth: 1,
+        backgroundColor: ["#36a2eb", "#ffc107", "#198754", "#6c757d"],
       },
     ],
   };
 
-  const classificationOptions = {
+  const ticketOptions = {
     plugins: {
-      tooltip: {
-        callbacks: {
-          label: function (context) {
-            const value = context.raw;
-            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-
-            const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-
-            return `${context.label}: ${value} docs (${percent}%)`;
-          },
-        },
-      },
-      legend: {
-        position: "bottom",
+      legend: { position: "bottom" },
+      title: {
+        display: true,
+        text: `Total Tickets: ${data.ticketSummary.total}`,
+        font: { size: 12 },
       },
     },
   };
 
+  /* ================= UI ================= */
   return (
-    <div className="container">
+    <div className="container py-3">
       {/* HEADER */}
       <div className="mb-3">
         <div className="card-body d-flex justify-content-between flex-wrap">
@@ -275,8 +327,8 @@ const AdministratorDashboard = () => {
               </div>
 
               <div>
-                <small className="text-muted">Storage Allocation</small>
-                <h4 className="text-muted mb-0">1 TB</h4>
+                <small className="text-muted">Allocated Storage</small>
+                <h4 className="text-muted mb-0">{data.storageAllocation.allocatedStorageGB} GB</h4>
               </div>
             </div>
           </div>
@@ -388,57 +440,53 @@ const AdministratorDashboard = () => {
 
       {/* CHARTS */}
       <div className="row g-4">
-        <div className="col-md-12">
-          <div className="card p-3 shadow-sm">
-            <h6>Documents per Department</h6>
-            <Bar data={docDeptChart} />
-          </div>
-        </div>
-
         <div className="col-md-8">
-          <div className="card p-3 shadow-sm">
-            <h6 className="mb-3">Top 5 Downloaded Documents</h6>
-
-            {/* ✅ chart wrapper controls spacing */}
-            <div style={{ height: "350px" }}>
-              <Bar data={topDocsChart} options={topDocsOptions} />
-            </div>
-          </div>
+          <ChartCard title="Documents per Department" data={docDeptChart} />
         </div>
 
         <div className="col-md-4">
-          <div className="card p-3 shadow-sm">
-            <h6>Ducument by classification</h6>
-            <Doughnut
-              data={classificationChart}
-              options={classificationOptions}
-            />
-          </div>
-        </div>
-
-        <div className="col-md-8">
-          <div className="card p-3 shadow-sm">
-            <h6>Upload Activity</h6>
-            <Line data={uploadChart} />
-          </div>
-        </div>
-
-        <div className="col-md-4">
-          <div className="card p-3 shadow-sm">
-            <h6>Storage by Department (MB)</h6>
-            <Doughnut data={storageChart} />
-          </div>
+          <ChartCard
+            title="Document Classification"
+            data={classificationChart}
+            defaultType="doughnut"
+          />
         </div>
 
         <div className="col-md-12">
-          <div className="card p-3 shadow-sm">
-            <h6>Active Users by Department/Partners</h6>
-            <Bar data={usersChart} />
-          </div>
+          <ChartCard title="Users by Department" data={usersChart} />
         </div>
-        
+
+        <div className="col-md-8">
+          <ChartCard
+            title="Top 5 Downloaded Documents"
+            data={topDocsChart}
+            options={topDocsOptions}
+          />
+        </div>
+        <div className="col-md-4">
+          <ChartCard
+            title="Support Ticket Status"
+            data={ticketChart}
+            options={ticketOptions}
+          />
+        </div>
+
+        <div className="col-md-8">
+          <ChartCard
+            title="Upload Activity"
+            data={uploadChart}
+            defaultType="line"
+          />
+        </div>
+
+        <div className="col-md-4">
+          <ChartCard
+            title="Storage Usage"
+            data={storageChart}
+            defaultType="doughnut"
+          />
+        </div>
       </div>
-
       {/* EXPIRING DOCUMENTS */}
       <div className="card mt-4 shadow-sm">
         <div className="card-body">

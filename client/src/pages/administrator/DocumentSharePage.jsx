@@ -166,23 +166,56 @@ const ShareDocumentPage = () => {
       {/* ===== DOCUMENT HEADER ===== */}
       <div className="card shadow-sm border-1 mb-4">
         <div className="card-body position-relative">
-          <div className="d-flex justify-content-between align-items-start mb-3">
-            {/* LEFT SIDE */}
-            <div>
-              <h3 className="fw-bold mb-1">{doc.title}</h3>
-              <div className="text-muted small">
-                <i className="bi bi-file-earmark-text me-1"></i>
-                {doc.document_code}
+          <div className="d-flex justify-content-between align-items-start gap-4 mb-4">
+            {/* LEFT */}
+            <div
+              style={{
+                flex: 1,
+                minWidth: 0,
+              }}
+            >
+              <h4
+                className="mb-2 text-dark"
+                style={{
+                  overflowWrap: "break-word",
+                  wordBreak: "break-word",
+                  lineHeight: "1.4",
+                }}
+              >
+                {doc.title}
+              </h4>
+
+              <div className="text-muted small d-flex align-items-center">
+                <i className="bi bi-upc-scan me-2"></i>
+
+                <span
+                  style={{
+                    overflowWrap: "break-word",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {doc.document_code}
+                </span>
               </div>
             </div>
 
-            {/* RIGHT SIDE */}
-            <div className="d-flex align-items-center gap-3">
-              {/* Classification Badge */}
+            {/* RIGHT */}
+            <div
+              className="d-flex flex-column align-items-end gap-3"
+              style={{
+                flexShrink: 0,
+                whiteSpace: "nowrap",
+              }}
+            >
+              {/* Classification */}
               <span
-                className={`badge px-3 py-2 mt-2 ${
+                className={`badge px-4 py-2 rounded-pill fw-semibold ${
                   classificationColors[doc.classification] || "bg-secondary"
                 }`}
+                style={{
+                  fontSize: "0.85rem",
+                  letterSpacing: "0.3px",
+                }}
               >
                 {doc.classification}
               </span>
@@ -254,8 +287,7 @@ const ShareDocumentPage = () => {
                       <i className="bi bi-people text-secondary"></i>
                       Share with Partners
                     </h6>
-
-                    <span className="badge bg-success-subtle text-success px-3 py-2">
+                    <span className="badge bg-success-subtle text-success border px-3 py-2 rounded-pill">
                       {selectedPartners.length} Selected
                     </span>
                   </div>
@@ -440,7 +472,7 @@ const ShareDocumentPage = () => {
 
                     {/* COPY BUTTON */}
                     <button
-                      className="btn btn-outline-primary btn-sm mb-3"
+                      className="btn btn-outline-secondary btn-sm mb-3"
                       onClick={() => {
                         navigator.clipboard.writeText(publicLink.link);
                         Swal.fire(

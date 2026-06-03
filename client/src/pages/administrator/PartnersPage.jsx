@@ -179,10 +179,10 @@ const PartnerPage = () => {
     <div className="container py-4">
       {/* HEADER */}
       <div className="d-flex justify-content-between mb-4">
-        <h3 className="">
+        <h3 className="fw-bold">
           <i className="bi bi-link text-muted me-2"></i>Partners
         </h3>
-        <button className="btn bg-success-subtle text-success" onClick={openAdd}>
+        <button className="btn bg-success-subtle text-success border px-3 py-2 rounded-pill" onClick={openAdd}>
           <i className="bi bi-plus-circle me-2"></i> Add Partner
         </button>
       </div>

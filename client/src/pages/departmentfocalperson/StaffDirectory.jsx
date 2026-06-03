@@ -73,8 +73,7 @@ Gender: ${s.gender || "N/A"}
 Email: ${s.email}
 Phone: ${s.phone_number || "N/A"}
 Designation: ${s.designation || "N/A"}
-Division/Unit/State: ${s.division_unit_state || "N/A"}
-File No: ${s.file_number}`;
+Division/Unit/State: ${s.division_unit_state || "N/A"}`;
 
     try {
       if (navigator.share) {
@@ -336,7 +335,7 @@ File No: ${s.file_number}`;
                         {/* FILE */}
                         <td>
                           <span className="badge bg-light text-dark border px-3 py-2 rounded-pill">
-                            {s.file_number}
+                            ****
                           </span>
                         </td>
 
@@ -527,7 +526,7 @@ File No: ${s.file_number}`;
 
                         <div className="fw-semibold">
                           <i className="bi bi-file-earmark-text me-2 text-success"></i>
-                          {selectedStaff.file_number}
+                          ****
                         </div>
                       </div>
                     </div>

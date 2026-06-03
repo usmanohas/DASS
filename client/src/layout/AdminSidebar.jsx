@@ -14,319 +14,328 @@ const AdminSidebar = ({ collapsed, user }) => {
   const isParentActive = (paths) =>
     paths.some((path) => location.pathname.startsWith(path));
 
-  const activeParentStyle = {
-    background: "#1e7239f9",
-    color: "#ffffff",
-    borderRadius: "8px",
+  /* ================= MENU STYLE ================= */
+  const menuItem = (active) => ({
+    background: active ? "#50a16af9" : "transparent",
+    borderLeft: active ? "4px solid #fff" : "4px solid transparent",
+    borderRadius: "12px",
+    transition: "all 0.25s ease",
+  });
+
+  const iconStyle = {
+    width: "42px",
+    height: "42px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "1rem",
+    flexShrink: 0,
   };
+
+  const navItemClass =
+    "d-flex align-items-center text-white text-decoration-none px-2 py-2 sidebar-link";
+
+  const dropdownClass =
+    "d-flex align-items-center text-white px-2 py-2 sidebar-link";
 
   return (
     <div
-      className={` bg-success text-white d-flex flex-column p-3 ${
-        collapsed ? "d-none d-md-flex" : ""
-      }`}
-      style={{ width: "250px", minHeight: "100vh" }}
+      className="d-flex flex-column text-white"
+      style={{
+        width: collapsed ? "82px" : "265px",
+        transition: "all 0.3s ease",
+        minHeight: "100vh",
+        padding: "14px",
+        borderRight: "1px solid rgba(255,255,255,0.06)",
+      }}
     >
-      {/* Logo */}
-      <div className="text-center mb-4">
-        <img src="/assets/images/logo.png" alt="logo" width={50} />
-        <h5 className="fw-bold">NPHCDA-DASS</h5>
-        <small>
-          <i className="bi bi-file-earmark-text me-1"></i>
-          {user?.file_number}
-        </small>
+      {/* ================= BRAND ================= */}
+      <div className="text-center  pb-3 border-bottom border-secondary border-opacity-25">
+        <img
+          src="/assets/images/logo.png"
+          alt="logo"
+          width={collapsed ? 38 : 54}
+          className="mb-2"
+        />
+
+        {!collapsed && (
+          <>
+            <h5 className="fw-bold mt-2 mb-1 text-white">NPHCDA-DASS</h5>
+
+            <small style={{ color: "#badfdf" }}>
+              <i className="bi bi-file-earmark-text me-1"></i>
+              {user?.file_number}
+            </small>
+          </>
+        )}
       </div>
 
-      {/* Navigation */}
-      <ul className="nav flex-column mb-auto">
-        {/* Dashboard */}
-        <li className="nav-item mb-2 position-relative">
-          {isActive("/") && <span className="active-indicator"></span>}
+      {/* ================= MENU ================= */}
+      <div className="flex-grow-1 d-flex flex-column gap-1">
+        {/* DASHBOARD */}
+        <Link to="/" style={menuItem(isActive("/"))} className={navItemClass}>
+          <div style={iconStyle}>
+            <i className="bi bi-speedometer2"></i>
+          </div>
 
-          <Link
-            to="/"
-            className="nav-link text-white d-flex align-items-center"
-          >
-            <i className="bi bi-speedometer2 me-2"></i>
-            Dashboard
-            {isActive("/") && (
-              <i className="bi bi-dot ms-auto text-warning"></i>
-            )}
-          </Link>
-        </li>
+          {!collapsed && (
+            <>
+              <span>Dashboard</span>
 
-        {/* Document */}
-        <li className="nav-item mb-2">
+              {isActive("/") && (
+                <span className="ms-auto badge rounded-pill bg-info">
+                  Active
+                </span>
+              )}
+            </>
+          )}
+        </Link>
+
+        {/* ================= DOCUMENT ================= */}
+        <div>
           <div
             onClick={() => toggleMenu("document")}
-            className="nav-link d-flex justify-content-between align-items-center text-white position-relative"
-            style={{
-              cursor: "pointer",
-              ...(isParentActive([
+            style={menuItem(
+              isParentActive([
                 "/admin/documents",
                 "/admin/documents/shared",
                 "/admin/documents/archived-deleted",
-              ])
-                ? activeParentStyle
-                : {}),
-            }}
+              ]),
+            )}
+            className={dropdownClass}
+            role="button"
           >
-            <span>
-              <i className="bi bi-files me-2"></i> Document
-            </span>
-            <i
-              className={`bi ${
-                openMenu === "document"
-                  ? "bi-caret-down-fill text-white"
-                  : "bi-caret-right-fill"
-              }`}
-            ></i>
+            <div style={iconStyle}>
+              <i className="bi bi-files"></i>
+            </div>
+
+            {!collapsed && (
+              <>
+                <span>Documents</span>
+
+                <i
+                  className={`bi ms-auto ${
+                    openMenu === "document"
+                      ? "bi-chevron-down"
+                      : "bi-chevron-right"
+                  }`}
+                />
+              </>
+            )}
           </div>
 
           <div
             style={{
-              maxHeight: openMenu === "document" ? "300px" : "0px",
+              maxHeight: openMenu === "document" && !collapsed ? "200px" : "0",
               overflow: "hidden",
-              transition: "max-height 0.3s ease",
+              transition: "all 0.3s ease",
             }}
           >
-            <ul className="nav flex-column ms-3 mt-1">
-              <li className="nav-item mb-2 position-relative">
-                {isActive("/department/document/upload") && (
-                  <span className="active-indicator"></span>
-                )}
-
-                <Link
-                  to="/admin/documents"
-                  className="nav-link text-white d-flex align-items-center"
-                >
+            {!collapsed && (
+              <div className="ms-5 mt-2 d-flex flex-column gap-2">
+                <Link to="/admin/documents" className="submenu-link">
                   Active Documents
-                  {isActive("/admin/documents") && (
-                    <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
-                  )}
                 </Link>
-              </li>
-
-              <li className="nav-item mb-2 position-relative">
-                {isActive("/admin/documents/archived-deleted") && (
-                  <span className="active-indicator"></span>
-                )}
 
                 <Link
                   to="/admin/documents/archived-deleted"
-                  className="nav-link text-white d-flex align-items-center"
+                  className="submenu-link"
                 >
                   Archived/Deleted
-                  {isActive("/admin/documents/archived-deleted") && (
-                    <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
-                  )}
                 </Link>
-              </li>
 
-              <li className="nav-item mb-2 position-relative">
-                {isActive("/admin/documents/shared") && (
-                  <span className="active-indicator"></span>
-                )}
-
-                <Link
-                  to="/admin/documents/shared"
-                  className="nav-link text-white d-flex align-items-center"
-                >
+                <Link to="/admin/documents/shared" className="submenu-link">
                   Shared
-                  {isActive("/admin/documents/shared") && (
-                    <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
-                  )}
                 </Link>
-              </li>
-            </ul>
+              </div>
+            )}
           </div>
-        </li>
+        </div>
 
-        {/* Staff */}
-        <li className="nav-item mb-2 position-relative">
-          {isActive("/admin/staff") && (
-            <span className="active-indicator"></span>
-          )}
+        {/* ================= STAFF ================= */}
+        <Link
+          to="/admin/staff"
+          style={menuItem(isActive("/admin/staff"))}
+          className={navItemClass}
+        >
+          <div style={iconStyle}>
+            <i className="bi bi-people"></i>
+          </div>
 
-          <Link
-            to="/admin/staff"
-            className="nav-link text-white d-flex align-items-center"
-          >
-            <i className="bi bi-people me-2"></i>Staff
-            {isActive("/admin/staff") && (
-              <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
-            )}
-          </Link>
-        </li>
+          {!collapsed && <span>Staff</span>}
+        </Link>
 
-        {/* Partners */}
-        <li className="nav-item mb-2 position-relative">
-          {isActive("/admin/staff") && (
-            <span className="active-indicator"></span>
-          )}
+        {/* ================= PARTNERS ================= */}
+        <Link
+          to="/admin/partners"
+          style={menuItem(isActive("/admin/partners"))}
+          className={navItemClass}
+        >
+          <div style={iconStyle}>
+            <i className="bi bi-link-45deg"></i>
+          </div>
 
-          <Link
-            to="/admin/partners"
-            className="nav-link text-white d-flex align-items-center"
-          >
-            <i className="bi bi-link-45deg me-2"></i>Partners
-            {isActive("/admin/partners") && (
-              <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
-            )}
-          </Link>
-        </li>
+          {!collapsed && <span>Partners</span>}
+        </Link>
 
-        {/* Document Access Request */}
-        <li className="nav-item mb-2">
+        {/* ================= REQUESTS ================= */}
+        <div>
           <div
             onClick={() => toggleMenu("request")}
-            className="nav-link d-flex justify-content-between align-items-center text-white"
-            style={{
-              cursor: "pointer",
-              ...(isParentActive([
+            style={menuItem(
+              isParentActive([
                 "/admin/document/cross-department-access",
                 "/admin/document/delete",
                 "/admin/document/restore",
-              ])
-                ? activeParentStyle
-                : {}),
-            }}
+              ]),
+            )}
+            className={dropdownClass}
+            role="button"
           >
-            <span>
-              <i className="bi bi-shield-lock me-2"></i>Requests
-            </span>
-            <i
-              className={`bi ${
-                openMenu === "request"
-                  ? "bi-caret-down-fill text-white"
-                  : "bi-caret-right-fill"
-              }`}
-            ></i>
+            <div style={iconStyle}>
+              <i className="bi bi-shield-lock"></i>
+            </div>
+
+            {!collapsed && (
+              <>
+                <span>Requests</span>
+
+                <i
+                  className={`bi ms-auto ${
+                    openMenu === "request"
+                      ? "bi-chevron-down"
+                      : "bi-chevron-right"
+                  }`}
+                />
+              </>
+            )}
           </div>
 
           <div
             style={{
-              maxHeight: openMenu === "request" ? "300px" : "0px",
+              maxHeight: openMenu === "request" && !collapsed ? "250px" : "0",
               overflow: "hidden",
-              transition: "max-height 0.3s ease",
+              transition: "all 0.3s ease",
             }}
           >
-            <ul className="nav flex-column ms-3 mt-1">
-              <li className="nav-item mb-2 position-relative">
-                {isActive("/admin/document/cross-department-access") && (
-                  <span className="active-indicator"></span>
-                )}
-
+            {!collapsed && (
+              <div className="ms-5 mt-2 d-flex flex-column gap-2">
                 <Link
                   to="/admin/document/cross-department-access"
-                  className="nav-link text-white d-flex align-items-center"
+                  className="submenu-link"
                 >
-                  Cross-Department Requests
-                  {isActive("/admin/document/cross-department-access") && (
-                    <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
-                  )}
+                  Cross Department
                 </Link>
-              </li>
 
-              <li className="nav-item mb-2 position-relative">
-                {isActive("/admin/document/delete") && (
-                  <span className="active-indicator"></span>
-                )}
-
-                <Link
-                  to="/admin/document/delete"
-                  className="nav-link text-white d-flex align-items-center"
-                >
-                  Delete Request
-                  {isActive("/admin/document/delete") && (
-                    <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
-                  )}
+                <Link to="/admin/document/delete" className="submenu-link">
+                  Delete
                 </Link>
-              </li>
-              <li className="nav-item mb-2 position-relative">
-                {isActive("/admin/document/restore") && (
-                  <span className="active-indicator"></span>
-                )}
 
-                <Link
-                  to="/admin/document/restore"
-                  className="nav-link text-white d-flex align-items-center"
-                >
-                  Restore Request
-                  {isActive("/admin/document/restore") && (
-                    <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
-                  )}
+                <Link to="/admin/document/restore" className="submenu-link">
+                  Restore
                 </Link>
-              </li>
-            </ul>
+              </div>
+            )}
           </div>
-        </li>
+        </div>
 
-        {/* Support */}
-        <li className="nav-item mb-2 position-relative">
-          {isActive("/admin/my-support-tickets") && (
-            <span className="active-indicator"></span>
-          )}
-          <Link
-            to="/admin/my-support-tickets"
-            className="nav-link text-white d-flex align-items-center"
-          >
-            <i className="bi bi-ticket-detailed me-2"></i>Tickets
-            {isActive("/admin/my-support-tickets") && (
-              <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
-            )}
-          </Link>
-        </li>
-
-        {/* Program Team Lead */}
-        <li className="nav-item mb-2 position-relative">
-          {isActive("/admin/program/team-lead") && (
-            <span className="active-indicator"></span>
-          )}
-          <Link
-            to="/admin/program/team-lead"
-            className="nav-link text-white d-flex align-items-center"
-          >
-            <i className="bi bi-people-fill me-2"></i>Team Lead
-            {isActive("/admin/program/team-lead") && (
-              <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
-            )}
-          </Link>
-        </li>
-
-        {/* Audit Trait */}
-        <li className="nav-item mb-2 position-relative">
-          {isActive("/admin/audit-trait") && (
-            <span className="active-indicator"></span>
-          )}
-          <Link
-            to="/admin/audit-trait"
-            className="nav-link text-white d-flex align-items-center"
-          >
-            <i className="bi bi-clipboard-data me-2"></i>Audit Trait
-            {isActive("/admin/audit-trait") && (
-              <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
-            )}
-          </Link>
-        </li>
-      </ul>
-
-      {/* Bottom */}
-      <div className="mt-auto position-relative">
-        {isActive("/admin/change-password") && (
-          <span className="active-indicator"></span>
-        )}
-
+        {/* ================= TICKETS ================= */}
         <Link
-          to="/admin/change-password"
-          className="nav-link text-white d-flex align-items-center"
+          to="/admin/my-support-tickets"
+          style={menuItem(isActive("/admin/my-support-tickets"))}
+          className={navItemClass}
         >
-          <i className="bi bi-gear-fill me-2"></i> Settings
-          {isActive("/admin/change-password") && (
-            <i className="bi bi-check-circle-fill ms-auto text-warning"></i>
-          )}
+          <div style={iconStyle}>
+            <i className="bi bi-ticket-detailed"></i>
+          </div>
+
+          {!collapsed && <span>Support Ticket</span>}
+        </Link>
+
+        {/* ================= PROGRAMS TEAM LEAD ================= */}
+        <Link
+          to="/admin/program/team-lead"
+          style={menuItem(isActive("/admin/program/team-lead"))}
+          className={navItemClass}
+        >
+          <div style={iconStyle}>
+            <i className="bi bi-people-fill"></i>
+          </div>
+
+          {!collapsed && <span>Program Team Lead</span>}
+        </Link>
+
+        {/* ================= STORAGE ALLOCATION ================= */}
+        <Link
+          to="/admin/system-storage"
+          style={menuItem(isActive("/admin/system-storage"))}
+          className={navItemClass}
+        >
+          <div style={iconStyle}>
+            <i className="bi bi-database-fill-gear"></i>
+          </div>
+
+          {!collapsed && <span>Storage</span>}
+        </Link>
+
+        {/* ================= AUDIT TRAIT ================= */}
+        <Link
+          to="/admin/audit-trait"
+          style={menuItem(isActive("/admin/audit-trait"))}
+          className={navItemClass}
+        >
+          <div style={iconStyle}>
+            <i className="bi bi-clipboard-data"></i>
+          </div>
+
+          {!collapsed && <span>Audit Trait</span>}
         </Link>
       </div>
+
+      {/* ================= SETTINGS ================= */}
+      <div className="pt-3 mt-3 border-top border-secondary border-opacity-25">
+        <Link
+          to="/admin/change-password"
+          style={menuItem(isActive("/admin/change-password"))}
+          className={navItemClass}
+        >
+          <div style={iconStyle}>
+            <i className="bi bi-gear"></i>
+          </div>
+
+          {!collapsed && <span>Settings</span>}
+        </Link>
+      </div>
+
+      {/* ================= CUSTOM CSS ================= */}
+      <style>
+        {`
+          .sidebar-link {
+            transition: all 0.25s ease;
+            border-radius: 12px;
+            cursor: pointer;
+          }
+
+          .sidebar-link:hover {
+            background: rgba(155, 12, 12, 0.06);
+            transform: translateX(2px);
+          }
+
+          .submenu-link {
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            padding: 6px 10px;
+            border-radius: 8px;
+          }
+
+          .submenu-link:hover {
+            color: #ffffff;
+            padding-left: 14px;
+          }
+        `}
+      </style>
     </div>
   );
 };

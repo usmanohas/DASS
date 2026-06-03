@@ -1876,7 +1876,7 @@ router.put("/documents/:id", verifyToken, async (req, res) => {
         [
           userId,
           sessionId,
-          "DOCUMENT_UPDATED",
+          "UPDATE DOCUMENT",
           "DOCUMENT",
           documentId,
           changeDescription,

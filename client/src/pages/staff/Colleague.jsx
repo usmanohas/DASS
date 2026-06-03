@@ -51,7 +51,7 @@ const Colleague = () => {
     <div className="container py-3">
       {/* HEADER */}
       <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <h3 className="mb-0">
+        <h3 className="mb-0 fw-bold">
           <i className="bi bi-people me-2"></i> Department Staff
         </h3>
 
@@ -145,61 +145,158 @@ const Colleague = () => {
       </div>
 
       {/* MODAL */}
-      <div className="modal fade" id="staffModal">
-        <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content border-0 shadow">
-            <div className="modal-header">
-              <h5 className="modal-title">Staff Details</h5>
-              <button className="btn-close" data-bs-dismiss="modal"></button>
-            </div>
+      <div className="modal fade" id="staffModal" tabIndex="-1">
+        <div className="modal-dialog modal-dialog-centered modal-lg">
+          <div className="modal-content border-0 shadow rounded-4 overflow-hidden">
+            {/* HEADER */}
+            <div
+              className="p-4 text-white"
+              style={{
+                background:
+                  "linear-gradient(135deg, #ef6c00 0%, #ff8f00 100%)",
+              }}
+            >
+              <div className="d-flex justify-content-between align-items-start">
+                <div>
+                  <h4 className="fw-bold mb-1">
+                    <i className="bi bi-person-badge me-2"></i>
+                    Staff Profile
+                  </h4>
 
+                  <p className="mb-0 opacity-75">Detailed staff information</p>
+                </div>
+
+                <button
+                  className="btn-close btn-close-white"
+                  data-bs-dismiss="modal"
+                ></button>
+              </div>
+            </div>
             <div className="modal-body">
               {selected && (
                 <>
-                  <h5 className="fw-bold">
-                    {selected.title} {selected.full_name}
-                  </h5>
+                {/* PROFILE */}
+                  <div className="d-flex align-items-center gap-3 mb-4">
+                    <div
+                      className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
+                      style={{
+                        width: "75px",
+                        height: "75px",
+                        backgroundColor: "#ef6c00",
+                        fontSize: "1.5rem",
+                      }}
+                    >
+                      {selected.full_name?.charAt(0)}
+                    </div>
 
-                  <div className="mt-3">
-                    <p>
-                      <strong>Gender:</strong> {selected.gender}
-                    </p>
-                    <p>
-                      <strong>Email:</strong> {selected.email}
-                    </p>
-                    <p>
-                      <strong>Phone:</strong> {selected.phone_number}
-                    </p>
-                    <p>
-                      <strong>Designation:</strong> {selected.designation}
-                    </p>
-                    <p>
-                      <strong>Division/Unit/State:</strong>{" "}
-                      {selected.division_unit_state}
-                    </p>
-                    <p>
-                      <strong>File Number:</strong>{" "}
-                      <span className="badge bg-success">
-                        {selected.file_number}
+                    <div>
+                      <h4 className="fw-bold mb-1">
+                        {selected.title} {selected.full_name}
+                      </h4>
+                      <span
+                        className="badge rounded-pill px-3 py-2"
+                        style={{
+                          background: "rgba(239, 166, 9, 0.15)",
+                          color: "#ef6c00",
+                        }}
+                      >
+                        {selected.designation}
                       </span>
-                    </p>
+                    </div>
                   </div>
 
-                  <hr />
+                  {/* DETAILS */}
+                  <div className="row g-3">
+                    <div className="col-md-6">
+                      <div className="border rounded-4 p-3 h-100 bg-light">
+                        <small className="text-muted d-block mb-1">
+                          Gender
+                        </small>
 
-                  <div className="d-flex gap-2">
+                        <div className="fw-semibold">
+                          <i className="bi bi-person me-2 text-success"></i>
+                          {selected.gender || "N/A"}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="col-md-6">
+                      <div className="border rounded-4 p-3 h-100 bg-light">
+                        <small className="text-muted d-block mb-1">
+                          Email Address
+                        </small>
+
+                        <div className="fw-semibold text-break">
+                          <i className="bi bi-envelope me-2 text-success"></i>
+                          {selected.email}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="col-md-6">
+                      <div className="border rounded-4 p-3 h-100 bg-light">
+                        <small className="text-muted d-block mb-1">
+                          Phone Number
+                        </small>
+
+                        <div className="fw-semibold">
+                          <i className="bi bi-telephone me-2 text-success"></i>
+                          {selected.phone_number || "N/A"}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="col-md-6">
+                      <div className="border rounded-4 p-3 h-100 bg-light">
+                        <small className="text-muted d-block mb-1">
+                          File Number
+                        </small>
+
+                        <div className="fw-semibold">
+                          <i className="bi bi-file-earmark-text me-2 text-success"></i>
+                          ****
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="col-12">
+                      <div className="border rounded-4 p-3 bg-light">
+                        <small className="text-muted d-block mb-1">
+                          Division / Unit / State
+                        </small>
+
+                        <div className="fw-semibold">
+                          <i className="bi bi-geo-alt me-2 text-success"></i>
+                          {selected.division_unit_state || "N/A"}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* ACTIONS */}
+                  <div className="d-flex gap-3 mt-4">
                     <button
-                      className="btn btn-success w-100"
+                      className="btn text-white flex-fill"
+                      style={{
+                        backgroundColor: "#ef6c00",
+                        borderRadius: "14px",
+                        height: "50px",
+                      }}
                       onClick={() => shareStaff(selected)}
                     >
-                      <i className="bi bi-share me-1"></i> Share
+                      <i className="bi bi-share-fill me-2"></i>
+                      Share Profile
                     </button>
 
                     <a
                       href={`mailto:${selected.email}`}
-                      className="btn btn-danger w-100"
+                      className="btn btn-light border flex-fill d-flex align-items-center justify-content-center"
+                      style={{
+                        borderRadius: "14px",
+                        height: "50px",
+                      }}
                     >
-                      <i className="bi bi-envelope me-1"></i> Email
+                      <i className="bi bi-envelope-fill me-2"></i>
+                      Send Email
                     </a>
                   </div>
                 </>

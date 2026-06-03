@@ -16,7 +16,7 @@ const DeleteDocumentRequests = () => {
     try {
       const res = await axios.get(
         `http://localhost:3000/admin/delete-requests?page=${pageNum}&department=${department}&search=${search}`,
-        { withCredentials: true },
+        { withCredentials: true }
       );
 
       if (res.data.Status) {
@@ -37,7 +37,6 @@ const DeleteDocumentRequests = () => {
     setExpandedId(expandedId === id ? null : id);
   };
 
-  /* ================= DELETE ================= */
   const handleDelete = async (id) => {
     const confirm = await Swal.fire({
       title: "Delete Document?",
@@ -53,7 +52,7 @@ const DeleteDocumentRequests = () => {
     try {
       const res = await axios.delete(
         `http://localhost:3000/admin/delete-document/${id}`,
-        { withCredentials: true },
+        { withCredentials: true }
       );
 
       if (res.data.Status) {
@@ -65,155 +64,222 @@ const DeleteDocumentRequests = () => {
     }
   };
 
-  return (
-    <div className="container py-4">
-      <h3 className="mb-3">
-        <i className="bi bi-trash me-2"></i>
-        Delete Document Requests
-      </h3>
+  const totalRequests = data.length;
 
-      {/* FILTERS */}
-      <div className="row mb-3">
-        <div className="col-md-4">
-          <input
-            className="form-control"
-            placeholder="Search document..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+  return (
+    <div className="container-fluid py-4">
+
+      {/* ================= HEADER ================= */}
+      <div className="mb-4">
+        <div className="d-flex justify-content-between align-items-start flex-wrap gap-3">
+
+          <div>
+            <h3 className="fw-bold mb-1">
+              <i className="bi bi-trash me-2 text-danger"></i>
+              Delete Document Requests
+            </h3>
+
+            <p className="text-muted mb-0">
+              Review and permanently remove document deletion requests
+            </p>
+          </div>
+
+          {/* STAT CARD */}
+          <div
+            className="rounded-3 px-4 py-3 text-white text-center shadow-sm"
+            style={{ background: "#dc3545", minWidth: 160 }}
+          >
+            <div className="small">Total Requests</div>
+            <div className="fs-3 fw-bold">{totalRequests}</div>
+          </div>
         </div>
-        {/* FILTERS department
-        <div className="col-md-3">
-          <input
-            className="form-control"
-            placeholder="Department ID"
-            value={department}
-            onChange={(e) => setDepartment(e.target.value)}
-          />
-        </div>
-        */}
       </div>
 
-      {/* TABLE */}
-      <div className="card shadow-sm border-0">
-        <div className="card-body table-responsive">
-          <table className="table align-middle">
-            <thead className="table-light">
-              <tr>
-                <th>#</th>
-                <th>Document</th>
-                <th>Department</th>
-                <th>Upload Date</th>
-                <th></th>
-              </tr>
-            </thead>
+      {/* ================= FILTERS ================= */}
+      <div className="card border-0 shadow-sm mb-4">
+        <div className="card-body">
+          <div className="row g-2 align-items-center">
 
-            <tbody>
-              {data.length === 0 ? (
-                <tr>
-                  <td colSpan="5">
-                    <div className="text-center py-5 text-muted">
-                      <i className="bi bi-inbox fs-1"></i>
-                      <div className="mt-2">No Delete Requests Found</div>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-              data.map((d, i) => (
-                <React.Fragment key={d.id}>
-                  {/* MAIN */}
-                  <tr
-                    onClick={() => toggleExpand(d.id)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <td>{i + 1}</td>
-                    <td>
-                      <div className="fw-semibold">{d.title}</div>
-                      <small className="text-muted">{d.document_code}</small>
-                    </td>
+            <div className="col-md-10">
+              <input
+                className="form-control"
+                placeholder="Search document, code, or title..."
+                value={search}
+                onChange={(e) => {
+                  setPage(1);
+                  setSearch(e.target.value);
+                }}
+              />
+            </div>
 
-                    <td>{d.department_name}</td>
 
-                    <td className="text-muted small">
-                      {new Date(d.created_at).toLocaleDateString("en-GB")}
-                    </td>
+            <div className="col-md-2 d-grid">
+              <button
+                className="btn btn-outline-secondary"
+                onClick={() => {
+                  setSearch("");
+                  setDepartment("");
+                  setPage(1);
+                }}
+              >
+                <i className="bi bi-arrow-repeat me-1"></i>
+                Reset
+              </button>
+            </div>
 
-                    <td className="text-end">
-                      <i
-                        className={`bi ${expandedId === d.id ? "bi-chevron-up" : "bi-chevron-down"}`}
-                      ></i>
-                    </td>
-                  </tr>
+          </div>
+        </div>
+      </div>
 
-                  {/* EXPAND */}
+      {/* ================= TABLE ================= */}
+      <div className="card border-0 shadow-sm">
+        <div className="card-body p-0">
+
+          {data.length === 0 ? (
+            <div className="text-center py-5 text-muted">
+              <i className="bi bi-inbox fs-1"></i>
+              <div className="mt-2">No Delete Requests Found</div>
+            </div>
+          ) : (
+            <div className="table-responsive">
+
+              <table className="table align-middle mb-0">
+                <thead className="table-light">
                   <tr>
-                    <td colSpan="5" style={{ padding: 0 }}>
-                      <div
-                        style={{
-                          maxHeight: expandedId === d.id ? "400px" : "0",
-                          overflow: "hidden",
-                          transition: "0.3s",
-                          background: "#f8f9fa",
-                        }}
-                      >
-                        <div className="p-3 border-top">
-                          <div className="row">
-                            {/* REASON */}
-                            <div className="col-md-6 mb-3">
-                              <small className="fw-semibold">
-                                <i className="bi bi-trash me-1"></i>
-                                Delete Reason
-                              </small>
-                              <div className="text-muted small">
-                                {d.deletion_reason || "No reason provided"}
-                              </div>
-                            </div>
-                            {/* DFP */}
-                            <div className="col-md-6 mb-3">
-                              <small className="fw-semibold">
-                                <i className="bi bi-person me-1"></i>
-                                DFP
-                              </small>
-                              <div className="text-muted small">
-                                {d.requested_by || "No name found"}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="p-3">
-                            <button
-                              className="btn btn-danger btn-sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDelete(d.id);
-                              }}
-                            >
-                              <i className="bi bi-trash me-1"></i>
-                              Delete Permanently
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
+                    <th>#</th>
+                    <th>Document Title</th>
+                    <th>Department</th>
+                    <th>Date</th>
+                    <th></th>
                   </tr>
-                </React.Fragment>
-              ))
-              )}
-            </tbody>
-          </table>
+                </thead>
 
-          {/* PAGINATION */}
-          {data.length > 0 && (
-          <div className="d-flex justify-content-center gap-2 mt-3">
+                <tbody>
+                  {data.map((d, i) => (
+                    <React.Fragment key={d.id}>
+
+                      {/* MAIN ROW */}
+                      <tr
+                        onClick={() => toggleExpand(d.id)}
+                        style={{
+                          cursor: "pointer",
+                          transition: "0.2s",
+                        }}
+                        className="hover-row"
+                      >
+                        <td className="text-muted">{i + 1}</td>
+
+                        <td>
+                          <div className="fw-semibold">{d.title}</div>
+                          <small className="text-muted">
+                            {d.document_code}
+                          </small>
+                        </td>
+
+                        <td>{d.department_name}</td>
+
+                        <td className="text-muted small">
+                          {new Date(d.created_at).toLocaleDateString("en-GB")}
+                        </td>
+
+                        <td className="text-end">
+                          <i
+                            className={`bi ${
+                              expandedId === d.id
+                                ? "bi-chevron-up"
+                                : "bi-chevron-down"
+                            }`}
+                          ></i>
+                        </td>
+                      </tr>
+
+                      {/* EXPANDED ROW */}
+                      <tr>
+                        <td colSpan="5" className="p-0 border-0">
+
+                          <div
+                            style={{
+                              maxHeight: expandedId === d.id ? 300 : 0,
+                              overflow: "hidden",
+                              transition: "all 0.3s ease",
+                              background: "#f8f9fa",
+                            }}
+                          >
+                            <div className="p-3">
+
+                              <div className="row g-3">
+
+                                <div className="col-md-6">
+                                  <div className="text-muted small">
+                                    <i className="bi bi-chat-left-text me-1"></i>
+                                    Delete Reason
+                                  </div>
+                                  <div className="fw-semibold">
+                                    <small>
+                                      {d.deletion_reason ||
+                                      "No reason provided"}
+                                    </small>
+                                  </div>
+                                </div>
+
+                                <div className="col-md-6">
+                                  <div className="text-muted small">
+                                    <i className="bi bi-person me-1"></i>
+                                    DFP
+                                  </div>
+                                  <div className="fw-semibold">
+                                    <small>
+                                      {d.requested_by || "Unknown"}
+                                    </small>
+                                    
+                                  </div>
+                                </div>
+
+                              </div>
+
+                              <hr />
+
+                              <button
+                                className="btn btn-sm btn-danger border px-3 py-2 rounded-pill"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(d.id);
+                                }}
+                              >
+                                <i className="bi bi-trash me-1"></i>
+                                Delete Permanently
+                              </button>
+
+                            </div>
+                          </div>
+
+                        </td>
+                      </tr>
+
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              </table>
+
+            </div>
+          )}
+
+        </div>
+
+        {/* ================= PAGINATION ================= */}
+        {data.length > 0 && (
+          <div className="d-flex justify-content-between align-items-center p-3 border-top">
+
             <button
               className="btn btn-outline-secondary btn-sm"
               disabled={page === 1}
               onClick={() => fetchData(page - 1)}
             >
-              Prev
+              ← Prev
             </button>
 
-            <span>
-              Page {page} of {totalPages}
+            <span className="text-muted">
+              Page <b>{page}</b> of {totalPages}
             </span>
 
             <button
@@ -221,12 +287,23 @@ const DeleteDocumentRequests = () => {
               disabled={page === totalPages}
               onClick={() => fetchData(page + 1)}
             >
-              Next
+              Next →
             </button>
+
           </div>
-          )}
-        </div>
+        )}
+
       </div>
+
+      {/* HOVER STYLE */}
+      <style>
+        {`
+          .hover-row:hover {
+            background-color: #f8f9fa;
+          }
+        `}
+      </style>
+
     </div>
   );
 };

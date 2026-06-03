@@ -251,11 +251,11 @@ const ManageDocumentDFP = () => {
               <table className="table table-hover table-bordered align-middle">
                 <thead className="table-light">
                   <tr>
-                    <th>DOCUMENT TITLE</th>
-                    <th>CATEGORY</th>
-                    <th>SUB CATEGORY</th>
-                    <th className="text-center">CLASSIFICATION</th>
-                    <th>UPLOADED AT</th>
+                    <th>Document Title</th>
+                    <th>Category</th>
+                    <th>Sub Category</th>
+                    <th className="text-center">Visibility </th>
+                    <th>Uploaded At</th>
                   </tr>
                 </thead>
                 <tbody>

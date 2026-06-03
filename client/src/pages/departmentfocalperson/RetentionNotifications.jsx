@@ -81,8 +81,8 @@ const RetentionNotifications = () => {
     <div className="container-fluid">
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center flex-wrap mb-4">
-        <h3 className="text-success">
-          <i className="bi bi-bell-fill me-2"></i> Retention Notifications
+        <h3 className="fw-bold">
+          <i className="bi bi-bell me-2"></i> Retention Notifications
         </h3>
       </div>
       {/* Document Table */}
@@ -93,7 +93,7 @@ const RetentionNotifications = () => {
               <thead className="table-light">
                 <tr>
                   <th className="text-center">#</th>
-                  <th>Title</th>
+                  <th>Document Title</th>
                   <th>Expiry Date</th>
                   <th>Status</th>
                   <th>Period</th>
@@ -122,8 +122,8 @@ const RetentionNotifications = () => {
                         <span
                           className={
                             isExpired
-                              ? "badge bg-danger"
-                              : "badge bg-warning text-dark"
+                              ? "badge bg-danger border px-3 py-2 rounded-pill"
+                              : "badge bg-warning text-dark border px-3 py-2 rounded-pill"
                           }
                         >
                           {isExpired ? "Expired" : "Expiring"}
@@ -171,7 +171,7 @@ const RetentionNotifications = () => {
       </div>
       <div className="text-center mt-4">
         <button
-          className="btn btn-secondary px-4"
+          className="btn btn-outline-secondary px-4"
           onClick={() => navigate("/department/document/manage")}
         >
           <i className="bi bi-arrow-left me-2"></i>

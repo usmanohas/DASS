@@ -216,7 +216,7 @@ const DocumentDetailAdmin = () => {
 
   return (
     <div className="container py-4">
-      <h3 className="mb-4">
+      <h3 className="mb-4 fw-bold ">
         <i className="bi bi-file-earmark-text me-2"></i> Document Details
       </h3>
 
@@ -224,23 +224,56 @@ const DocumentDetailAdmin = () => {
       {/* ===== DOCUMENT HEADER ===== */}
       <div className="card shadow-sm border-0 mb-4">
         <div className="card-body position-relative">
-          <div className="d-flex justify-content-between align-items-start mb-3">
-            {/* LEFT SIDE */}
-            <div>
-              <h3 className="fw-bold mb-1">{doc.title}</h3>
-              <div className="text-muted small">
-                <i className="bi bi-file-earmark-text me-1"></i>
-                {doc.document_code}
+          <div className="d-flex justify-content-between align-items-start gap-4 mb-4">
+            {/* LEFT */}
+            <div
+              style={{
+                flex: 1,
+                minWidth: 0,
+              }}
+            >
+              <h4
+                className="mb-2 text-dark"
+                style={{
+                  overflowWrap: "break-word",
+                  wordBreak: "break-word",
+                  lineHeight: "1.4",
+                }}
+              >
+                {doc.title}
+              </h4>
+
+              <div className="text-muted small d-flex align-items-center">
+                <i className="bi bi-upc-scan me-2"></i>
+
+                <span
+                  style={{
+                    overflowWrap: "break-word",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {doc.document_code}
+                </span>
               </div>
             </div>
 
-            {/* RIGHT SIDE */}
-            <div className="d-flex align-items-center gap-3">
-              {/* Classification Badge */}
+            {/* RIGHT */}
+            <div
+              className="d-flex flex-column align-items-end gap-3"
+              style={{
+                flexShrink: 0,
+                whiteSpace: "nowrap",
+              }}
+            >
+              {/* Classification */}
               <span
-                className={`badge px-3 py-2 mt-2 ${
+                className={`badge px-4 py-2 rounded-pill fw-semibold ${
                   classificationColors[doc.classification] || "bg-secondary"
                 }`}
+                style={{
+                  fontSize: "0.85rem",
+                  letterSpacing: "0.3px",
+                }}
               >
                 {doc.classification}
               </span>
@@ -252,14 +285,15 @@ const DocumentDetailAdmin = () => {
           <div className="row g-4">
             <div className="col-md-8">
               {/* KEYWORDS */}
-              <div className="mb-3">
+              <div className="mb-4">
                 <div
-                  className="d-flex justify-content-between"
+                  className="d-flex justify-content-between align-items-center"
                   style={{ cursor: "pointer" }}
                   onClick={() => setShowKeywords(!showKeywords)}
                 >
-                  <strong>
-                    <i className="bi bi-tags me-2"></i> Search Keywords
+                  <strong className="d-flex align-items-center">
+                    <i className="bi bi-tags me-2"></i>
+                    Search Keywords
                   </strong>
 
                   <i
@@ -276,10 +310,13 @@ const DocumentDetailAdmin = () => {
                     transition: "max-height 0.3s ease",
                   }}
                 >
-                  <div className="mt-2 d-flex flex-wrap gap-2">
+                  <div className="mt-3 d-flex flex-wrap gap-2">
                     {keywords.length > 0 ? (
                       keywords.map((k, i) => (
-                        <span key={i} className="badge bg-light text-dark">
+                        <span
+                          key={i}
+                          className="badge rounded-pill bg-light text-dark border px-3 py-2"
+                        >
                           {k}
                         </span>
                       ))
@@ -287,7 +324,6 @@ const DocumentDetailAdmin = () => {
                       <small className="text-muted">No keywords</small>
                     )}
                   </div>
-                  <hr />
                 </div>
               </div>
               <div className="text-muted small mb-1">Description</div>

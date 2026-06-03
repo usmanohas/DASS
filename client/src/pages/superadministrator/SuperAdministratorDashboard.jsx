@@ -265,7 +265,7 @@ const SuperAdministratorDashboard = () => {
           <div>
             <h3>
               <i className="bi bi-speedometer2 me-2"></i>
-              Administrator Dashboard{" "}
+              Super Administrator Dashboard{" "}
             </h3>
             <small className="text-muted">
               Last Login: {formattedLastLogin}
@@ -327,8 +327,8 @@ const SuperAdministratorDashboard = () => {
               </div>
 
               <div>
-                <small className="text-muted">Storage Allocation</small>
-                <h4 className="text-muted mb-0">1 TB</h4>
+                <small className="text-muted">Allocated Storage</small>
+                <h4 className="text-muted mb-0">{data.storageAllocation.allocatedStorageGB} GB</h4>
               </div>
             </div>
           </div>
