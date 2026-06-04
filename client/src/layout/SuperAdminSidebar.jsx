@@ -236,6 +236,19 @@ const SuperAdminSidebar = ({ collapsed, user }) => {
 
           {!collapsed && <span>Settings</span>}
         </Link>
+
+        {/* ================= BACKUP ================= */}
+        <Link
+          to="/superadmin/backup"
+          style={menuItem(isActive("/superadmin/backup"))}
+          className={navItemClass}
+        >
+          <div style={iconStyle}>
+            <i className="bi bi-database-fill-gear"></i>
+          </div>
+
+          {!collapsed && <span>System Backup</span>}
+        </Link>
       </div>
 
       {/* ================= CUSTOM CSS ================= */}

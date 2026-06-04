@@ -24,6 +24,7 @@ import TicketManagement from "./pages/superadministrator/Tickets";
 import ManageSupportContacts from "./pages/superadministrator/SupportContact";
 import StorageDashboard from "./pages/superadministrator/StorageDashboard";
 import SuperAdminDocumentTracker from "./pages/superadministrator/SuperAdminDocumentTracker";
+import BackupPage from "./pages/superadministrator/BackupPage";
 
 //For Adminstrator (DPRS)
 import AdministratorDashboard from "./pages/administrator/AdministratorDashboard";
@@ -101,6 +102,7 @@ import PartnerSupportTickets from "./pages/partners/SupportTicket";
 
 
 
+
 function App() {
   return (
     <BrowserRouter>
@@ -146,6 +148,7 @@ function App() {
             path="document-tracker/:documentCode"
             element={<SuperAdminDocumentTracker />}
           />
+          <Route path="backup" element={<BackupPage />} />
         </Route>
 
         {/* Secure Routes for Administrator start */}

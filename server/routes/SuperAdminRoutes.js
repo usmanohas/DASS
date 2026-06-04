@@ -1,6 +1,7 @@
 import express from "express";
 import crypto from "crypto";
 import fs from "fs";
+import os from "os";
 import path from "path";
 import multer from "multer";
 import bcrypt from "bcryptjs";
@@ -12,8 +13,12 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { UAParser } from "ua-parser-js";
 import XLSX from "xlsx";
+import mysqldump from "mysqldump";
+import { exec } from "child_process";
+import archiver from "archiver";
 
 const router = express.Router();
+
 
 /* ===========================
    __dirname (ESM fix)
@@ -3759,5 +3764,116 @@ router.get("/document-tracker", verifyToken, async (req, res) => {
     });
   }
 });
+
+/* ===========================
+   BACKUP
+=========================== */
+
+/* ================= DATABASE BACKUP ================= */
+router.get("/backup/database", verifyToken, async (req, res) => {
+  try {
+    const now = new Date();
+
+    const date = now.toISOString().split("T")[0];
+    const time = now.toTimeString().split(" ")[0].replace(/:/g, "-");
+
+    const fileName = `database_${date}_${time}.sql`;
+
+    const tempFile = path.join(
+      os.tmpdir(),
+      fileName
+    );
+
+    await mysqldump({
+      connection: {
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD || "",
+        database: process.env.DB_NAME,
+      },
+      dumpToFile: tempFile,
+    });
+
+    res.download(tempFile, fileName, () => {
+      if (fs.existsSync(tempFile)) {
+        fs.unlinkSync(tempFile);
+      }
+    });
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      Status: false,
+      Message: "Database backup failed",
+    });
+  }
+});
+
+router.get("/backup/documents", verifyToken, async (req, res) => {
+  try {
+    const docsPath = path.join(
+      process.cwd(),
+      "Public",
+      "Documents"
+    );
+
+    if (!fs.existsSync(docsPath)) {
+      return res.status(404).json({
+        Status: false,
+        Message: "Documents folder not found",
+      });
+    }
+
+    const now = new Date();
+
+    const date = now.toISOString().split("T")[0];
+
+    const time = now
+      .toTimeString()
+      .split(" ")[0]
+      .replace(/:/g, "-");
+
+    const fileName = `documents_${date}_${time}.zip`;
+
+    res.setHeader(
+      "Content-Type",
+      "application/zip"
+    );
+
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${fileName}"`
+    );
+
+    const archive = archiver("zip", {
+      zlib: { level: 9 },
+    });
+
+    archive.on("error", (err) => {
+      console.error(err);
+
+      if (!res.headersSent) {
+        res.status(500).end();
+      }
+    });
+
+    archive.pipe(res);
+
+    archive.directory(
+      docsPath,
+      "Documents"
+    );
+
+    await archive.finalize();
+  } catch (err) {
+    console.error("Backup error:", err);
+
+    res.status(500).json({
+      Status: false,
+      Message: "Backup failed",
+    });
+  }
+});
+
 
 export { router as SuperAdminRouter };
