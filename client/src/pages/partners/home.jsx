@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../../config/baseUrl";
 
 const PartnerHome = () => {
   const [partner, setPartner] = useState(null);
@@ -13,13 +14,13 @@ const PartnerHome = () => {
   const fetchDashboard = async () => {
     try {
       const [profileRes, summaryRes, recentRes] = await Promise.all([
-        axios.get("http://localhost:3000/partner/profile", {
+        axios.get(`${API_BASE_URL}/partner/profile`, {
           withCredentials: true,
         }),
-        axios.get("http://localhost:3000/partner/summary", {
+        axios.get(`${API_BASE_URL}/partner/summary`, {
           withCredentials: true,
         }),
-        axios.get("http://localhost:3000/partner/recent-documents", {
+        axios.get(`${API_BASE_URL}/partner/recent-documents`, {
           withCredentials: true,
         }),
       ]);

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const BackupPage = () => {
   const [type, setType] = useState("");
@@ -10,11 +11,9 @@ const BackupPage = () => {
     let url = "";
 
     if (type === "db") {
-      url = "http://localhost:3000/superadmin/backup/database";
-    } else if (type === "docs") {
-      url = "http://localhost:3000/superadmin/backup/documents";
-    } else {
-      url = "http://localhost:3000/superadmin/backup/full";
+      url = `${API_BASE_URL}/superadmin/backup/database`;
+    }  else {
+      url = `${API_BASE_URL}/superadmin/backup/documents`;
     }
 
     try {

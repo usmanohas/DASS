@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const StaffProfile = () => {
   const [user, setUser] = useState(null);
@@ -21,7 +22,7 @@ const StaffProfile = () => {
 
   const loadProfile = () => {
     axios
-      .get("http://localhost:3000/staff/user", { withCredentials: true })
+      .get(`${API_BASE_URL}/staff/user`, { withCredentials: true })
       .then((res) => {
         if (res.data.Status) {
           setUser(res.data.user);
@@ -42,7 +43,7 @@ const handleUpdate = async () => {
 
   try {
     const res = await axios.put(
-      "http://localhost:3000/staff/user/update",
+      `${API_BASE_URL}/staff/user/update`,
       editData,
       { withCredentials: true }
     );

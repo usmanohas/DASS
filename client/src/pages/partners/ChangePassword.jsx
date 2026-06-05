@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const PartnerChangePassword = () => {
   const [username, setUsername] = useState("");
@@ -29,7 +30,7 @@ const PartnerChangePassword = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/admin/user", { withCredentials: true })
+      .get(`${API_BASE_URL}/admin/user`, { withCredentials: true })
       .then((res) => {
         if (res.data.Status) {
           setUsername(res.data.user.username);
@@ -99,7 +100,7 @@ const PartnerChangePassword = () => {
       setLoading(true);
 
       const res = await axios.post(
-        "http://localhost:3000/partner/change-password",
+        `${API_BASE_URL}/partner/change-password`,
         {
           currentPassword: form.currentPassword,
           newPassword: form.newPassword,
@@ -114,7 +115,7 @@ const PartnerChangePassword = () => {
           text: "Please login again",
         });
 
-        await axios.get("http://localhost:3000/auth/logout", {
+        await axios.get(`${API_BASE_URL}/auth/logout`, {
           withCredentials: true,
         });
 

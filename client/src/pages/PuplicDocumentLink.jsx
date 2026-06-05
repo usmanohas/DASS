@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import API_BASE_URL from "../config/baseUrl";
 import Swal from "sweetalert2";
 
 const PublicDocumentLink = () => {
@@ -63,7 +64,7 @@ const PublicDocumentLink = () => {
     const fetchDoc = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:3000/admin/public/document/${token}`,
+          `${API_BASE_URL}/admin/public/document/${token}`,
         );
 
         if (res.data.Status) {
@@ -128,7 +129,7 @@ const PublicDocumentLink = () => {
   const startDownload = async (versionId) => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/admin/public/documents/download/${versionId}`,
+        `${API_BASE_URL}/admin/public/documents/download/${versionId}`,
         {
           responseType: "blob",
           validateStatus: (status) => status < 500,

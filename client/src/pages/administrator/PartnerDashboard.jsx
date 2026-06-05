@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const PartnerDashboardAdmin = () => {
   const { id } = useParams();
@@ -14,7 +15,7 @@ const PartnerDashboardAdmin = () => {
   const fetchData = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/admin/partner/dashboard/${id}`,
+        `${API_BASE_URL}/admin/partner/dashboard/${id}`,
         { withCredentials: true }
       );
 
@@ -50,7 +51,7 @@ const PartnerDashboardAdmin = () => {
 
     try {
       const res = await axios.put(
-        `http://localhost:3000/admin/partner/toggle/${partner.id}`,
+        `${API_BASE_URL}/admin/partner/toggle/${partner.id}`,
         {},
         { withCredentials: true }
       );

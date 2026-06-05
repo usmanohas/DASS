@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useParams } from "react-router-dom";
+import API_BASE_URL from "../../config/baseUrl";
 
 const TeamLeadDetailsAdmin = () => {
   const { id } = useParams();
@@ -67,7 +68,7 @@ const TeamLeadDetailsAdmin = () => {
     setLoading(true);
     try {
       const res = await axios.get(
-        `http://localhost:3000/admin/team-lead/programs/${id}`,
+        `${API_BASE_URL}/admin/team-lead/programs/${id}`,
         { withCredentials: true },
       );
 
@@ -117,7 +118,7 @@ const TeamLeadDetailsAdmin = () => {
 
     try {
       const res = await axios.post(
-        `http://localhost:3000/admin/team-lead/upload-report/${id}`,
+        `${API_BASE_URL}/admin/team-lead/upload-report/${id}`,
         formData,
         { withCredentials: true },
       );
@@ -188,7 +189,7 @@ const TeamLeadDetailsAdmin = () => {
   const startDownload = async (id) => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/admin/report/download/${id}`,
+        `${API_BASE_URL}/admin/report/download/${id}`,
         {
           withCredentials: true,
           responseType: "blob",

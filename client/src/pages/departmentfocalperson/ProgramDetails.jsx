@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useParams, useNavigate } from "react-router-dom";
+import API_BASE_URL from "../../config/baseUrl";
 
 const states = [
   "Abia",
@@ -64,7 +65,7 @@ const ProgramDetails = () => {
   const fetchData = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/department/programs/${id}`,
+        `${API_BASE_URL}/department/programs/${id}`,
         { withCredentials: true },
       );
 
@@ -98,7 +99,7 @@ const ProgramDetails = () => {
 
     try {
       const res = await axios.get(
-        `http://localhost:3000/department/users/by-file-number/${fileNumber}`,
+        `${API_BASE_URL}/department/users/by-file-number/${fileNumber}`,
       );
 
       setUser(res.data);
@@ -134,7 +135,7 @@ const ProgramDetails = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:3000/department/programs/add-team-lead",
+        `${API_BASE_URL}/department/programs/add-team-lead`,
         {
           program_id: id,
           user_id: user.id,

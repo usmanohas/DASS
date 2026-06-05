@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import API_BASE_URL from "../../config/baseUrl";
 
 const truncate = (text, length = 50) =>
   text.length > length ? text.substring(0, length) + "…" : text;
@@ -37,7 +38,7 @@ const ManageDocumentDFP = () => {
   const fetchYears = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3000/department/documents/years",
+        `${API_BASE_URL}/department/documents/years`,
         { withCredentials: true },
       );
 
@@ -52,7 +53,7 @@ const ManageDocumentDFP = () => {
   const fetchCategories = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3000/department/categories",
+        `${API_BASE_URL}/department/categories`,
         { withCredentials: true },
       );
 
@@ -66,7 +67,7 @@ const ManageDocumentDFP = () => {
     try {
       setLoading(true);
       const res = await axios.get(
-        "http://localhost:3000/department/documents/list",
+        `${API_BASE_URL}/department/documents/list`,
         {
           params: {
             page,

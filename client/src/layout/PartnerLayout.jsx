@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink, Link, Outlet, useNavigate } from "react-router-dom";
 import axios from "axios";
+import API_BASE_URL from "../config/baseUrl";
 
 const PartnerLayout = () => {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ const PartnerLayout = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.get("http://localhost:3000/auth/logout", {
+      await axios.get(`${API_BASE_URL}/auth/logout`, {
         withCredentials: true,
       });
       localStorage.removeItem("user");

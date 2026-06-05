@@ -4,6 +4,7 @@ import React, {
 } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const StorageDashboardAdmin = () => {
   const [data, setData] =
@@ -18,7 +19,7 @@ const StorageDashboardAdmin = () => {
 
   const fetchDashboard = async () => {
     const res = await axios.get(
-      "http://localhost:3000/superadmin/storage-dashboard",
+      `${API_BASE_URL}/superadmin/storage-dashboard`,
       {
         withCredentials: true,
       }

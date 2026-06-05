@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../config/baseUrl";
 import { useNavigate, Link } from "react-router-dom";
 
 const Login = () => {
@@ -31,7 +32,7 @@ const Login = () => {
   ========================= */
   useEffect(() => {
     axios
-      .get("http://localhost:3000/verify")
+      .get(`${API_BASE_URL}/verify`)
       .then((res) => {
         if (res.data.Status) {
           const { role } = res.data;
@@ -56,7 +57,7 @@ const Login = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:3000/auth/login",
+        `${API_BASE_URL}/auth/login`,
         values
       );
 

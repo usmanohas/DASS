@@ -4,6 +4,7 @@ import { Bar, Line } from "react-chartjs-2";
 import "chart.js/auto";
 import { useOutletContext } from "react-router-dom";
 import RecentActivities from "./RecentActivities";
+import API_BASE_URL from "../../config/baseUrl";
 
 const MainStaffDashboard = () => {
   const { user } = useOutletContext();
@@ -34,7 +35,7 @@ const MainStaffDashboard = () => {
   const fetchSummary = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3000/staff/dashboard-summary",
+        `${API_BASE_URL}/staff/dashboard-summary`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -51,7 +52,7 @@ const MainStaffDashboard = () => {
   const fetchDeptChart = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3000/staff/requests-by-department",
+        `${API_BASE_URL}/staff/requests-by-department`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -68,7 +69,7 @@ const MainStaffDashboard = () => {
   const fetchDownloadStats = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3000/staff/download-stats",
+        `${API_BASE_URL}/staff/download-stats`,
         {
           params: dateRange,
 

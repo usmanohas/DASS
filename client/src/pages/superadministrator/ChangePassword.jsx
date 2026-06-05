@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const SuperAdminChangePassword = () => {
   const [username, setUsername] = useState("");
@@ -29,7 +30,7 @@ const SuperAdminChangePassword = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/superadmin/user", { withCredentials: true })
+      .get(`${API_BASE_URL}/superadmin/user`, { withCredentials: true })
       .then((res) => {
         if (res.data.Status) {
           setUsername(res.data.user.username);
@@ -99,7 +100,7 @@ const SuperAdminChangePassword = () => {
       setLoading(true);
 
       const res = await axios.post(
-        "http://localhost:3000/superadmin/change-password",
+        `${API_BASE_URL}/superadmin/change-password`,
         {
           currentPassword: form.currentPassword,
           newPassword: form.newPassword,
@@ -114,7 +115,7 @@ const SuperAdminChangePassword = () => {
           text: "Please login again",
         });
 
-        await axios.get("http://localhost:3000/auth/logout", {
+        await axios.get(`${API_BASE_URL}/auth/logout`, {
           withCredentials: true,
         });
 

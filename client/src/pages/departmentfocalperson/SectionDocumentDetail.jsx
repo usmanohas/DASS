@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useParams, useNavigate } from "react-router-dom";
+import API_BASE_URL from "../../config/baseUrl";
 
 const SectionDocumentDetail = () => {
   const navigate = useNavigate();
@@ -59,7 +60,7 @@ const SectionDocumentDetail = () => {
   const fetchDocument = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/department/documents/section/${id}`,
+        `${API_BASE_URL}/department/documents/section/${id}`,
         { withCredentials: true },
       );
 
@@ -81,7 +82,7 @@ const SectionDocumentDetail = () => {
   const andleDownloadShared = async (versionId) => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/department/documents/download/shared/${versionId}`,
+        `${API_BASE_URL}/department/documents/download/shared/${versionId}`,
         { withCredentials: true, responseType: "blob" },
       );
 
@@ -156,7 +157,7 @@ const SectionDocumentDetail = () => {
   const startDownload = async (versionId) => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/department/documents/download/shared/${versionId}`,
+        `${API_BASE_URL}/department/documents/download/shared/${versionId}`,
         { withCredentials: true, responseType: "blob" },
       );
 
@@ -209,7 +210,7 @@ const SectionDocumentDetail = () => {
       preConfirm: async (reason) => {
         try {
           const res = await axios.post(
-            "http://localhost:3000/department/documents/request-access",
+            `${API_BASE_URL}/department/documents/request-access`,
             {
               document_id: doc.id,
               owner_department_id: doc.department_id,

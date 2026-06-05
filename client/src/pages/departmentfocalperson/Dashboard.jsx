@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useOutletContext, useNavigate } from "react-router-dom";
 import { Line, Bar, Doughnut } from "react-chartjs-2";
+import API_BASE_URL from "../../config/baseUrl";
 import {
   Chart as ChartJS,
   LineElement,
@@ -59,20 +60,20 @@ const DfpDashboard = () => {
 
     try {
       const [s, a, t, f, r] = await Promise.all([
-        axios.get("http://localhost:3000/department/dashboard/summary", {
+        axios.get(`${API_BASE_URL}/department/dashboard/summary`, {
           withCredentials: true,
         }),
         axios.get(
-          `http://localhost:3000/department/dashboard/activity?days=${days}`,
+          `${API_BASE_URL}/department/dashboard/activity?days=${days}`,
           { withCredentials: true },
         ),
-        axios.get("http://localhost:3000/department/dashboard/top-documents", {
+        axios.get(`${API_BASE_URL}/department/dashboard/top-documents`, {
           withCredentials: true,
         }),
-        axios.get("http://localhost:3000/department/dashboard/file-types", {
+        axios.get(`${API_BASE_URL}/department/dashboard/file-types`, {
           withCredentials: true,
         }),
-        axios.get("http://localhost:3000/department/dashboard/recent-uploads", {
+        axios.get(`${API_BASE_URL}/department/dashboard/recent-uploads`, {
           withCredentials: true,
         }),
       ]);

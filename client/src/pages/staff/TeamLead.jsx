@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import API_BASE_URL from "../../config/baseUrl";
 
 const TeamLead = () => {
   const [programs, setPrograms] = useState([]);
@@ -13,7 +14,7 @@ const TeamLead = () => {
     setLoading(true);
     try {
       const res = await axios.get(
-        "http://localhost:3000/staff/team-lead/programs",
+        `${API_BASE_URL}/staff/team-lead/programs`,
         { withCredentials: true },
       );
 

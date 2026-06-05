@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const StaffDirectoryAdmin = () => {
   const [staff, setStaff] = useState([]);
@@ -20,7 +21,7 @@ const StaffDirectoryAdmin = () => {
   const fetchStaff = async (pageNum = 1) => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/admin/staff-directory?page=${pageNum}&limit=10&search=${search}&department=${department}`,
+        `${API_BASE_URL}/admin/staff-directory?page=${pageNum}&limit=10&search=${search}&department=${department}`,
         { withCredentials: true },
       );
 
@@ -40,7 +41,7 @@ const StaffDirectoryAdmin = () => {
   const fetchDepartments = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/admin/departments`,
+        `${API_BASE_URL}/admin/departments`,
         {
           withCredentials: true,
         },

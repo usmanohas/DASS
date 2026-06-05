@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const AdminSupportTickets = () => {
   const [tickets, setTickets] = useState([]);
@@ -11,7 +12,7 @@ const AdminSupportTickets = () => {
   const fetchTickets = async (pageNum = 1) => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/admin/ticket?page=${pageNum}&limit=10`,
+        `${API_BASE_URL}/admin/ticket?page=${pageNum}&limit=10`,
         { withCredentials: true },
       );
 
@@ -273,7 +274,7 @@ const AdminSupportTickets = () => {
                         }}
                       >
                         <img
-                          src={`http://localhost:3000${selectedTicket.screenshot}`}
+                          src={`${API_BASE_URL}${selectedTicket.screenshot}`}
                           alt="screenshot"
                           className="img-fluid rounded-4 shadow"
                           style={{

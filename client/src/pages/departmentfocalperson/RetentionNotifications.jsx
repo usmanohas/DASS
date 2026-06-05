@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate, } from "react-router-dom";
+import API_BASE_URL from "../../config/baseUrl";
 
 const RetentionNotifications = () => {
   const navigate = useNavigate();
@@ -8,7 +9,7 @@ const RetentionNotifications = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/department/retention-alerts", {
+      .get(`${API_BASE_URL}/department/retention-alerts`, {
         withCredentials: true,
       })
       .then((res) => {

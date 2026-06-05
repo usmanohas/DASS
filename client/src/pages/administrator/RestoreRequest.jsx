@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const AdminRestoreRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -11,7 +12,7 @@ const AdminRestoreRequests = () => {
   const fetchData = async (p = 1) => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/admin/restore-requests?page=${p}&status=${status}`,
+        `${API_BASE_URL}/admin/restore-requests?page=${p}&status=${status}`,
         { withCredentials: true }
       );
 
@@ -51,7 +52,7 @@ const AdminRestoreRequests = () => {
 
     try {
       await axios.post(
-        "http://localhost:3000/admin/restore-action",
+        `${API_BASE_URL}/admin/restore-action`,
         { request_id: id, action },
         { withCredentials: true }
       );

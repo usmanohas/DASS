@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const InternalAccessRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -20,7 +21,7 @@ const InternalAccessRequests = () => {
   const fetchRequests = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3000/department/staff/access-requests",
+        `${API_BASE_URL}/department/staff/access-requests`,
         { withCredentials: true },
       );
       setRequests(res.data.Data || []);
@@ -88,7 +89,7 @@ const InternalAccessRequests = () => {
       Swal.fire({ title: "Processing...", didOpen: () => Swal.showLoading() });
 
       const res = await axios.post(
-        `http://localhost:3000/department/staff/access-requests/${req.id}/approve`,
+        `${API_BASE_URL}/department/staff/access-requests/${req.id}/approve`,
         { expires_at: expiry },
         { withCredentials: true },
       );
@@ -125,7 +126,7 @@ const InternalAccessRequests = () => {
       Swal.fire({ title: "Processing...", didOpen: () => Swal.showLoading() });
 
       const res = await axios.post(
-        `http://localhost:3000/department/staff/access-requests/${req.id}/reject`,
+        `${API_BASE_URL}/department/staff/access-requests/${req.id}/reject`,
         { reason },
         { withCredentials: true },
       );

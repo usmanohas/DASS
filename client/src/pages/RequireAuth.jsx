@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import API_BASE_URL from "../config/baseUrl";
 
 const RequireAuth = ({ children }) => {
   const [loading, setLoading] = useState(true);
@@ -11,7 +12,7 @@ const RequireAuth = ({ children }) => {
   useEffect(() => {
     axios.defaults.withCredentials = true;
     axios
-      .get("http://localhost:3000/verify")
+      .get(`${API_BASE_URL}/verify`)
       .then((res) => {
         if (res.data.Status) {
           const { role, id } = res.data;

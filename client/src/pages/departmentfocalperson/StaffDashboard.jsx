@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { Bar } from "react-chartjs-2";
+import API_BASE_URL from "../../config/baseUrl";
 
 import {
   Chart as ChartJS,
@@ -26,7 +27,7 @@ const StaffDashboard = () => {
   const etchData = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/department/staff/${id}/dashboard`,
+        `${API_BASE_URL}/department/staff/${id}/dashboard`,
         { withCredentials: true },
       );
 
@@ -45,7 +46,7 @@ const StaffDashboard = () => {
   const fetchData = async () => {
   try {
     const res = await axios.get(
-      `http://localhost:3000/department/staff/${id}/dashboard`,
+      `${API_BASE_URL}/department/staff/${id}/dashboard`,
       { withCredentials: true },
     );
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const DocumentDetail = () => {
   const navigate = useNavigate();
@@ -112,7 +113,7 @@ const DocumentDetail = () => {
   const fetchCategories = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3000/department/categories",
+        `${API_BASE_URL}/department/categories`,
         { withCredentials: true },
       );
       setCategories(res.data);
@@ -125,7 +126,7 @@ const DocumentDetail = () => {
   const fetchSubcategories = async (categoryId) => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/department/categories/${categoryId}/subcategories`,
+        `${API_BASE_URL}/department/categories/${categoryId}/subcategories`,
         { withCredentials: true },
       );
       setSubcategories(res.data);
@@ -139,13 +140,13 @@ const DocumentDetail = () => {
       try {
         // 1️⃣ Fetch document
         const docRes = await axios.get(
-          `http://localhost:3000/department/documents/${id}`,
+          `${API_BASE_URL}/department/documents/${id}`,
           { withCredentials: true },
         );
 
         // 2️⃣ Fetch versions
         const verRes = await axios.get(
-          `http://localhost:3000/department/documents/${id}/versions`,
+          `${API_BASE_URL}/department/documents/${id}/versions`,
           { withCredentials: true },
         );
 
@@ -202,7 +203,7 @@ const DocumentDetail = () => {
       };
 
       const res = await axios.put(
-        `http://localhost:3000/department/documents/${id}`,
+        `${API_BASE_URL}/department/documents/${id}`,
         payload,
         { withCredentials: true },
       );
@@ -311,7 +312,7 @@ const DocumentDetail = () => {
       formData.append("verified_by", verifiedBy);
 
       const res = await axios.post(
-        `http://localhost:3000/department/documents/${id}/upload-version`,
+        `${API_BASE_URL}/department/documents/${id}/upload-version`,
         formData,
         {
           withCredentials: true,
@@ -390,7 +391,7 @@ const DocumentDetail = () => {
   const startDownload = async (versionId) => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/department/documents/download/${versionId}`,
+        `${API_BASE_URL}/department/documents/download/${versionId}`,
         {
           withCredentials: true,
           responseType: "blob",
@@ -462,7 +463,7 @@ const DocumentDetail = () => {
       setSaving(true);
 
       const res = await axios.put(
-        `http://localhost:3000/department/documents/${id}/delete-not-expired`,
+        `${API_BASE_URL}/department/documents/${id}/delete-not-expired`,
         { reason },
         { withCredentials: true },
       );

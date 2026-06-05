@@ -13,7 +13,7 @@ const StaffLineManager = () => {
   const fetchContacts = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3000/staff/support-contacts",
+        `${API_BASE_URL}/staff/support-contacts`,
         { withCredentials: true },
       );
 
@@ -63,7 +63,7 @@ const StaffLineManager = () => {
       });
 
       const res = await axios.post(
-        "http://localhost:3000/staff/support/report",
+        `${API_BASE_URL}/staff/support/report`,
         formData,
         { withCredentials: true },
       );

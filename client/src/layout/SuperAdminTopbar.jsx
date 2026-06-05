@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import API_BASE_URL from "../config/baseUrl";
 
 const SuperAdminTopbar = ({
   toggleSidebar,
@@ -40,7 +41,7 @@ const SuperAdminTopbar = ({
 
   const handleLogout = async () => {
     try {
-      await axios.get("http://localhost:3000/auth/logout", {
+      await axios.get(`${API_BASE_URL}/auth/logout`, {
         withCredentials: true,
       });
       navigate("/login");

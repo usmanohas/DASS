@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import API_BASE_URL from "../../config/baseUrl";
 
 const AdminDocumentTracker = () => {
   const { documentCode } = useParams();
@@ -17,7 +18,7 @@ const AdminDocumentTracker = () => {
   const fetchTracker = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3000/admin/document-tracker",
+        `${API_BASE_URL}/admin/document-tracker`,
         {
           params: {
             document_code: documentCode,

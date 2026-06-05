@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const FocalPersonManagement = () => {
   const [admins, setAdmins] = useState([]);
@@ -47,7 +48,7 @@ const FocalPersonManagement = () => {
   const fetchDepartments = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3000/superadmin/departments",
+        `${API_BASE_URL}/superadmin/departments`,
         {
           withCredentials: true,
         },
@@ -68,7 +69,7 @@ const FocalPersonManagement = () => {
 
   /* ================= FETCH FOCAL PERSON ================= */
   const fetchFocalPerson = async () => {
-    const res = await axios.get("http://localhost:3000/superadmin/focalperson", {
+    const res = await axios.get(`${API_BASE_URL}/superadmin/focalperson`, {
       withCredentials: true,
     });
 
@@ -86,7 +87,7 @@ const FocalPersonManagement = () => {
     setSearched(true);
 
     const res = await axios.get(
-      `http://localhost:3000/superadmin/users/search?q=${search}`,
+      `${API_BASE_URL}/superadmin/users/search?q=${search}`,
       { withCredentials: true },
     );
 
@@ -107,7 +108,7 @@ const FocalPersonManagement = () => {
     if (!confirm.isConfirmed) return;
 
     const res = await axios.put(
-      `http://localhost:3000/superadmin/users/make-focalperson/${id}`,
+      `${API_BASE_URL}/superadmin/users/make-focalperson/${id}`,
       {},
       { withCredentials: true },
     );
@@ -144,7 +145,7 @@ const FocalPersonManagement = () => {
   const updateFocalPerson = async () => {
     try {
       const res = await axios.put(
-        `http://localhost:3000/superadmin/focalperson/update/${editId}`,
+        `${API_BASE_URL}/superadmin/focalperson/update/${editId}`,
         form,
         { withCredentials: true },
       );
@@ -172,7 +173,7 @@ const FocalPersonManagement = () => {
 
     try {
       const res = await axios.put(
-        `http://localhost:3000/superadmin/focalperson/reset-password/${id}`,
+        `${API_BASE_URL}/superadmin/focalperson/reset-password/${id}`,
         {},
         { withCredentials: true },
       );
@@ -199,7 +200,7 @@ const FocalPersonManagement = () => {
 
     try {
       const res = await axios.put(
-        `http://localhost:3000/superadmin/focalperson/toggle-status/${id}`,
+        `${API_BASE_URL}/superadmin/focalperson/toggle-status/${id}`,
         {},
         { withCredentials: true },
       );
@@ -220,7 +221,7 @@ const FocalPersonManagement = () => {
   /* ================= CREATE ADMIN ================= */
   const createFocalPerson = async () => {
     const res = await axios.post(
-      "http://localhost:3000/superadmin/users/create-focalperson",
+      `${API_BASE_URL}/superadmin/users/create-focalperson`,
       form,
       { withCredentials: true },
     );

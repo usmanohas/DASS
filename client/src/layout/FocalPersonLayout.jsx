@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import axios from "axios";
 import FocalPersonSidebar from "./FocalPersonSidebar";
 import FocalPersonTopbar from "./FocalPersonTopbar";
+import API_BASE_URL from "../config/baseUrl";
 
 const FocalPersonLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -23,7 +24,7 @@ const FocalPersonLayout = () => {
   /* ================= USER ================= */
   useEffect(() => {
     axios
-      .get("http://localhost:3000/department/user", {
+      .get(`${API_BASE_URL}/department/user`, {
         withCredentials: true,
       })
       .then((res) => {
@@ -39,7 +40,7 @@ const FocalPersonLayout = () => {
     setLoadingAlerts(true);
     try {
       const res = await axios.get(
-        "http://localhost:3000/department/retention-alerts",
+        `${API_BASE_URL}/department/retention-alerts`,
         { withCredentials: true },
       );
       if (res.data.Status) setAlerts(res.data.alerts || []);
@@ -56,7 +57,7 @@ const FocalPersonLayout = () => {
     setLoadingAccessAlerts(true);
     try {
       const res = await axios.get(
-        "http://localhost:3000/department/document-access-notification/pending",
+        `${API_BASE_URL}/department/document-access-notification/pending`,
         { withCredentials: true },
       );
       if (res.data.Status) setAccessAlerts(res.data.data || []);
@@ -69,7 +70,7 @@ const FocalPersonLayout = () => {
     setLoadingInternalAccessAlerts(true);
     try {
       const res = await axios.get(
-        "http://localhost:3000/department/document-internal-access-notification/pending",
+        `${API_BASE_URL}/department/document-internal-access-notification/pending`,
         { withCredentials: true },
       );
       if (res.data.Status) setInternalAccessAlerts(res.data.data || []);

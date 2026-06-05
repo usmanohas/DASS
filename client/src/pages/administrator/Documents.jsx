@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import API_BASE_URL from "../../config/baseUrl";
 
 const truncate = (text, length = 50) =>
   text.length > length ? text.substring(0, length) + "…" : text;
@@ -41,7 +42,7 @@ const DocumentAdmin = () => {
 
   const fetchDepartments = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/admin/departments", {
+      const res = await axios.get(`${API_BASE_URL}/admin/departments`, {
         withCredentials: true,
       });
 
@@ -56,7 +57,7 @@ const DocumentAdmin = () => {
   const fetchYears = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3000/admin/documents/distinct_years",
+        `${API_BASE_URL}/admin/documents/distinct_years`,
         { withCredentials: true },
       );
 
@@ -70,7 +71,7 @@ const DocumentAdmin = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/admin/categories", {
+      const res = await axios.get(`${API_BASE_URL}/admin/categories`, {
         withCredentials: true,
       });
 
@@ -83,7 +84,7 @@ const DocumentAdmin = () => {
   const fetchDocuments = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:3000/admin/documents", {
+      const res = await axios.get(`${API_BASE_URL}/admin/documents`, {
         params: {
           page,
           limit: 10,

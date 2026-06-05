@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../../config/baseUrl";
 
 const SuperAdminAuditTrail = () => {
   const [groupedLogs, setGroupedLogs] = useState({});
@@ -27,7 +28,7 @@ const SuperAdminAuditTrail = () => {
 
   /* ================= FETCH USERS ================= */
   const fetchUsers = async () => {
-    const res = await axios.get("http://localhost:3000/superadmin/audit-users", {
+    const res = await axios.get(`${API_BASE_URL}/superadmin/audit-users`, {
       withCredentials: true,
     });
     if (res.data.Status) setUsers(res.data.Data);
@@ -35,7 +36,7 @@ const SuperAdminAuditTrail = () => {
 
   /* ================= FETCH ACTIONS ================= */
   const fetchActions = async () => {
-    const res = await axios.get("http://localhost:3000/superadmin/audit-actions", {
+    const res = await axios.get(`${API_BASE_URL}/superadmin/audit-actions`, {
       withCredentials: true,
     });
     if (res.data.Status) setActions(res.data.Data);
@@ -46,7 +47,7 @@ const SuperAdminAuditTrail = () => {
     setLoading(true);
 
     try {
-      const res = await axios.get("http://localhost:3000/superadmin/audit-logs", {
+      const res = await axios.get(`${API_BASE_URL}/superadmin/audit-logs`, {
         params: filters,
         withCredentials: true,
       });
@@ -69,7 +70,7 @@ const SuperAdminAuditTrail = () => {
 
     try {
       const res = await axios.get(
-        "http://localhost:3000/superadmin/audit-document-summary",
+        `${API_BASE_URL}/superadmin/audit-document-summary`,
         {
           params: {
             document_code: filters.document_code,
@@ -297,7 +298,7 @@ const SuperAdminAuditTrail = () => {
                     setFilters(reset);
 
                     axios
-                      .get("http://localhost:3000/admin/audit-logs", {
+                      .get(`${API_BASE_URL}/admin/audit-logs`, {
                         withCredentials: true,
                       })
                       .then((res) => {

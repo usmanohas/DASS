@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const DeleteDocumentRequests = () => {
   const [data, setData] = useState([]);
@@ -15,7 +16,7 @@ const DeleteDocumentRequests = () => {
   const fetchData = async (pageNum = 1) => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/admin/delete-requests?page=${pageNum}&department=${department}&search=${search}`,
+        `${API_BASE_URL}/admin/delete-requests?page=${pageNum}&department=${department}&search=${search}`,
         { withCredentials: true }
       );
 
@@ -51,7 +52,7 @@ const DeleteDocumentRequests = () => {
 
     try {
       const res = await axios.delete(
-        `http://localhost:3000/admin/delete-document/${id}`,
+        `${API_BASE_URL}/admin/delete-document/${id}`,
         { withCredentials: true }
       );
 

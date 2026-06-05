@@ -4,6 +4,7 @@ import React, {
 } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const StorageDashboard = () => {
   const [data, setData] =
@@ -18,7 +19,7 @@ const StorageDashboard = () => {
 
   const fetchDashboard = async () => {
     const res = await axios.get(
-      "http://localhost:3000/superadmin/storage-dashboard",
+      `${API_BASE_URL}/superadmin/storage-dashboard`,
       {
         withCredentials: true,
       }
@@ -36,7 +37,7 @@ const StorageDashboard = () => {
   const saveStorage = async () => {
     try {
       await axios.put(
-        "http://localhost:3000/superadmin/storage-dashboard",
+        `${API_BASE_URL}/superadmin/storage-dashboard`,
         {
           allocated_storage_mb:
             allocatedMB,

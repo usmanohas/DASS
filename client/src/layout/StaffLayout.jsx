@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import axios from "axios";
 import StaffSidebar from "./StaffSidebar";
 import StaffTopbar from "./StaffTopbar";
+import API_BASE_URL from "../config/baseUrl";
 
 const StaffLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -24,7 +25,7 @@ const StaffLayout = () => {
   ========================== */
   useEffect(() => {
     axios
-      .get("http://localhost:3000/staff/user", {
+      .get(`${API_BASE_URL}/staff/user`, {
         withCredentials: true,
       })
       .then((res) => {
@@ -45,7 +46,7 @@ const StaffLayout = () => {
       setLoadingAccessAlerts(true);
 
       const res = await axios.get(
-        "http://localhost:3000/staff/document-access-notification/pending",
+        `${API_BASE_URL}/staff/document-access-notification/pending`,
         { withCredentials: true },
       );
 
@@ -71,7 +72,7 @@ const StaffLayout = () => {
       setLoadingInternalAccessAlerts(true);
 
       const res = await axios.get(
-        "http://localhost:3000/staff/document-internal-access-notification/pending",
+        `${API_BASE_URL}/staff/document-internal-access-notification/pending`,
         { withCredentials: true },
       );
 

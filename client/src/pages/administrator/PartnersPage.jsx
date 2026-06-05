@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import API_BASE_URL from "../../config/baseUrl";
 
 const PartnerPage = () => {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ const PartnerPage = () => {
 
   // ================= FETCH =================
   const fetchPartners = async () => {
-    const res = await axios.get("http://localhost:3000/admin/partners");
+    const res = await axios.get(`${API_BASE_URL}/admin/partners`);
     setPartners(res.data.Data);
   };
 
@@ -47,11 +48,11 @@ const PartnerPage = () => {
 
       if (isEdit) {
         res = await axios.put(
-          `http://localhost:3000/admin/partners/${selected.id}`,
+          `${API_BASE_URL}/admin/partners/${selected.id}`,
           payload,
         );
       } else {
-        res = await axios.post("http://localhost:3000/admin/partners", {
+        res = await axios.post(`${API_BASE_URL}/admin/partners`, {
           ...payload,
           password: form.password,
         });
@@ -127,7 +128,7 @@ const PartnerPage = () => {
 
     try {
       const res = await axios.put(
-        `http://localhost:3000/admin/partners/${id}/reset-password`,
+        `${API_BASE_URL}/admin/partners/${id}/reset-password`,
       );
 
       if (res.data.Status) {

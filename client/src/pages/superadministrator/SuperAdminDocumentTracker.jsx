@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import API_BASE_URL from "../../config/baseUrl";
 
 const SuperAdminDocumentTracker = () => {
   const { documentCode } = useParams();
@@ -17,7 +18,7 @@ const SuperAdminDocumentTracker = () => {
   const fetchTracker = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3000/superadmin/document-tracker",
+        `${API_BASE_URL}/superadmin/document-tracker`,
         {
           params: {
             document_code: documentCode,

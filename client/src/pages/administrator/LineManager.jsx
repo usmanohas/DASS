@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const AdminLineManager = () => {
   const [contacts, setContacts] = useState([]);
@@ -13,7 +14,7 @@ const AdminLineManager = () => {
   const fetchContacts = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3000/admin/support-contacts",
+        `${API_BASE_URL}/admin/support-contacts`,
         { withCredentials: true },
       );
 
@@ -63,7 +64,7 @@ const AdminLineManager = () => {
       });
 
       const res = await axios.post(
-        "http://localhost:3000/admin/ticket",
+        `${API_BASE_URL}/admin/ticket`,
         formData,
         { withCredentials: true },
       );

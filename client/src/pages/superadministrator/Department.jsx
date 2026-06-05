@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const DepartmentManagement = () => {
   const [departments, setDepartments] = useState([]);
@@ -16,7 +17,7 @@ const DepartmentManagement = () => {
   /* ================= FETCH ================= */
   const fetchDepartments = async () => {
     const res = await axios.get(
-      "http://localhost:3000/superadmin/departments",
+      `${API_BASE_URL}/superadmin/departments`,
       { withCredentials: true }
     );
 
@@ -53,7 +54,7 @@ const DepartmentManagement = () => {
   /* ================= CREATE ================= */
   const createDepartment = async () => {
     const res = await axios.post(
-      "http://localhost:3000/superadmin/departments/create",
+      `${API_BASE_URL}/superadmin/departments/create`,
       form,
       { withCredentials: true }
     );
@@ -70,7 +71,7 @@ const DepartmentManagement = () => {
   /* ================= UPDATE ================= */
   const updateDepartment = async () => {
     const res = await axios.put(
-      `http://localhost:3000/superadmin/departments/update/${editId}`,
+      `${API_BASE_URL}/superadmin/departments/update/${editId}`,
       form,
       { withCredentials: true }
     );

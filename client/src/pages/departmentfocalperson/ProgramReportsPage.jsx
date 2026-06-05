@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useParams } from "react-router-dom";
+import API_BASE_URL from "../../config/baseUrl";
 
 const ProgramReportsPage = () => {
   const { id } = useParams();
@@ -69,7 +70,7 @@ const ProgramReportsPage = () => {
 
     try {
       const res = await axios.get(
-        `http://localhost:3000/department/programs/${id}/reports`,
+        `${API_BASE_URL}/department/programs/${id}/reports`,
         { withCredentials: true },
       );
 
@@ -148,7 +149,7 @@ const ProgramReportsPage = () => {
 
     try {
       const res = await axios.get(
-        `http://localhost:3000/department/report/download/${reportId}`,
+        `${API_BASE_URL}/department/report/download/${reportId}`,
         {
           withCredentials: true,
           responseType: "blob",

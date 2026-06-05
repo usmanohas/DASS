@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const ReviewDepartmentDocRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -18,7 +19,7 @@ const ReviewDepartmentDocRequests = () => {
   const fetchRequests = async (pageNum = 1) => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/department/document/cross-department-requests?page=${pageNum}&status=${status}&search=${search}`,
+        `${API_BASE_URL}/department/document/cross-department-requests?page=${pageNum}&status=${status}&search=${search}`,
         { withCredentials: true },
       );
 
@@ -66,7 +67,7 @@ const ReviewDepartmentDocRequests = () => {
 
     try {
       await axios.post(
-        "http://localhost:3000/department/department-review",
+        `${API_BASE_URL}/department/department-review`,
         {
           request_id: id,
           action,

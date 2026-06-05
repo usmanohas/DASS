@@ -3,6 +3,7 @@ import axios from "axios";
 import { Bar, Pie, Doughnut, Line } from "react-chartjs-2";
 import "chart.js/auto";
 import { useOutletContext } from "react-router-dom";
+import API_BASE_URL from "../../config/baseUrl";
 
 /* ================= REUSABLE CHART CARD ================= */
 const ChartCard = ({ title, data, options = {}, defaultType = "bar" }) => {
@@ -130,7 +131,7 @@ const SuperAdministratorDashboard = () => {
   const fetchDashboard = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3000/superadmin/dashboard-metrics",
+        `${API_BASE_URL}/superadmin/dashboard-metrics`,
         { withCredentials: true },
       );
 

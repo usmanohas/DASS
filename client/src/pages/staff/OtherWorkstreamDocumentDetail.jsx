@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useParams, useNavigate } from "react-router-dom";
+import API_BASE_URL from "../../config/baseUrl";
 
 const OtherWorkstreamDocumentDetail = () => {
   const navigate = useNavigate();
@@ -60,7 +61,7 @@ const OtherWorkstreamDocumentDetail = () => {
   const fetchDocument = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/staff/documents/section/${id}`,
+        `${API_BASE_URL}/staff/documents/section/${id}`,
         { withCredentials: true },
       );
 
@@ -125,7 +126,7 @@ const handleDownloadShared = (versionId) => {
 const startDownload = async (versionId) => {
   try {
     const res = await axios.get(
-      `http://localhost:3000/staff/documents/download/shared/${versionId}`,
+      `${API_BASE_URL}/staff/documents/download/shared/${versionId}`,
       { withCredentials: true, responseType: "blob" },
     );
 
@@ -178,7 +179,7 @@ const startDownload = async (versionId) => {
       preConfirm: async (reason) => {
         try {
           const res = await axios.post(
-            "http://localhost:3000/staff/otherworkstramdocuments/request-access",
+            `${API_BASE_URL}/staff/otherworkstramdocuments/request-access`,
             {
               document_id: doc.id,
               owner_department_id: doc.department_id,

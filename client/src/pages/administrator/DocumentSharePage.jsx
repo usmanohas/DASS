@@ -3,7 +3,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useParams, useNavigate } from "react-router-dom";
 import { QRCodeCanvas } from "qrcode.react";
-
+import API_BASE_URL from "../../config/baseUrl";
 const ShareDocumentPage = () => {
   const qrRef = useRef(null);
   const truncate = (text, length = 50) =>
@@ -39,12 +39,12 @@ const ShareDocumentPage = () => {
   }, []);
 
   const fetchDoc = async () => {
-    const res = await axios.get(`http://localhost:3000/admin/documents/${id}`);
+    const res = await axios.get(`${API_BASE_URL}/admin/documents/${id}`);
     if (res.data.Status) setDoc(res.data.Data);
   };
 
   const fetchPartners = async () => {
-    const res = await axios.get("http://localhost:3000/admin/partners-active");
+    const res = await axios.get(`${API_BASE_URL}/admin/partners-active`);
 
     if (res.data.Status) {
       setPartners(res.data.Data);
@@ -101,7 +101,7 @@ const ShareDocumentPage = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:3000/admin/documents/share",
+        `/admin/documents/share`,
         {
           document_id: id,
           partner_ids: selectedPartners,
@@ -140,7 +140,7 @@ const ShareDocumentPage = () => {
   const fetchLatestLink = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/admin/documents/latest-link/${id}`,
+        `${API_BASE_URL}/admin/documents/latest-link/${id}`,
       );
 
       if (res.data.Status) {
@@ -423,7 +423,7 @@ const ShareDocumentPage = () => {
 
                     try {
                       const res = await axios.post(
-                        "http://localhost:3000/admin/documents/generate-link",
+                        `${API_BASE_URL}/admin/documents/generate-link`,
                         {
                           document_id: id,
                           expiry_date: expiryDate,

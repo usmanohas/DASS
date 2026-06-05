@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import API_BASE_URL from "../../config/baseUrl";
 
 const DepartmentStaff = () => {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ const DepartmentStaff = () => {
 
   const fetchStaff = async () => {
     const res = await axios.get(
-      `http://localhost:3000/department/staff?page=${page}&limit=10&search=${search}`,
+      `${API_BASE_URL}/department/staff?page=${page}&limit=10&search=${search}`,
       { withCredentials: true },
     );
 
@@ -75,12 +76,12 @@ const DepartmentStaff = () => {
 
       if (selectedStaff) {
         res = await axios.put(
-          `http://localhost:3000/department/staff/${selectedStaff.id}`,
+          `${API_BASE_URL}/department/staff/${selectedStaff.id}`,
           form,
           { withCredentials: true },
         );
       } else {
-        res = await axios.post("http://localhost:3000/department/staff", form, {
+        res = await axios.post(`${API_BASE_URL}/department/staff`, form, {
           withCredentials: true,
         });
       }
@@ -118,7 +119,7 @@ const DepartmentStaff = () => {
     if (!password) return;
 
     await axios.put(
-      `http://localhost:3000/department/staff/${id}/reset-password`,
+      `${API_BASE_URL}/department/staff/${id}/reset-password`,
       { password },
       { withCredentials: true },
     );
@@ -143,7 +144,7 @@ const DepartmentStaff = () => {
 
     try {
       await axios.put(
-        `http://localhost:3000/department/staff/${staff.id}/active`,
+        `${API_BASE_URL}/department/staff/${staff.id}/active`,
         { active: !staff.is_active },
         { withCredentials: true },
       );
@@ -162,7 +163,7 @@ const DepartmentStaff = () => {
 
   const toggleLock = async (staff) => {
     await axios.put(
-      `http://localhost:3000/department/staff/${staff.id}/lock`,
+      `${API_BASE_URL}/department/staff/${staff.id}/lock`,
       { lock: !staff.is_locked },
       { withCredentials: true },
     );
@@ -181,7 +182,7 @@ const DepartmentStaff = () => {
     formData.append("file", uploadFile);
 
     const res = await axios.post(
-      "http://localhost:3000/department/staff/import",
+      `${API_BASE_URL}/department/staff/import`,
       formData,
       { withCredentials: true },
     );
@@ -215,7 +216,7 @@ const DepartmentStaff = () => {
     if (!reason) return;
 
     const res = await axios.put(
-      `http://localhost:3000/department/staff/${staff.id}/remove`,
+      `${API_BASE_URL}/department/staff/${staff.id}/remove`,
       { reason },
       { withCredentials: true },
     );
@@ -262,7 +263,7 @@ const DepartmentStaff = () => {
     if (!reason) return;
 
     const res = await axios.put(
-      `http://localhost:3000/department/staff/${staff.id}/remove`,
+      `${API_BASE_URL}/department/staff/${staff.id}/remove`,
       { reason },
       { withCredentials: true },
     );
@@ -307,7 +308,7 @@ const DepartmentStaff = () => {
     if (!fileNumber) return;
 
     const res = await axios.post(
-      "http://localhost:3000/department/staff/lookup",
+      `${API_BASE_URL}/department/staff/lookup`,
       { file_number: fileNumber },
       { withCredentials: true },
     );

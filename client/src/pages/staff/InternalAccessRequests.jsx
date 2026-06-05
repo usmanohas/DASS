@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const StaffDocumentAccess = () => {
   const [requests, setRequests] = useState([]);
@@ -63,7 +64,7 @@ const StaffDocumentAccess = () => {
   const fetchRequests = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3000/staff/my-access-requests",
+        `${API_BASE_URL}/staff/my-access-requests`,
         { withCredentials: true },
       );
       setRequests(res.data.Data || []);
@@ -120,7 +121,7 @@ const StaffDocumentAccess = () => {
   const startDownload = async (versionId) => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/staff/documents/download/${versionId}`,
+        `${API_BASE_URL}/staff/documents/download/${versionId}`,
         {
           withCredentials: true,
           responseType: "blob",

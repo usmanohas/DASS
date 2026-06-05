@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import API_BASE_URL from "../../config/baseUrl";
 
 const ProgramsPage = () => {
   const [programs, setPrograms] = useState([]);
@@ -30,7 +31,7 @@ const ProgramsPage = () => {
     setLoading(true);
     try {
       const res = await axios.get(
-        `http://localhost:3000/department/programs?page=${page}`,
+        `${API_BASE_URL}/department/programs?page=${page}`,
         { withCredentials: true },
       );
 
@@ -89,8 +90,8 @@ const ProgramsPage = () => {
 
     try {
       const url = editMode
-        ? `http://localhost:3000/department/programs/${selectedId}`
-        : `http://localhost:3000/department/programs`;
+        ? `${API_BASE_URL}/department/programs/${selectedId}`
+        : `${API_BASE_URL}/department/programs`;
 
       const method = editMode ? "put" : "post";
 

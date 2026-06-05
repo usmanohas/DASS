@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useOutletContext } from "react-router-dom";
+import API_BASE_URL from "../../config/baseUrl";
 
 const RecentActivities = () => {
   const { user } = useOutletContext();
@@ -19,7 +20,7 @@ const RecentActivities = () => {
   const fetchRecentActivities = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3000/staff/recent-activities",
+        `${API_BASE_URL}/staff/recent-activities`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const ArchiveDeletePage = () => {
   const [documents, setDocuments] = useState([]);
@@ -12,7 +13,7 @@ const ArchiveDeletePage = () => {
     setLoading(true);
     try {
       const res = await axios.get(
-        `http://localhost:3000/department/document/archive-delete?page=${page}`,
+        `${API_BASE_URL}/department/document/archive-delete?page=${page}`,
         { withCredentials: true },
       );
 
@@ -55,7 +56,7 @@ const ArchiveDeletePage = () => {
 
     try {
       const res = await axios.post(
-        `http://localhost:3000/department/document/${id}/request-restore`,
+        `${API_BASE_URL}/department/document/${id}/request-restore`,
         { reason },
         { withCredentials: true },
       );

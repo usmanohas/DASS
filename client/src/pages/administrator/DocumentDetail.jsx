@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const DocumentDetailAdmin = () => {
   const truncate = (text, length = 50) =>
@@ -92,17 +93,17 @@ const DocumentDetailAdmin = () => {
     const loadData = async () => {
       try {
         const docRes = await axios.get(
-          `http://localhost:3000/admin/documents/${id}`,
+          `${API_BASE_URL}/admin/documents/${id}`,
           { withCredentials: true },
         );
 
         const verRes = await axios.get(
-          `http://localhost:3000/admin/documents/${id}/versions`,
+          `${API_BASE_URL}/admin/documents/${id}/versions`,
           { withCredentials: true },
         );
 
         const shareRes = await axios.get(
-          `http://localhost:3000/admin/documents/${id}/share-summary`,
+          `${API_BASE_URL}/admin/documents/${id}/share-summary`,
           { withCredentials: true },
         );
 
@@ -167,7 +168,7 @@ const DocumentDetailAdmin = () => {
   const startDownload = async (versionId) => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/admin/documents/download/${versionId}`,
+        `${API_BASE_URL}/admin/documents/download/${versionId}`,
         {
           withCredentials: true,
           responseType: "blob",

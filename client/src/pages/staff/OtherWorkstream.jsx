@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import API_BASE_URL from "../../config/baseUrl";
 
 const truncate = (text, length = 50) =>
   text.length > length ? text.substring(0, length) + "…" : text;
@@ -41,7 +42,7 @@ const OtherWorkstreamDocument = () => {
 
   const fetchDepartments = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/staff/departments", {
+      const res = await axios.get(`${API_BASE_URL}/staff/departments`, {
         withCredentials: true,
       });
 
@@ -56,7 +57,7 @@ const OtherWorkstreamDocument = () => {
   const fetchYears = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3000/staff/documents/section_years",
+        `${API_BASE_URL}/staff/documents/section_years`,
         { withCredentials: true },
       );
 
@@ -70,7 +71,7 @@ const OtherWorkstreamDocument = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/staff/categories", {
+      const res = await axios.get(`${API_BASE_URL}/staff/categories`, {
         withCredentials: true,
       });
 
@@ -84,7 +85,7 @@ const OtherWorkstreamDocument = () => {
     try {
       setLoading(true);
       const res = await axios.get(
-        "http://localhost:3000/staff/documents/section/list",
+        `${API_BASE_URL}/staff/documents/section/list`,
         {
           params: {
             page,

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const TicketManagement = () => {
   const [tickets, setTickets] = useState([]);
@@ -12,7 +13,7 @@ const TicketManagement = () => {
   const fetchTickets = async (pageNum = 1) => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/superadmin/tickets?page=${pageNum}&limit=10&status=${statusFilter}`,
+        `${API_BASE_URL}/superadmin/tickets?page=${pageNum}&limit=10&status=${statusFilter}`,
         { withCredentials: true }
       );
 
@@ -33,7 +34,7 @@ const TicketManagement = () => {
   const updateStatus = async () => {
     try {
       const res = await axios.put(
-        `http://localhost:3000/superadmin/tickets/update-status/${selectedTicket.id}`,
+        `${API_BASE_URL}/superadmin/tickets/update-status/${selectedTicket.id}`,
         { status: selectedTicket.status },
         { withCredentials: true }
       );
@@ -273,7 +274,7 @@ const TicketManagement = () => {
                     <div className="mt-3">
                       <h6 className="mb-2">Screenshot</h6>
                       <img
-                        src={`http://localhost:3000${selectedTicket.screenshot}`}
+                        src={`${API_BASE_URL}${selectedTicket.screenshot}`}
                         className="img-fluid rounded border"
                         alt="screenshot"
                         style={{ maxHeight: 400 }}

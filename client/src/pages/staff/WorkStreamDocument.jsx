@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import API_BASE_URL from "../../config/baseUrl";
 
 const truncate = (text, length = 50) =>
   text.length > length ? text.substring(0, length) + "…" : text;
@@ -37,7 +38,7 @@ const WorkStreamDocument = () => {
   const fetchYears = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3000/staff/documents/years",
+        `${API_BASE_URL}/staff/documents/years`,
         { withCredentials: true },
       );
 
@@ -51,7 +52,7 @@ const WorkStreamDocument = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/staff/categories", {
+      const res = await axios.get(`${API_BASE_URL}/staff/categories`, {
         withCredentials: true,
       });
 
@@ -65,7 +66,7 @@ const WorkStreamDocument = () => {
     try {
       setLoading(true);
       const res = await axios.get(
-        "http://localhost:3000/staff/documents/list",
+        `${API_BASE_URL}/staff/documents/list`,
         {
           params: {
             page,

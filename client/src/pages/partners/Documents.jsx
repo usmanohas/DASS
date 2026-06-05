@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const PartnerDocuments = () => {
   const [docs, setDocs] = useState([]);
@@ -63,7 +64,7 @@ const PartnerDocuments = () => {
     setLoading(true);
     try {
       const res = await axios.get(
-        `http://localhost:3000/partner/documents?page=${pageNum}&search=${search}`,
+        `${API_BASE_URL}/partner/documents?page=${pageNum}&search=${search}`,
         { withCredentials: true },
       );
 
@@ -127,7 +128,7 @@ const PartnerDocuments = () => {
   const startDownload = async (versionId) => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/partner/documents/download/${versionId}`,
+        `${API_BASE_URL}/partner/documents/download/${versionId}`,
         {
           withCredentials: true,
           responseType: "blob",

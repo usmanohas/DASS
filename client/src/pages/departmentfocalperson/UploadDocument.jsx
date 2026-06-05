@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const Upload = () => {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ const Upload = () => {
   const fetchCategories = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3000/department/categories",
+        `${API_BASE_URL}/department/categories`,
         { withCredentials: true },
       );
       setCategories(res.data);
@@ -45,7 +46,7 @@ const Upload = () => {
   const fetchSubcategories = async (categoryId) => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/department/categories/${categoryId}/subcategories`,
+        `${API_BASE_URL}/department/categories/${categoryId}/subcategories`,
         { withCredentials: true },
       );
       setSubcategories(res.data);
@@ -175,7 +176,7 @@ const Upload = () => {
       const fileHash = await calculateFileHash(file);
 
       const res = await axios.post(
-        "http://localhost:3000/department/documents/check-duplicate",
+        `${API_BASE_URL}/department/documents/check-duplicate`,
         {
           title: form.title,
           fileHash,
@@ -209,7 +210,7 @@ const Upload = () => {
       });
 
       const res = await axios.post(
-        "http://localhost:3000/department/documents/upload",
+        `${API_BASE_URL}/department/documents/upload`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },

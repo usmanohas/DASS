@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import axios from "axios";
 import SuperAdminSidebar from "./SuperAdminSidebar";
 import SuperAdminTopbar from "./SuperAdminTopbar";
+import API_BASE_URL from "../config/baseUrl";
 
 const SuperAdminLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -19,7 +20,7 @@ const SuperAdminLayout = () => {
   ========================== */
   useEffect(() => {
     axios
-      .get("http://localhost:3000/superadmin/user", {
+      .get(`${API_BASE_URL}/superadmin/user`, {
         withCredentials: true,
       })
       .then((res) => {
@@ -43,7 +44,7 @@ const SuperAdminLayout = () => {
       setLoadingTicketAlerts(true);
 
       const res = await axios.get(
-        "http://localhost:3000/superadmin/ticket-notification/open",
+        `${API_BASE_URL}/superadmin/ticket-notification/open`,
         { withCredentials: true },
       );
 

@@ -3,6 +3,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useNavigate, useOutletContext } from "react-router-dom";
+import API_BASE_URL from "../../config/baseUrl";
 
 const ExpiredDocumentDetail = () => {
   const { refreshAlerts } = useOutletContext();
@@ -83,13 +84,13 @@ const ExpiredDocumentDetail = () => {
       try {
         // 1️⃣ Fetch document
         const docRes = await axios.get(
-          `http://localhost:3000/department/document/expired/${id}`,
+          `${API_BASE_URL}/department/document/expired/${id}`,
           { withCredentials: true },
         );
 
         // 2️⃣ Fetch versions
         const verRes = await axios.get(
-          `http://localhost:3000/department/document/expired/${id}/versions`,
+          `${API_BASE_URL}/department/document/expired/${id}/versions`,
           { withCredentials: true },
         );
 
@@ -169,7 +170,7 @@ const ExpiredDocumentDetail = () => {
   const startDownload = async (versionId) => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/department/documents/download/${versionId}`,
+        `${API_BASE_URL}/department/documents/download/${versionId}`,
         {
           withCredentials: true,
           responseType: "blob",
@@ -241,7 +242,7 @@ const ExpiredDocumentDetail = () => {
       setSaving(true);
 
       const res = await axios.put(
-        `http://localhost:3000/department/documents/${id}/delete`,
+        `${API_BASE_URL}/department/documents/${id}/delete`,
         { reason },
         { withCredentials: true },
       );
@@ -288,7 +289,7 @@ const ExpiredDocumentDetail = () => {
       setSaving(true);
 
       const res = await axios.put(
-        `http://localhost:3000/department/documents/${id}/archive`,
+        `${API_BASE_URL}/department/documents/${id}/archive`,
         {},
         { withCredentials: true },
       );

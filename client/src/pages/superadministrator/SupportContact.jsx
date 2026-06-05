@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const ManageSupportContacts = () => {
   const [contacts, setContacts] = useState([]);
@@ -13,7 +14,7 @@ const ManageSupportContacts = () => {
   const fetchContacts = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3000/superadmin/support-contacts",
+        `${API_BASE_URL}/superadmin/support-contacts`,
         { withCredentials: true }
       );
 
@@ -36,7 +37,7 @@ const ManageSupportContacts = () => {
       setLoadingId(c.id);
 
       const res = await axios.put(
-        `http://localhost:3000/superadmin/support-contacts/${c.id}`,
+        `${API_BASE_URL}/superadmin/support-contacts/${c.id}`,
         c,
         { withCredentials: true }
       );

@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import axios from "axios";
 import AdminSidebar from "./AdminSidebar";
 import AdminTopbar from "./AdminTopbar";
+import API_BASE_URL from "../config/baseUrl";
 
 const AdminLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -27,7 +28,7 @@ const AdminLayout = () => {
   ========================== */
   useEffect(() => {
     axios
-      .get("http://localhost:3000/admin/user", {
+      .get(`${API_BASE_URL}/admin/user`, {
         withCredentials: true,
       })
       .then((res) => {
@@ -51,7 +52,7 @@ const AdminLayout = () => {
       setLoadingAlerts(true);
 
       const res = await axios.get(
-        "http://localhost:3000/admin/restore-alerts",
+        `${API_BASE_URL}/admin/restore-alerts`,
         { withCredentials: true },
       );
 
@@ -77,7 +78,7 @@ const AdminLayout = () => {
       setLoadingAccessAlerts(true);
 
       const res = await axios.get(
-        "http://localhost:3000/admin/document-access-notification/pending",
+        `${API_BASE_URL}/admin/document-access-notification/pending`,
         { withCredentials: true },
       );
 
@@ -103,7 +104,7 @@ const AdminLayout = () => {
       setLoadingDeleteAlerts(true);
 
       const res = await axios.get(
-        "http://localhost:3000/admin/delete-notification/pending",
+        `${API_BASE_URL}/admin/delete-notification/pending`,
         { withCredentials: true },
       );
 

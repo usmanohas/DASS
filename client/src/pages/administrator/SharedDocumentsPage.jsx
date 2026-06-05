@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../../config/baseUrl";
 
 const DocumentSharedList = () => {
   const [docs, setDocs] = useState([]);
@@ -13,7 +14,7 @@ const DocumentSharedList = () => {
 
     try {
       const res = await axios.get(
-        `http://localhost:3000/admin/document/shared?page=${page}`,
+        `${API_BASE_URL}/admin/document/shared?page=${page}`,
         { withCredentials: true },
       );
 

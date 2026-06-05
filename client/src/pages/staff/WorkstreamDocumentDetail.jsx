@@ -3,6 +3,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import API_BASE_URL from "../../config/baseUrl";
 
 const WorkstreamDocumentDetail = () => {
   const navigate = useNavigate();
@@ -68,12 +69,12 @@ const WorkstreamDocumentDetail = () => {
   const loadData = async () => {
     try {
       const docRes = await axios.get(
-        `http://localhost:3000/staff/documents/${id}`,
+        `${API_BASE_URL}/staff/documents/${id}`,
         { withCredentials: true },
       );
 
       const statusRes = await axios.get(
-        `http://localhost:3000/staff/documents/${id}/request-status`,
+        `${API_BASE_URL}/staff/documents/${id}/request-status`,
         { withCredentials: true },
       );
 
@@ -174,7 +175,7 @@ const WorkstreamDocumentDetail = () => {
   const startDownload = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/staff/documents/download/${doc.current_version_id}`,
+        `${API_BASE_URL}/staff/documents/download/${doc.current_version_id}`,
         {
           withCredentials: true,
           responseType: "blob",
@@ -206,7 +207,7 @@ const WorkstreamDocumentDetail = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:3000/staff/documents/request-access",
+        `${API_BASE_URL}/staff/documents/request-access`,
         { document_id: id, reason },
         { withCredentials: true },
       );

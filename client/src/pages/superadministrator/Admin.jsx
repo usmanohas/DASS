@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const AdminManagement = () => {
   const [admins, setAdmins] = useState([]);
@@ -44,7 +45,7 @@ const AdminManagement = () => {
   const fetchDepartments = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3000/superadmin/departments",
+        `${API_BASE_URL}/superadmin/departments`,
         {
           withCredentials: true,
         },
@@ -65,7 +66,7 @@ const AdminManagement = () => {
 
   /* ================= FETCH ADMINS ================= */
   const fetchAdmins = async () => {
-    const res = await axios.get("http://localhost:3000/superadmin/admins", {
+    const res = await axios.get(`${API_BASE_URL}/superadmin/admins`, {
       withCredentials: true,
     });
 
@@ -83,7 +84,7 @@ const AdminManagement = () => {
     setSearched(true);
 
     const res = await axios.get(
-      `http://localhost:3000/superadmin/users/search?q=${search}`,
+      `${API_BASE_URL}/superadmin/users/search?q=${search}`,
       { withCredentials: true },
     );
 
@@ -104,7 +105,7 @@ const AdminManagement = () => {
     if (!confirm.isConfirmed) return;
 
     const res = await axios.put(
-      `http://localhost:3000/superadmin/users/make-admin/${id}`,
+      `${API_BASE_URL}/superadmin/users/make-admin/${id}`,
       {},
       { withCredentials: true },
     );
@@ -141,7 +142,7 @@ const AdminManagement = () => {
   const updateAdmin = async () => {
     try {
       const res = await axios.put(
-        `http://localhost:3000/superadmin/admins/update/${editId}`,
+        `${API_BASE_URL}/superadmin/admins/update/${editId}`,
         form,
         { withCredentials: true },
       );
@@ -169,7 +170,7 @@ const AdminManagement = () => {
 
     try {
       const res = await axios.put(
-        `http://localhost:3000/superadmin/admins/reset-password/${id}`,
+        `${API_BASE_URL}/superadmin/admins/reset-password/${id}`,
         {},
         { withCredentials: true },
       );
@@ -196,7 +197,7 @@ const AdminManagement = () => {
 
     try {
       const res = await axios.put(
-        `http://localhost:3000/superadmin/admins/toggle-status/${id}`,
+        `${API_BASE_URL}/superadmin/admins/toggle-status/${id}`,
         {},
         { withCredentials: true },
       );
@@ -217,7 +218,7 @@ const AdminManagement = () => {
   /* ================= CREATE ADMIN ================= */
   const createAdmin = async () => {
     const res = await axios.post(
-      "http://localhost:3000/superadmin/users/create-admin",
+      `${API_BASE_URL}/superadmin/users/create-admin`,
       form,
       { withCredentials: true },
     );

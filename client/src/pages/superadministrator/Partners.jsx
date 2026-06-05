@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const PartnerManagement = () => {
   const [admins, setAdmins] = useState([]);
@@ -40,7 +41,7 @@ const PartnerManagement = () => {
   const fetchDepartments = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3000/superadmin/departments",
+        `${API_BASE_URL}/superadmin/departments`,
         {
           withCredentials: true,
         },
@@ -61,7 +62,7 @@ const PartnerManagement = () => {
 
   /* ================= FETCH PARTNER ================= */
   const fetchPartner = async () => {
-    const res = await axios.get("http://localhost:3000/superadmin/partners", {
+    const res = await axios.get(`${API_BASE_URL}/superadmin/partners`, {
       withCredentials: true,
     });
 
@@ -88,7 +89,7 @@ const PartnerManagement = () => {
   const updatePartner = async () => {
     try {
       const res = await axios.put(
-        `http://localhost:3000/superadmin/partner/update/${editId}`,
+        `${API_BASE_URL}/superadmin/partner/update/${editId}`,
         form,
         { withCredentials: true },
       );
@@ -116,7 +117,7 @@ const PartnerManagement = () => {
 
     try {
       const res = await axios.put(
-        `http://localhost:3000/superadmin/partner/reset-password/${id}`,
+        `${API_BASE_URL}/superadmin/partner/reset-password/${id}`,
         {},
         { withCredentials: true },
       );
@@ -143,7 +144,7 @@ const PartnerManagement = () => {
 
     try {
       const res = await axios.put(
-        `http://localhost:3000/superadmin/partner/toggle-status/${id}`,
+        `${API_BASE_URL}/superadmin/partner/toggle-status/${id}`,
         {},
         { withCredentials: true },
       );
@@ -164,7 +165,7 @@ const PartnerManagement = () => {
   /* ================= CREATE ADMIN ================= */
   const createPartner = async () => {
     const res = await axios.post(
-      "http://localhost:3000/superadmin/users/create-partner",
+      `${API_BASE_URL}/superadmin/users/create-partner`,
       form,
       { withCredentials: true },
     );

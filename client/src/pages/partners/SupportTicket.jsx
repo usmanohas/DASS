@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import API_BASE_URL from "../../config/baseUrl";
 
 const PartnerSupportTickets = () => {
   const [tickets, setTickets] = useState([]);
@@ -19,7 +20,7 @@ const PartnerSupportTickets = () => {
     setLoading(true);
     try {
       const res = await axios.get(
-        `http://localhost:3000/partner/tickets?page=${pageNum}&limit=${LIMIT}`,
+        `${API_BASE_URL}/partner/tickets?page=${pageNum}&limit=${LIMIT}`,
         { withCredentials: true },
       );
 
@@ -51,7 +52,7 @@ const PartnerSupportTickets = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:3000/partner/tickets",
+        `${API_BASE_URL}/partner/tickets`,
         formData,
         {
           withCredentials: true,
@@ -323,7 +324,7 @@ const PartnerSupportTickets = () => {
 
                       <div className="mt-2 border rounded-3 overflow-hidden">
                         <img
-                          src={`http://localhost:3000${selectedTicket.screenshot}`}
+                          src={`${API_BASE_URL}${selectedTicket.screenshot}`}
                           alt="Screenshot"
                           className="w-100"
                           style={{
