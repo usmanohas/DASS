@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import API_BASE_URL from "../../config/baseUrl";
+import API_BASE_URL from "../../config/baseUrl"; 
+import { ClipLoader } from "react-spinners";
+import { PulseLoader } from "react-spinners";
 
 const BackupPage = () => {
   const [type, setType] = useState("");
@@ -134,7 +136,7 @@ const BackupPage = () => {
             >
               {loading ? (
                 <>
-                  <span className="spinner-border spinner-border-sm me-2" />
+                  <span className="spinner-border spinner-border-sm me-2 " />
                   Generating Backup...
                 </>
               ) : (

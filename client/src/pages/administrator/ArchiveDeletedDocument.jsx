@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import API_BASE_URL from "../../config/baseUrl";
+import { ClipLoader } from "react-spinners";
+import { PulseLoader } from "react-spinners";
 
 const ArchiveDeletePageAdmin = () => {
   const [documents, setDocuments] = useState([]);
@@ -21,7 +23,7 @@ const ArchiveDeletePageAdmin = () => {
     try {
       const res = await axios.get(
         `${API_BASE_URL}/admin/document/archive-delete?page=${page}`,
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       if (res.data.Status) {
@@ -54,16 +56,14 @@ const ArchiveDeletePageAdmin = () => {
     // STATUS FILTER
     if (statusFilter !== "all") {
       filtered = filtered.filter((doc) =>
-        statusFilter === "deleted"
-          ? doc.is_delete
-          : !doc.is_delete
+        statusFilter === "deleted" ? doc.is_delete : !doc.is_delete,
       );
     }
 
     // DEPARTMENT FILTER
     if (departmentFilter !== "all") {
       filtered = filtered.filter(
-        (doc) => doc.department_name === departmentFilter
+        (doc) => doc.department_name === departmentFilter,
       );
     }
 
@@ -85,7 +85,6 @@ const ArchiveDeletePageAdmin = () => {
       {/* 🔥 FILTER BAR */}
       <div className="card border-0 shadow-sm mb-3">
         <div className="card-body d-flex flex-wrap gap-3 align-items-center">
-          
           {/* STATUS FILTER */}
           <div>
             <label className="small text-muted d-block">Status</label>
@@ -137,9 +136,9 @@ const ArchiveDeletePageAdmin = () => {
         <div className="card-body">
           {/* LOADING */}
           {loading ? (
-            <div className="text-center py-5 text-muted">
-              <div className="spinner-border text-primary mb-2"></div>
-              <div>Loading documents...</div>
+            <div className="text-center py-5">
+              <PulseLoader color="#198754" size={12} margin={4} />
+              <p className="mt-3 text-muted">Loading documents...</p>
             </div>
           ) : filteredDocs.length === 0 ? (
             <div className="text-center py-5 text-muted">
@@ -165,9 +164,7 @@ const ArchiveDeletePageAdmin = () => {
                     {filteredDocs.map((doc, index) => (
                       <tr key={doc.id}>
                         <td className="text-center text-muted">{index + 1}</td>
-                        <td className="text-muted">
-                          {doc.department_name}
-                        </td>
+                        <td className="text-muted">{doc.department_name}</td>
 
                         <td className="text-muted">{doc.title}</td>
 
@@ -185,8 +182,12 @@ const ArchiveDeletePageAdmin = () => {
 
                         <td className="text-muted text-center">
                           {doc.is_delete
-                            ? new Date(doc.delete_at).toLocaleDateString("en-GB")
-                            : new Date(doc.archived_at).toLocaleDateString("en-GB")}
+                            ? new Date(doc.delete_at).toLocaleDateString(
+                                "en-GB",
+                              )
+                            : new Date(doc.archived_at).toLocaleDateString(
+                                "en-GB",
+                              )}
                         </td>
                       </tr>
                     ))}

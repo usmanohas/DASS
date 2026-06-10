@@ -50,7 +50,7 @@ const SuperAdminSidebar = ({ collapsed, user }) => {
       }}
     >
       {/* ================= BRAND ================= */}
-      <div className="text-center  pb-3 border-bottom border-secondary border-opacity-25">
+      <div className="text-center  pb-3 ">
         <img
           src="/assets/images/logo.png"
           alt="logo"
@@ -73,7 +73,11 @@ const SuperAdminSidebar = ({ collapsed, user }) => {
       {/* ================= MENU ================= */}
       <div className="flex-grow-1 d-flex flex-column gap-1">
         {/* DASHBOARD */}
-        <Link to="/" style={menuItem(isActive("/"))} className={navItemClass}>
+        <Link
+          to="/superadmin"
+          style={menuItem(isActive("/superadmin"))}
+          className={navItemClass}
+        >
           <div style={iconStyle}>
             <i className="bi bi-speedometer2"></i>
           </div>
@@ -82,8 +86,8 @@ const SuperAdminSidebar = ({ collapsed, user }) => {
             <>
               <span>Dashboard</span>
 
-              {isActive("/") && (
-                <span className="ms-auto badge rounded-pill bg-info">
+              {isActive("/superadmin") && (
+                <span className="ms-auto badge text-success fw-normal rounded-pill bg-white">
                   Active
                 </span>
               )}
@@ -219,7 +223,7 @@ const SuperAdminSidebar = ({ collapsed, user }) => {
             <i className="bi bi-database-fill-gear"></i>
           </div>
 
-          {!collapsed && <span>Storage</span>} 
+          {!collapsed && <span>Storage</span>}
         </Link>
       </div>
 

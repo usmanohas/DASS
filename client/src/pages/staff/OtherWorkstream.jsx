@@ -3,6 +3,8 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../../config/baseUrl";
+import { ClipLoader } from "react-spinners";
+import { PulseLoader } from "react-spinners";
 
 const truncate = (text, length = 50) =>
   text.length > length ? text.substring(0, length) + "…" : text;
@@ -260,9 +262,9 @@ const OtherWorkstreamDocument = () => {
           {/* Loading */}
           {loading && (
             <div className="text-center py-5">
-              <div className="spinner-border text-success"></div>
-              <p className="mt-2">Loading documents...</p>
-            </div>
+          <PulseLoader color="#ef6c00" size={12} margin={4} />
+          <p className="mt-3 text-muted">Loading documents...</p>
+        </div>
           )}
 
           {/* Empty */}

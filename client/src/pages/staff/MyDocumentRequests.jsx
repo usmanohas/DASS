@@ -232,23 +232,23 @@ const WorkstreamDocumentRequests = () => {
     switch (status) {
       case "Pending_Department_Review":
         return (
-          <span className="badge bg-warning-subtle text-warning border px-3 py-2 rounded-pill">
+          <span className="badge bg-warning fw-normal text-white px-3 py-2 rounded-pill">
             <i className="bi bi-hourglass-bottom me-1"></i>
-            Awaiting Department Review
+            Pending Department Review
           </span>
         );
 
       case "Pending_Admin_Approval":
         return (
-          <span className="badge bg-info-subtle text-info border px-3 py-2 rounded-pill">
+          <span className="badge bg-info text-white fw-normal px-3 py-2 rounded-pill">
             <i className="bi bi-hourglass-top me-1"></i>
-            Awaiting Admin Approval
+            Pending Admin Approval
           </span>
         );
 
       case "Approved":
         return (
-          <span className="badge bg-success-subtle text-success border px-3 py-2 rounded-pill">
+          <span className="badge bg-success text-white fw-normal px-3 py-2 rounded-pill">
             <i className="bi bi-check-circle me-1"></i>
             Approved
           </span>
@@ -256,9 +256,9 @@ const WorkstreamDocumentRequests = () => {
 
       case "Rejected":
         return (
-          <span className="badge bg-danger-subtle text-danger border px-3 py-2 rounded-pill">
+          <span className="badge bg-danger text-white px-3 py-2 rounded-pill">
             <i className="bi bi-x-circle me-1"></i>
-            Denied
+            Declined
           </span>
         );
 

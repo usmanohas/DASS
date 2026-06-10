@@ -53,7 +53,7 @@ const StaffSidebar = ({ collapsed, user }) => {
       }}
     >
       {/* ================= BRAND ================= */}
-      <div className="text-center  pb-3 border-bottom border-secondary border-opacity-25">
+      <div className="text-center  pb-3">
         <img
           src="/assets/images/logo.png"
           alt="logo"
@@ -77,8 +77,8 @@ const StaffSidebar = ({ collapsed, user }) => {
       <div className="flex-grow-1 d-flex flex-column gap-1">
         {/* DASHBOARD */}
         <Link
-          to="/"
-          style={menuItem(isActive("/"))}
+          to="/staff"
+          style={menuItem(isActive("/staff"))}
           className={navItemClass}
         >
           <div style={iconStyle}>
@@ -89,8 +89,8 @@ const StaffSidebar = ({ collapsed, user }) => {
             <>
               <span>Dashboard</span>
 
-              {isActive("/") && (
-                <span className="ms-auto badge rounded-pill bg-info">
+              {isActive("/staff") && (
+                <span className="ms-auto badge text-success fw-normal rounded-pill bg-white">
                   Active
                 </span>
               )}

@@ -481,13 +481,12 @@ const MyDocumentRequests = () => {
                               </span>
                             ) : (
                               <button
-                                className="btn btn-success btn-sm"
+                                className="btn btn-danger btn-sm"
                                 onClick={() =>
                                   handleDownload(r.current_version_id)
                                 }
                                 title="Download Document"
                               >
-                                <i className="bi bi-download me-1"></i>
                                 Download
                               </button>
                             )

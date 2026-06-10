@@ -78,7 +78,7 @@ const PartnerUserGuide = () => {
                   Password Rules
                 </h6>
                 <ul className="text-muted small mb-0">
-                  <li>Minimum 8 characters</li>
+                  <li>Minimum of 8 characters</li>
                   <li>Uppercase letter required</li>
                   <li>Include a number</li>
                   <li>Include special character</li>
@@ -132,12 +132,12 @@ const PartnerUserGuide = () => {
               <h2 className="accordion-header">
                 <button className="accordion-button rounded" data-bs-toggle="collapse" data-bs-target="#faq1">
                   <i className="bi bi-download me-2"></i>
-                  Why can’t I download a document?
+                  Why i can't download a document?
                 </button>
               </h2>
               <div id="faq1" className="accordion-collapse collapse show">
                 <div className="accordion-body text-muted small">
-                  The document may have expired. Contact the administrator to re-share it.
+                  The document may have expired. Contact the administrator to re-share.
                 </div>
               </div>
             </div>
@@ -152,7 +152,7 @@ const PartnerUserGuide = () => {
               </h2>
               <div id="faq2" className="accordion-collapse collapse">
                 <div className="accordion-body text-muted small">
-                  No. Documents are shared by administrators only.
+                  Yes, but not through the portal. Contact system administrator (DPRS).
                 </div>
               </div>
             </div>
@@ -167,7 +167,7 @@ const PartnerUserGuide = () => {
               </h2>
               <div id="faq3" className="accordion-collapse collapse">
                 <div className="accordion-body text-muted small">
-                  Minimum 8 characters including uppercase letter, number, and special character.
+                  Minimum of 8 characters including uppercase letter, number, and special character.
                 </div>
               </div>
             </div>

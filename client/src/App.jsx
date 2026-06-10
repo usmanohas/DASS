@@ -99,6 +99,7 @@ import PartnerDocuments from "./pages/partners/Documents";
 import PartnerChangePassword from "./pages/partners/ChangePassword";
 import PartnerUserGuide from "./pages/partners/PartnerUserGuide";
 import PartnerSupportTickets from "./pages/partners/SupportTicket";
+import HelpDesk from "./pages/partners/HelpDesk";
 
 
 
@@ -319,6 +320,7 @@ function App() {
           <Route path="change-password" element={<PartnerChangePassword />} />
           <Route path="user-guide" element={<PartnerUserGuide />} />
           <Route path="support-ticket" element={<PartnerSupportTickets />} />
+          <Route path="helpdesk" element={<HelpDesk />} />
         </Route>
       </Routes>
     </BrowserRouter>

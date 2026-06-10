@@ -745,12 +745,12 @@ router.post(
   verifyToken,
   upload.single("file"),
   async (req, res) => {
-    const connection = await connectToDatabase();
-
     // ✅ store uploaded file path for cleanup
     const uploadedFilePath = req.file?.path;
+    let connection;
 
     try {
+      const connection = await connectToDatabase();
       if (!req.file) {
         return res.status(400).json({
           Status: false,
@@ -1054,18 +1054,23 @@ router.post(
         document_id: documentId,
       });
     } catch (err) {
-      console.error(err);
+        console.error("UPLOAD ERROR:", err);
 
-      // rollback transaction
-      await connection.rollback();
+        if (connection) {
+          try {
+            await connection.rollback();
+          } catch {}
+        }
 
-      // IMPORTANT: remove uploaded file if anything fails
-      deleteFile(uploadedFilePath);
+        deleteFile(uploadedFilePath);
 
-      res.status(500).json({
-        Status: false,
-        Error: "Upload failed",
-      });
+        res.status(500).json({
+          Status: false,
+          Error: err.message,
+          Stack: process.env.NODE_ENV !== "production"
+            ? err.stack
+            : undefined
+        });
     }
   },
 );
@@ -3216,7 +3221,7 @@ router.post("/documents/request-access", verifyToken, async (req, res) => {
         "ACCESS REQUEST",
         "DOCUMENT",
         document_id,
-        `Access request submitted for document "${title}". Reason: "${reason}"`,
+        `Request submitted for document "${title}". Reason: "${reason}"`,
         ip,
         req.headers["user-agent"],
         browser,
@@ -3231,7 +3236,7 @@ router.post("/documents/request-access", verifyToken, async (req, res) => {
     ========================= */
     return res.json({
       Status: true,
-      Message: "Access request submitted successfully",
+      Message: "Request submitted successfully",
     });
 
   } catch (error) {

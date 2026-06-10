@@ -3,6 +3,8 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../../config/baseUrl";
+import { ClipLoader } from "react-spinners";
+import { PulseLoader } from "react-spinners";
 
 const truncate = (text, length = 50) =>
   text.length > length ? text.substring(0, length) + "…" : text;
@@ -52,10 +54,9 @@ const ManageDocumentDFP = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get(
-        `${API_BASE_URL}/department/categories`,
-        { withCredentials: true },
-      );
+      const res = await axios.get(`${API_BASE_URL}/department/categories`, {
+        withCredentials: true,
+      });
 
       setCategories(res.data);
     } catch (err) {
@@ -66,20 +67,17 @@ const ManageDocumentDFP = () => {
   const fetchDocuments = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(
-        `${API_BASE_URL}/department/documents/list`,
-        {
-          params: {
-            page,
-            limit: 10,
-            search,
-            category,
-            classification,
-            year,
-          },
-          withCredentials: true,
+      const res = await axios.get(`${API_BASE_URL}/department/documents/list`, {
+        params: {
+          page,
+          limit: 10,
+          search,
+          category,
+          classification,
+          year,
         },
-      );
+        withCredentials: true,
+      });
       if (res.data.Status) {
         setDocuments(res.data.Data);
         setTotalPages(res.data.Pages);
@@ -233,8 +231,8 @@ const ManageDocumentDFP = () => {
           {/* Loading */}
           {loading && (
             <div className="text-center py-5">
-              <div className="spinner-border text-success"></div>
-              <p className="mt-2">Loading documents...</p>
+              <PulseLoader color="#0b8585" size={12} margin={4} />
+              <p className="mt-3 text-muted">Fetching documents...</p>
             </div>
           )}
 
@@ -288,8 +286,8 @@ const ManageDocumentDFP = () => {
 
                       <td className="text-center">
                         <span className="badge bg-light text-dark border px-3 py-2 rounded-pill">
-                            {doc.classification}
-                          </span>
+                          {doc.classification}
+                        </span>
                       </td>
 
                       <td>

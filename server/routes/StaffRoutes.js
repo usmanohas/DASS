@@ -1276,7 +1276,7 @@ router.post(
           "ACCESS REQUEST",
           "DOCUMENT",
           document_id,
-          `Access request submitted for document "${title}". Reason: "${reason}"`,
+          `Request submitted for document "${title}". Reason: "${reason}"`,
           ip,
           req.headers["user-agent"],
           browser,
@@ -1289,7 +1289,7 @@ router.post(
 
       res.json({
         Status: true,
-        Message: "Access request submitted successfully",
+        Message: "Request submitted successfully",
       });
     } catch (error) {
       console.error(error);

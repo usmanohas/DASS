@@ -3,6 +3,8 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../../config/baseUrl";
+import { ClipLoader } from "react-spinners";
+import { PulseLoader } from "react-spinners";
 
 const TeamLeadDashboard = () => {
   const [programs, setPrograms] = useState([]);
@@ -47,7 +49,8 @@ const TeamLeadDashboard = () => {
         <div className="card-body">
           {loading ? (
             <div className="text-center py-5">
-              <div className="spinner-border"></div>
+              <PulseLoader color="#0b8585" size={12} margin={4} />
+              <p className="mt-3 text-muted">Loading...</p>
             </div>
           ) : programs.length === 0 ? (
             <div className="text-center text-muted py-5">

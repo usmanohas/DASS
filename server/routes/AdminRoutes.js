@@ -12,6 +12,7 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { UAParser } from "ua-parser-js";
 import XLSX from "xlsx";
+import { BASE_URL } from "../lib/baseUrl.js";
 
 const router = express.Router();
 
@@ -2262,10 +2263,9 @@ router.post("/documents/share", verifyToken, async (req, res) => {
 /* ===========================
    SHARE DOCUMENT PUBLIC LINK
 =========================== */
-router.post("/documents/generate-link", verifyToken, async (req, res) => {
-  const connection = await connectToDatabase();
-
+router.post("/documents/generate-link", verifyToken, async (req, res) => { 
   try {
+    const connection = await connectToDatabase();
     const { document_id, expiry_date } = req.body;
     const adminId = req.user.id;
     const sessionId = req.user.session_id;
@@ -2295,7 +2295,7 @@ router.post("/documents/generate-link", verifyToken, async (req, res) => {
       [document_id, token, expiry_date, adminId],
     );
 
-    const link = `http://localhost:5173/public/document/${token}`;
+    const link = `${BASE_URL}/public/document/${token}`;
 
     /* ================= DEVICE INFO ================= */
     const parser = new UAParser(req.headers["user-agent"]);
@@ -2358,9 +2358,9 @@ router.get(
   "/documents/latest-link/:document_id",
   verifyToken,
   async (req, res) => {
-    const connection = await connectToDatabase();
-
+  
     try {
+      const connection = await connectToDatabase();
       const { document_id } = req.params;
 
       const [[link]] = await connection.query(
@@ -2382,7 +2382,8 @@ router.get(
         });
       }
 
-      const fullLink = `http://localhost:5173/public/document/${link.token}`;
+      //const fullLink = `http://localhost:5173/public/document/${link.token}`;
+      const fullLink = `${BASE_URL}/public/document/${link.token}`;
 
       res.json({
         Status: true,

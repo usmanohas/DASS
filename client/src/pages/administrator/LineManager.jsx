@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import API_BASE_URL from "../../config/baseUrl";
+import { ClipLoader } from "react-spinners";
+import { PulseLoader } from "react-spinners";
 
 const AdminLineManager = () => {
   const [contacts, setContacts] = useState([]);
@@ -13,10 +15,9 @@ const AdminLineManager = () => {
 
   const fetchContacts = async () => {
     try {
-      const res = await axios.get(
-        `${API_BASE_URL}/admin/support-contacts`,
-        { withCredentials: true },
-      );
+      const res = await axios.get(`${API_BASE_URL}/admin/support-contacts`, {
+        withCredentials: true,
+      });
 
       if (res.data.Status) {
         setContacts(res.data.Data);
@@ -63,11 +64,9 @@ const AdminLineManager = () => {
         },
       });
 
-      const res = await axios.post(
-        `${API_BASE_URL}/admin/ticket`,
-        formData,
-        { withCredentials: true },
-      );
+      const res = await axios.post(`${API_BASE_URL}/admin/ticket`, formData, {
+        withCredentials: true,
+      });
 
       Swal.close(); // stop loading
 
@@ -122,7 +121,8 @@ const AdminLineManager = () => {
       {/* LOADING */}
       {loading ? (
         <div className="text-center py-5">
-          <div className="spinner-border"></div>
+          <PulseLoader color="#198754" size={12} margin={4} />
+          <p className="mt-3 text-muted">Loading contact...</p>
         </div>
       ) : contacts.length === 0 ? (
         <div className="text-muted text-center">

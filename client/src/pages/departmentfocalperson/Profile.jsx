@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import API_BASE_URL from "../../config/baseUrl";
+import { ClipLoader } from "react-spinners";
+import { PulseLoader } from "react-spinners";
 
 const DfpProfile = () => {
   const [user, setUser] = useState(null);
@@ -106,8 +108,11 @@ const DfpProfile = () => {
 
   if (!user) {
     return (
-      <div className="container py-5 text-center">
-        <div className="spinner-border text-success"></div>
+      <div className="container">
+        <div className="text-center py-5">
+          <PulseLoader color="#0b8585" size={12} margin={4} />
+          <p className="mt-3 text-muted">Fetching profile...</p>
+        </div>
       </div>
     );
   }

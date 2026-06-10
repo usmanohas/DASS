@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 import API_BASE_URL from "../../config/baseUrl";
-import { ClipLoader } from "react-spinners";
-import { PulseLoader } from "react-spinners";
 
-const SuperAdminLineManager = () => {
+const HelpDesk = () => {
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -15,7 +14,7 @@ const SuperAdminLineManager = () => {
   const fetchContacts = async () => {
     try {
       const res = await axios.get(
-        `${API_BASE_URL}/superadmin/support-contacts`,
+        `${API_BASE_URL}/department/support-contacts`,
         { withCredentials: true },
       );
 
@@ -29,20 +28,100 @@ const SuperAdminLineManager = () => {
     }
   };
 
-  /* ================= UI ================= */
+  const submitIssue = async () => {
+    try {
+      const subject = document.getElementById("issueSubject").value;
+      const description = document.getElementById("issueDescription").value;
+      const screenshot = document.getElementById("issueScreenshot").files[0];
+
+      // 🔹 Frontend validation
+      if (!subject || !description) {
+        return Swal.fire({
+          icon: "warning",
+          title: "Missing Fields",
+          text: "Subject and description are required",
+          timer: 2500,
+          showConfirmButton: false,
+        });
+      }
+
+      const formData = new FormData();
+      formData.append("subject", subject);
+      formData.append("description", description);
+
+      if (screenshot) {
+        formData.append("screenshot", screenshot);
+      }
+
+      // 🔹 Show loading
+      Swal.fire({
+        title: "Submitting...",
+        text: "Please wait",
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      const res = await axios.post(
+        `${API_BASE_URL}/department/support/report`,
+        formData,
+        { withCredentials: true },
+      );
+
+      Swal.close(); // stop loading
+
+      // ✅ SUCCESS
+      if (res.data.Status) {
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: res.data.Message || "Issue reported successfully",
+          timer: 2500,
+          showConfirmButton: false,
+        });
+
+        // reset form
+        document.getElementById("issueSubject").value = "";
+        document.getElementById("issueDescription").value = "";
+        document.getElementById("issueScreenshot").value = "";
+      }
+      //BACKEND ERROR RESPONSE
+      else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: res.data.Error || "Something went wrong",
+          timer: 3000,
+          showConfirmButton: false,
+        });
+      }
+    } catch (err) {
+      console.error(err);
+
+      //NETWORK / SERVER ERROR
+      Swal.fire({
+        icon: "error",
+        title: "Request Failed",
+        text:
+          err.response?.data?.Error ||
+          "Server not responding. Please try again.",
+        timer: 3000,
+        showConfirmButton: false,
+      });
+    }
+  };
   return (
     <div className="container py-4">
       {/* HEADER */}
       <h3 className="mb-4">
-        <i className="bi bi-headset me-2"></i>
-        System Support & Line Manager
+        <i className="bi bi-headset me-2"></i>Help Desk Support
       </h3>
 
       {/* LOADING */}
       {loading ? (
         <div className="text-center py-5">
-          <PulseLoader color="#198754" size={12} margin={4} />
-          <p className="mt-3 text-muted">Loading contact...</p>
+          <div className="spinner-border"></div>
         </div>
       ) : contacts.length === 0 ? (
         <div className="text-muted text-center">
@@ -77,7 +156,7 @@ const SuperAdminLineManager = () => {
                     {/* NAME */}
                     {c.name && (
                       <div className="mb-2 d-flex justify-content-center align-items-center">
-                        <i className="bi bi-person me-2 text-primary"></i>
+                        <i className="bi bi-person me-2 text-muted"></i>
                         <span>{c.name}</span>
                       </div>
                     )}
@@ -113,39 +192,8 @@ const SuperAdminLineManager = () => {
         </div>
       )}
 
-      {/* SYSTEM INFO */}
-      <div className="card shadow-sm border-0 mt-4">
-        <div className="card-body">
-          <h6 className="fw-semibold mb-3">
-            <i className="bi bi-info-circle me-2"></i>
-            System Information
-          </h6>
-
-          <div className="row small">
-            <div className="col-md-3">
-              <strong>System Name</strong>
-              <div>Document Archiving and Sharing System</div>
-            </div>
-
-            <div className="col-md-3">
-              <strong>Version</strong>
-              <div>v1.0.0</div>
-            </div>
-
-            <div className="col-md-3">
-              <strong>Maintained By</strong>
-              <div>ICT Unit</div>
-            </div>
-
-            <div className="col-md-3">
-              <strong>Agency</strong>
-              <div>NPHCDA</div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
 
-export default SuperAdminLineManager;
+export default HelpDesk;

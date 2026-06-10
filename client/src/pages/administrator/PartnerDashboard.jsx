@@ -3,6 +3,8 @@ import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import API_BASE_URL from "../../config/baseUrl";
+import { ClipLoader } from "react-spinners";
+import { PulseLoader } from "react-spinners";
 
 const PartnerDashboardAdmin = () => {
   const { id } = useParams();
@@ -16,7 +18,7 @@ const PartnerDashboardAdmin = () => {
     try {
       const res = await axios.get(
         `${API_BASE_URL}/admin/partner/dashboard/${id}`,
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       if (res.data.Status) {
@@ -53,7 +55,7 @@ const PartnerDashboardAdmin = () => {
       const res = await axios.put(
         `${API_BASE_URL}/admin/partner/toggle/${partner.id}`,
         {},
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       if (res.data.Status) {
@@ -86,45 +88,32 @@ const PartnerDashboardAdmin = () => {
   if (loading) {
     return (
       <div className="text-center py-5">
-        <div
-          className="spinner-border"
-          style={{ color: "#ef6c00" }}
-        ></div>
+        <PulseLoader color="#198754" size={12} margin={4} />
+        <p className="mt-3 text-muted">Loading data...</p>
       </div>
     );
   }
 
   if (!partner) {
-    return (
-      <div className="alert alert-danger">
-        Partner record not found.
-      </div>
-    );
+    return <div className="alert alert-danger">Partner record not found.</div>;
   }
 
   const daysRegistered = Math.floor(
-    (new Date() - new Date(partner.created_at)) /
-      (1000 * 60 * 60 * 24)
+    (new Date() - new Date(partner.created_at)) / (1000 * 60 * 60 * 24),
   );
 
   const activeDocuments = documents.filter(
-    (d) =>
-      !d.expiry_date ||
-      new Date(d.expiry_date) >= new Date()
+    (d) => !d.expiry_date || new Date(d.expiry_date) >= new Date(),
   ).length;
 
   const expiredDocuments = documents.filter(
-    (d) =>
-      d.expiry_date &&
-      new Date(d.expiry_date) < new Date()
+    (d) => d.expiry_date && new Date(d.expiry_date) < new Date(),
   ).length;
 
   return (
     <div className="container-fluid py-4">
       {/* ================= HEADER ================= */}
-      <div
-        className="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 bg-dark"
-      >
+      <div className="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 bg-dark">
         <div className="card-body p-4">
           <div className="row align-items-center">
             <div className="col-lg-8">
@@ -147,9 +136,7 @@ const PartnerDashboardAdmin = () => {
                     {partner.full_name}
                   </h2>
 
-                  <p className="text-white-50 mb-2">
-                    External Partner Account
-                  </p>
+                  <p className="text-white-50 mb-2">External Partner Account</p>
 
                   <div className="d-flex flex-wrap gap-3 text-white small">
                     <span>
@@ -169,14 +156,10 @@ const PartnerDashboardAdmin = () => {
             <div className="col-lg-4 text-lg-end mt-3 mt-lg-0">
               <span
                 className={`badge px-4 py-2 fs-6 ${
-                  partner.is_active
-                    ? "bg-success"
-                    : "bg-danger"
+                  partner.is_active ? "bg-success" : "bg-danger"
                 }`}
               >
-                {partner.is_active
-                  ? "Active Partner"
-                  : "Inactive Partner"}
+                {partner.is_active ? "Active Partner" : "Inactive Partner"}
               </span>
             </div>
           </div>
@@ -217,9 +200,7 @@ const PartnerDashboardAdmin = () => {
       {/* ================= INFO CARD ================= */}
       <div className="card border-0 shadow-sm rounded-4 mb-4">
         <div className="card-body p-4">
-          <h5 className="fw-bold mb-4">
-            Partner Information
-          </h5>
+          <h5 className="fw-bold mb-4">Partner Information</h5>
 
           <div className="row g-4">
             <InfoItem
@@ -231,9 +212,7 @@ const PartnerDashboardAdmin = () => {
             <InfoItem
               icon="calendar"
               label="Account Created"
-              value={new Date(
-                partner.created_at
-              ).toLocaleDateString("en-GB")}
+              value={new Date(partner.created_at).toLocaleDateString("en-GB")}
             />
 
             <InfoItem
@@ -253,23 +232,17 @@ const PartnerDashboardAdmin = () => {
 
           <button
             className={`btn ${
-              partner.is_active
-                ? "btn-outline-danger"
-                : "btn-outline-success"
+              partner.is_active ? "btn-outline-danger" : "btn-outline-success"
             }`}
             onClick={handleToggleStatus}
           >
             <i
               className={`bi ${
-                partner.is_active
-                  ? "bi-person-x"
-                  : "bi-person-check"
+                partner.is_active ? "bi-person-x" : "bi-person-check"
               } me-2`}
             ></i>
 
-            {partner.is_active
-              ? "Deactivate Account"
-              : "Activate Account"}
+            {partner.is_active ? "Deactivate Account" : "Activate Account"}
           </button>
         </div>
       </div>
@@ -285,8 +258,7 @@ const PartnerDashboardAdmin = () => {
               </h5>
 
               <small className="text-muted">
-                Documents currently shared with this
-                partner
+                Documents currently shared with this partner
               </small>
             </div>
 
@@ -301,9 +273,7 @@ const PartnerDashboardAdmin = () => {
             <div className="text-center py-5">
               <i className="bi bi-folder-x fs-1 text-muted"></i>
 
-              <h6 className="mt-3 text-muted">
-                No shared documents found
-              </h6>
+              <h6 className="mt-3 text-muted">No shared documents found</h6>
             </div>
           ) : (
             <div className="table-responsive">
@@ -324,37 +294,30 @@ const PartnerDashboardAdmin = () => {
                       <td>{index + 1}</td>
 
                       <td>
-                        <div className="fw-semibold">
-                          {doc.title}
-                        </div>
+                        <div className="fw-semibold">{doc.title}</div>
                       </td>
 
                       <td>{doc.department_name}</td>
 
                       <td>
-                        {new Date(
-                          doc.created_at
-                        ).toLocaleDateString("en-GB")}
+                        {new Date(doc.created_at).toLocaleDateString("en-GB")}
                       </td>
 
                       <td>
                         {doc.expiry_date ? (
                           <span
                             className={`badge border px-3 py-2 rounded-pill ${
-                              new Date(doc.expiry_date) <
-                              new Date()
+                              new Date(doc.expiry_date) < new Date()
                                 ? "bg-danger"
                                 : "bg-success"
                             }`}
                           >
-                            {new Date(
-                              doc.expiry_date
-                            ).toLocaleDateString("en-GB")}
+                            {new Date(doc.expiry_date).toLocaleDateString(
+                              "en-GB",
+                            )}
                           </span>
                         ) : (
-                          <span className="badge bg-secondary">
-                            No Expiry
-                          </span>
+                          <span className="badge bg-secondary">No Expiry</span>
                         )}
                       </td>
                     </tr>
@@ -386,9 +349,7 @@ const StatCard = ({ title, value, icon, color }) => (
               height: "55px",
             }}
           >
-            <i
-              className={`bi bi-${icon} text-${color} fs-4`}
-            ></i>
+            <i className={`bi bi-${icon} text-${color} fs-4`}></i>
           </div>
         </div>
       </div>
@@ -399,14 +360,10 @@ const StatCard = ({ title, value, icon, color }) => (
 const InfoItem = ({ icon, label, value }) => (
   <div className="col-md-6">
     <div className="d-flex align-items-start">
-      <i
-        className={`bi bi-${icon} fs-5 text-primary me-3`}
-      ></i>
+      <i className={`bi bi-${icon} fs-5 text-primary me-3`}></i>
 
       <div>
-        <small className="text-muted d-block">
-          {label}
-        </small>
+        <small className="text-muted d-block">{label}</small>
 
         <div className="fw-semibold">{value}</div>
       </div>

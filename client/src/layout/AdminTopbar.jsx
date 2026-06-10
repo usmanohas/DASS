@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import API_BASE_URL from "../config/baseUrl";
+import Swal from "sweetalert2";
 
 const AdminTopbar = ({
   toggleSidebar,
@@ -47,13 +48,42 @@ const AdminTopbar = ({
     : "U";
 
   const handleLogout = async () => {
+    const result = await Swal.fire({
+      title: "Logout?",
+      text: "Are you sure you want to logout?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Logout",
+      cancelButtonText: "Cancel",
+      reverseButtons: true,
+      confirmButtonColor: "#dc3545",
+      cancelButtonColor: "#6c757d",
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
       await axios.get(`${API_BASE_URL}/auth/logout`, {
         withCredentials: true,
       });
+
+      await Swal.fire({
+        icon: "success",
+        title: "Logged Out",
+        text: "You have been logged out successfully.",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+
       navigate("/login");
     } catch (error) {
       console.error("Logout error:", error);
+
+      Swal.fire({
+        icon: "error",
+        title: "Logout Failed",
+        text: "Unable to logout. Please try again.",
+      });
     }
   };
 

@@ -3,6 +3,8 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useParams } from "react-router-dom";
 import API_BASE_URL from "../../config/baseUrl";
+import { ClipLoader } from "react-spinners";
+import { PulseLoader } from "react-spinners";
 
 const TeamLeadDetailsAdmin = () => {
   const { id } = useParams();
@@ -227,7 +229,8 @@ const TeamLeadDetailsAdmin = () => {
   if (loading || !data) {
     return (
       <div className="text-center py-5">
-        <div className="spinner-border"></div>
+        <PulseLoader color="#198754" size={12} margin={4} />
+        <p className="mt-3 text-muted">Loading data...</p>
       </div>
     );
   }
@@ -276,9 +279,13 @@ const TeamLeadDetailsAdmin = () => {
                 <i className="bi bi-cloud-arrow-up me-1"></i>Status
               </div>{" "}
               {data.submission_status === "submitted" ? (
-                <span className="badge bg-success-subtle text-success rounded-pill px-3 py-2">Submitted</span>
+                <span className="badge bg-success-subtle text-success rounded-pill px-3 py-2">
+                  Submitted
+                </span>
               ) : (
-                <span className="badge bg-warning-subtle text-warning rounded-pill px-3 py-2">Pending</span>
+                <span className="badge bg-warning-subtle text-warning rounded-pill px-3 py-2">
+                  Pending
+                </span>
               )}{" "}
             </div>{" "}
           </div>{" "}

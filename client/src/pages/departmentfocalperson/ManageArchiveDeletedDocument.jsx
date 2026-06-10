@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import API_BASE_URL from "../../config/baseUrl";
+import { ClipLoader } from "react-spinners";
+import { PulseLoader } from "react-spinners";
 
 const ArchiveDeletePage = () => {
   const [documents, setDocuments] = useState([]);
@@ -103,9 +105,9 @@ const ArchiveDeletePage = () => {
         <div className="card-body">
           {/* LOADING */}
           {loading ? (
-            <div className="text-center py-5 text-muted">
-              <div className="spinner-border text-primary mb-2"></div>
-              <div>Loading documents...</div>
+            <div className="text-center py-5">
+              <PulseLoader color="#0b8585" size={12} margin={4} />
+              <p className="mt-3 text-muted">Fetching documents...</p>
             </div>
           ) : documents.length === 0 ? (
             /* EMPTY STATE */

@@ -81,13 +81,13 @@ const OtherWorkstreamDocumentDetail = () => {
      📥 DOWNLOAD DOCUMENT
   ========================= */
 
-// ✅ UPDATED DOWNLOAD WITH 5-SEC SPINNER
-const handleDownloadShared = (versionId) => {
-  let timerInterval;
+  // ✅ UPDATED DOWNLOAD WITH 5-SEC SPINNER
+  const handleDownloadShared = (versionId) => {
+    let timerInterval;
 
-  Swal.fire({
-    title: "Preparing Download...",
-    html: `
+    Swal.fire({
+      title: "Preparing Download...",
+      html: `
       <p class="mb-2">Your download will start in <b>5</b> seconds.</p>
       <small class="text-muted">Securing your file...</small>
 
@@ -97,83 +97,87 @@ const handleDownloadShared = (versionId) => {
         </div>
       </div>
     `,
-    allowOutsideClick: false,
-    showConfirmButton: false,
-    didOpen: () => {
-      const content = Swal.getHtmlContainer();
-      const b = content.querySelector("b");
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        const content = Swal.getHtmlContainer();
+        const b = content.querySelector("b");
 
-      let timeLeft = 5;
+        let timeLeft = 5;
 
-      timerInterval = setInterval(() => {
-        timeLeft--;
-        b.textContent = timeLeft;
+        timerInterval = setInterval(() => {
+          timeLeft--;
+          b.textContent = timeLeft;
 
-        if (timeLeft <= 0) {
-          clearInterval(timerInterval);
-          Swal.close();
-          startDownload(versionId); // ✅ pass versionId
-        }
-      }, 1000);
-    },
-    willClose: () => {
-      clearInterval(timerInterval);
-    },
-  });
-};
+          if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            Swal.close();
+            startDownload(versionId); // ✅ pass versionId
+          }
+        }, 1000);
+      },
+      willClose: () => {
+        clearInterval(timerInterval);
+      },
+    });
+  };
 
-// ✅ Actual download function
-const startDownload = async (versionId) => {
-  try {
-    const res = await axios.get(
-      `${API_BASE_URL}/staff/documents/download/shared/${versionId}`,
-      { withCredentials: true, responseType: "blob" },
-    );
+  // ✅ Actual download function
+  const startDownload = async (versionId) => {
+    try {
+      const res = await axios.get(
+        `${API_BASE_URL}/staff/documents/download/shared/${versionId}`,
+        { withCredentials: true, responseType: "blob" },
+      );
 
-    const disposition = res.headers["content-disposition"];
-    let filename = "downloaded-file";
+      const disposition = res.headers["content-disposition"];
+      let filename = "downloaded-file";
 
-    if (disposition && disposition.includes("filename=")) {
-      filename = decodeURIComponent(
-        disposition.split("filename=")[1].replace(/"/g, "")
+      if (disposition && disposition.includes("filename=")) {
+        filename = decodeURIComponent(
+          disposition.split("filename=")[1].replace(/"/g, ""),
+        );
+      }
+
+      const url = window.URL.createObjectURL(res.data);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      Swal.fire(
+        "Download Failed",
+        err.response?.data?.Error || "Unable to download file",
+        "error",
       );
     }
-
-    const url = window.URL.createObjectURL(res.data);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    window.URL.revokeObjectURL(url);
-  } catch (err) {
-    Swal.fire(
-      "Download Failed",
-      err.response?.data?.Error || "Unable to download file",
-      "error"
-    );
-  }
-};
+  };
 
   /* =========================
      🔐 REQUEST ACCESS
   ========================= */
-  const requestAccess = async () => {
+   const requestAccess = async () => {
     const result = await Swal.fire({
-      title: "Request Document Access",
+      title: "Request Document",
       input: "textarea",
-      inputLabel: "Reason for Request",
+      inputLabel: "Why requesting this document?",
+      inputValue:
+        "I am requesting access to this document to support official duties, review relevant information, and facilitate departmental operations. Access will be used strictly for authorized work purposes in accordance with NPHCDA-DASS policies.",
       inputPlaceholder: "Explain why you need access...",
       confirmButtonText: "Submit Request",
-      confirmButtonColor: "#198754",
-      cancelButtonColor: "#6c757d",
+      confirmButtonColor: "#5cb874",
+      cancelButtonColor: "#ff1522",
       showCancelButton: true,
       showLoaderOnConfirm: true,
       allowOutsideClick: () => !Swal.isLoading(),
 
       inputValidator: (value) => {
-        if (!value) return "Please provide a reason";
+        if (!value?.trim()) {
+          return "Please provide a reason";
+        }
       },
 
       preConfirm: async (reason) => {
@@ -204,7 +208,7 @@ const startDownload = async (versionId) => {
         icon: "success",
         title: "Request Sent",
         text: result.value.Message,
-        confirmButtonColor: "#198754",
+        confirmButtonColor: "#5cb874",
       });
 
       setTimeout(() => {
@@ -289,7 +293,9 @@ const startDownload = async (versionId) => {
 
           <div className="row g-4">
             <div className="col-md-6">
-              <h6 className="text-muted mb-3"><i className="bi bi-info-circle me-2"></i>Document Information</h6>
+              <h6 className="text-muted mb-3">
+                <i className="bi bi-info-circle me-2"></i>Document Information
+              </h6>
 
               <p>
                 <strong>Owner Department:</strong> {doc.department_name}
@@ -303,7 +309,9 @@ const startDownload = async (versionId) => {
             </div>
 
             <div className="col-md-6">
-              <h6 className="text-muted mb-3"><i className="bi bi-info-circle me-2"></i>Metadata</h6>
+              <h6 className="text-muted mb-3">
+                <i className="bi bi-info-circle me-2"></i>Metadata
+              </h6>
 
               <p>
                 <strong>Status:</strong> {doc.document_status}
@@ -343,7 +351,8 @@ const startDownload = async (versionId) => {
             {/* REQUEST ACCESS */}
             {isConfidential && (
               <button
-                className="btn btn-warning text-white"
+                className="btn text-white"
+                style={{ backgroundColor: "#ef6c00" }}
                 onClick={requestAccess}
               >
                 <i className="bi bi-shield-lock me-1"></i>

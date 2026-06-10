@@ -3,6 +3,8 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useParams } from "react-router-dom";
 import API_BASE_URL from "../../config/baseUrl";
+import { ClipLoader } from "react-spinners";
+import { PulseLoader } from "react-spinners";
 
 const TeamLeadDetails = () => {
   const { id } = useParams();
@@ -16,11 +18,11 @@ const TeamLeadDetails = () => {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
 
-    // Inject spinner CSS globally (FIXED)
-    useEffect(() => {
-      const style = document.createElement("style");
-  
-      style.innerHTML = `
+  // Inject spinner CSS globally (FIXED)
+  useEffect(() => {
+    const style = document.createElement("style");
+
+    style.innerHTML = `
           .swal2-html-container .custom-spinner {
             position: relative;
             width: 70px;
@@ -55,13 +57,13 @@ const TeamLeadDetails = () => {
             }
           }
         `;
-  
-      document.head.appendChild(style);
-  
-      return () => {
-        document.head.removeChild(style);
-      };
-    }, []);
+
+    document.head.appendChild(style);
+
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
 
   /* ================= FETCH ================= */
   const fetchData = async () => {
@@ -227,7 +229,8 @@ const TeamLeadDetails = () => {
   if (loading || !data) {
     return (
       <div className="text-center py-5">
-        <div className="spinner-border"></div>
+        <PulseLoader color="#ef6c00" size={12} margin={4} />
+        <p className="mt-3 text-muted">Fetching data...</p>
       </div>
     );
   }
@@ -276,9 +279,13 @@ const TeamLeadDetails = () => {
                 <i className="bi bi-cloud-arrow-up me-1"></i>Status
               </div>{" "}
               {data.submission_status === "submitted" ? (
-                  <span className="badge bg-success-subtle text-success rounded-pill px-3 py-2">Submitted</span>
+                <span className="badge bg-success-subtle text-success rounded-pill px-3 py-2">
+                  Submitted
+                </span>
               ) : (
-                <span className="badge bg-warning-subtle text-warning rounded-pill px-3 py-2">Pending</span>
+                <span className="badge bg-warning-subtle text-warning rounded-pill px-3 py-2">
+                  Pending
+                </span>
               )}{" "}
             </div>{" "}
           </div>{" "}

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import API_BASE_URL from "../../config/baseUrl";
+import { ClipLoader } from "react-spinners";
+import { PulseLoader } from "react-spinners";
 
 const DocumentSharedList = () => {
   const [docs, setDocs] = useState([]);
@@ -54,9 +56,9 @@ const DocumentSharedList = () => {
       <div className="card shadow-sm border">
         <div className="card-body">
           {loading ? (
-            <div className="text-center py-5 text-muted">
-              <div className="spinner-border text-primary mb-2"></div>
-              <div>Loading shared documents...</div>
+            <div className="text-center py-5">
+              <PulseLoader color="#198754" size={12} margin={4} />
+              <p className="mt-3 text-muted">Loading documents...</p>
             </div>
           ) : docs.length === 0 ? (
             <div className="text-center py-5 text-muted">
@@ -139,7 +141,9 @@ const DocumentSharedList = () => {
                             </div>
                             <small className="text-muted">
                               Shared:{" "}
-                              {new Date(p.created_at).toLocaleDateString("en-GB")}
+                              {new Date(p.created_at).toLocaleDateString(
+                                "en-GB",
+                              )}
                             </small>
                           </div>
 
@@ -148,7 +152,9 @@ const DocumentSharedList = () => {
                             <small className="text-muted d-block">Expiry</small>
                             <span className="badge bg-light text-dark border px-3 py-2 rounded-pill">
                               {p.expiry_date
-                                ? new Date(p.expiry_date).toLocaleDateString("en-GB")
+                                ? new Date(p.expiry_date).toLocaleDateString(
+                                    "en-GB",
+                                  )
                                 : "No expiry"}
                             </span>
                           </div>

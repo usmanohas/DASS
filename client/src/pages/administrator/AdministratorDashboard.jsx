@@ -4,6 +4,8 @@ import { Bar, Pie, Doughnut, Line } from "react-chartjs-2";
 import "chart.js/auto";
 import { useOutletContext } from "react-router-dom";
 import API_BASE_URL from "../../config/baseUrl";
+import { ClipLoader } from "react-spinners";
+import { PulseLoader } from "react-spinners";
 
 /* ================= REUSABLE CHART CARD ================= */
 const ChartCard = ({ title, data, options = {}, defaultType = "bar" }) => {
@@ -130,10 +132,9 @@ const AdministratorDashboard = () => {
 
   const fetchDashboard = async () => {
     try {
-      const res = await axios.get(
-        `${API_BASE_URL}/admin/dashboard-metrics`,
-        { withCredentials: true },
-      );
+      const res = await axios.get(`${API_BASE_URL}/admin/dashboard-metrics`, {
+        withCredentials: true,
+      });
 
       if (res.data.Status) setData(res.data.Data);
     } catch (err) {
@@ -144,7 +145,8 @@ const AdministratorDashboard = () => {
   if (!data) {
     return (
       <div className="text-center py-5">
-        <div className="spinner-border"></div>
+        <PulseLoader color="#198754" size={12} margin={4} />
+        <p className="mt-3 text-muted">Loading data...</p>
       </div>
     );
   }
@@ -231,7 +233,7 @@ const AdministratorDashboard = () => {
   };
 
   const ticketChart = {
-    labels: ["Open","In progress", "Resolved", "Closed"],
+    labels: ["Open", "In progress", "Resolved", "Closed"],
     datasets: [
       {
         label: "Tickets",
@@ -239,7 +241,7 @@ const AdministratorDashboard = () => {
           data.ticketSummary.open,
           data.ticketSummary.inprogress,
           data.ticketSummary.resolved,
-          data.ticketSummary.closed
+          data.ticketSummary.closed,
         ],
         backgroundColor: ["#36a2eb", "#ffc107", "#198754", "#6c757d"],
       },
@@ -329,7 +331,9 @@ const AdministratorDashboard = () => {
 
               <div>
                 <small className="text-muted">Allocated Storage</small>
-                <h4 className="text-muted mb-0">{data.storageAllocation.allocatedStorageGB} GB</h4>
+                <h4 className="text-muted mb-0">
+                  {data.storageAllocation.allocatedStorageGB} GB
+                </h4>
               </div>
             </div>
           </div>

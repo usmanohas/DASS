@@ -50,7 +50,7 @@ const AdminSidebar = ({ collapsed, user }) => {
       }}
     >
       {/* ================= BRAND ================= */}
-      <div className="text-center  pb-3 border-bottom border-secondary border-opacity-25">
+      <div className="text-center  pb-3">
         <img
           src="/assets/images/logo.png"
           alt="logo"
@@ -73,7 +73,11 @@ const AdminSidebar = ({ collapsed, user }) => {
       {/* ================= MENU ================= */}
       <div className="flex-grow-1 d-flex flex-column gap-1">
         {/* DASHBOARD */}
-        <Link to="/" style={menuItem(isActive("/"))} className={navItemClass}>
+        <Link
+          to="/admin"
+          style={menuItem(isActive("/admin"))}
+          className={navItemClass}
+        >
           <div style={iconStyle}>
             <i className="bi bi-speedometer2"></i>
           </div>
@@ -82,8 +86,8 @@ const AdminSidebar = ({ collapsed, user }) => {
             <>
               <span>Dashboard</span>
 
-              {isActive("/") && (
-                <span className="ms-auto badge rounded-pill bg-info">
+              {isActive("/admin") && (
+                <span className="ms-auto badge text-success fw-normal rounded-pill bg-white">
                   Active
                 </span>
               )}

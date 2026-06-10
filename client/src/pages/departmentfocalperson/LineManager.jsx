@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import API_BASE_URL from "../../config/baseUrl";
+import { ClipLoader } from "react-spinners";
+import { PulseLoader } from "react-spinners";
 
 const LineManager = () => {
   const [contacts, setContacts] = useState([]);
@@ -122,7 +124,8 @@ const LineManager = () => {
       {/* LOADING */}
       {loading ? (
         <div className="text-center py-5">
-          <div className="spinner-border"></div>
+          <PulseLoader color="#0b8585" size={12} margin={4} />
+          <p className="mt-3 text-muted">Fetching contact...</p>
         </div>
       ) : contacts.length === 0 ? (
         <div className="text-muted text-center">

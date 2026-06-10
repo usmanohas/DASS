@@ -3,6 +3,8 @@ import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import API_BASE_URL from "../../config/baseUrl";
+import { ClipLoader } from "react-spinners";
+import { PulseLoader } from "react-spinners";
 
 const DocumentDetail = () => {
   const navigate = useNavigate();
@@ -112,10 +114,9 @@ const DocumentDetail = () => {
   //Get Categories
   const fetchCategories = async () => {
     try {
-      const res = await axios.get(
-        `${API_BASE_URL}/department/categories`,
-        { withCredentials: true },
-      );
+      const res = await axios.get(`${API_BASE_URL}/department/categories`, {
+        withCredentials: true,
+      });
       setCategories(res.data);
     } catch (err) {
       console.error("Failed to fetch categories");
@@ -499,7 +500,13 @@ const DocumentDetail = () => {
       (allowChangeVersion &&
         editData.active_version_id !== originalData.active_version_id));
 
-  if (!doc) return <p className="text-center">Loading...</p>;
+  if (!doc)
+    return (
+      <div className="text-center py-5">
+        <PulseLoader color="#0b8585" size={12} margin={4} />
+        <p className="mt-3 text-muted">Fetching documents...</p>
+      </div>
+    );
 
   // SEARCH KEY FORMAT
   const keywords = doc.document_search_keywords
@@ -616,7 +623,7 @@ const DocumentDetail = () => {
                 <button
                   className="btn btn-sm d-flex align-items-center gap-2 px-3"
                   onClick={() => setShowUploadVersion(true)}
-                  style={{backgroundColor: "#0b8585", color: "#badfdf"}}
+                  style={{ backgroundColor: "#0b8585", color: "#badfdf" }}
                 >
                   <i className="bi bi-cloud-upload"></i>
                   Add Version
@@ -1254,7 +1261,7 @@ const DocumentDetail = () => {
               <div className="modal-content shadow-lg">
                 <div className="modal-header">
                   <h5 className="modal-title fw-bold">
-                    <i class="bi bi-plus-circle"></i> Upload New Version
+                    <i class="bi bi-plus-circle"></i> Upload Document New Version
                   </h5>
                   <button
                     type="button"
@@ -1314,20 +1321,43 @@ const DocumentDetail = () => {
                     </small>
                   </div>
                 </div>
-
                 {uploading && (
-                  <div className="mb-3">
-                    <div className="d-flex justify-content-between small mb-1">
-                      <span>Uploading...</span>
-                      <span>{uploadProgress}%</span>
+                  <div className="px-4 pb-2">
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <small className="fw-semibold text-success">
+                        <i className="bi bi-cloud-arrow-up-fill me-1"></i>
+                        Uploading document...
+                      </small>
+
+                      <small className="fw-bold text-success">
+                        {uploadProgress}%
+                      </small>
                     </div>
 
-                    <div className="progress" style={{ height: "8px" }}>
+                    <div
+                      className="progress shadow-sm"
+                      style={{
+                        height: "12px",
+                        borderRadius: "20px",
+                        backgroundColor: "#e9f7ef",
+                      }}
+                    >
                       <div
                         className="progress-bar progress-bar-striped progress-bar-animated bg-success"
                         role="progressbar"
-                        style={{ width: `${uploadProgress}%` }}
+                        style={{
+                          width: `${uploadProgress}%`,
+                          transition: "width 0.4s ease",
+                          borderRadius: "20px",
+                        }}
                       />
+                    </div>
+
+                    <div className="text-center mt-2">
+                      <small className="text-muted">
+                        Please wait while the new document version is being
+                        uploaded...
+                      </small>
                     </div>
                   </div>
                 )}

@@ -2,6 +2,7 @@ import React from "react";
 import { NavLink, Link, Outlet, useNavigate } from "react-router-dom";
 import axios from "axios";
 import API_BASE_URL from "../config/baseUrl";
+import Swal from "sweetalert2";
 
 const PartnerLayout = () => {
   const navigate = useNavigate();
@@ -13,14 +14,42 @@ const PartnerLayout = () => {
   };
 
   const handleLogout = async () => {
+    const result = await Swal.fire({
+      title: "Logout?",
+      text: "Are you sure you want to logout?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Logout",
+      cancelButtonText: "Cancel",
+      reverseButtons: true,
+      confirmButtonColor: "#dc3545",
+      cancelButtonColor: "#6c757d",
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
       await axios.get(`${API_BASE_URL}/auth/logout`, {
         withCredentials: true,
       });
-      localStorage.removeItem("user");
+
+      await Swal.fire({
+        icon: "success",
+        title: "Logged Out",
+        text: "You have been logged out successfully.",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+
       navigate("/login");
     } catch (error) {
       console.error("Logout error:", error);
+
+      Swal.fire({
+        icon: "error",
+        title: "Logout Failed",
+        text: "Unable to logout. Please try again.",
+      });
     }
   };
 
@@ -133,7 +162,7 @@ const PartnerLayout = () => {
                     )}
                   </NavLink>
                 </li>
-                                <li className="nav-item">
+                <li className="nav-item">
                   <NavLink
                     to="/partner/support-ticket"
                     className={({ isActive }) =>
@@ -146,6 +175,23 @@ const PartnerLayout = () => {
                           className={`bi bi-ticket ${isActive ? "active-icon" : ""}`}
                         ></i>
                         Support Ticket
+                      </>
+                    )}
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink
+                    to="/partner/helpdesk"
+                    className={({ isActive }) =>
+                      `nav-link ${isActive ? "active-link" : ""}`
+                    }
+                  >
+                    {({ isActive }) => (
+                      <>
+                        <i
+                          className={`bi bi-headset ${isActive ? "active-icon" : ""}`}
+                        ></i>
+                        HelpDesk
                       </>
                     )}
                   </NavLink>
@@ -166,7 +212,10 @@ const PartnerLayout = () => {
 
                   <ul className="dropdown-menu dropdown-menu-end shadow border-0 rounded-3">
                     <li>
-                      <Link className="dropdown-item" to="/partner/change-password">
+                      <Link
+                        className="dropdown-item"
+                        to="/partner/change-password"
+                      >
                         <i className="bi bi-gear me-2"></i> Security
                       </Link>
                     </li>
@@ -204,20 +253,11 @@ const PartnerLayout = () => {
         </main>
 
         {/* ================= FOOTER ================= */}
-        
-        <footer className="footer py-3 mt-auto bg-white border-top">
-          <div className="container-fluid px-4 d-flex flex-column flex-md-row justify-content-between align-items-center">
-            <div className="small text-muted">
-              © {new Date().getFullYear()} NPHCDA-DASS. All rights reserved.
-            </div>
 
-            <div className="small text-muted d-flex gap-3 mt-2 mt-md-0">
-              <span>
-                <i className="bi bi-envelope me-1"></i> helpdesk@nphcda.gov.ng
-              </span>
-              <span>
-                <i className="bi bi-telephone me-1"></i> +234 905 152 3522
-              </span>
+        <footer className="footer py-3 mt-auto bg-white border-top">
+          <div className="container-fluid px-4 align-items-center">
+            <div className="small text-muted text-center">
+              © {new Date().getFullYear()} NPHCDA-DASS. All rights reserved.
             </div>
           </div>
         </footer>

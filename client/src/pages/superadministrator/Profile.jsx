@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import API_BASE_URL from "../../config/baseUrl";
+import { ClipLoader } from "react-spinners";
+import { PulseLoader } from "react-spinners";
 
 const SuperAdminProfile = () => {
   const [user, setUser] = useState(null);
@@ -38,82 +40,77 @@ const SuperAdminProfile = () => {
       });
   };
 
-const handleUpdate = async () => {
-  setSaving(true);
+  const handleUpdate = async () => {
+    setSaving(true);
 
-  try {
-    const res = await axios.put(
-      `${API_BASE_URL}/superadmin/profile/update`,
-      editData,
-      { withCredentials: true }
-    );
+    try {
+      const res = await axios.put(
+        `${API_BASE_URL}/superadmin/profile/update`,
+        editData,
+        { withCredentials: true },
+      );
 
-    if (res.data.Status) {
+      if (res.data.Status) {
+        loadProfile();
 
-      loadProfile();
-
-      Swal.fire({
-        icon: "success",
-        title: "Profile Updated",
-        text: res.data.Message || "Your profile has been updated successfully.",
-        timer: 2000,
-        showConfirmButton: false,
-      }).then(() => {
-
-        const modal = document.getElementById("editProfileModal");
-
-        if (modal) {
-          const modalInstance =
-            window.bootstrap?.Modal?.getOrCreateInstance(modal);
-
-          modalInstance.hide();
-        }
-
-      });
-
-    } else {
-
-      if (res.data.Error === "No changes detected") {
         Swal.fire({
-          icon: "info",
-          title: "No Changes Made",
-          text: "You did not modify any profile fields.",
+          icon: "success",
+          title: "Profile Updated",
+          text:
+            res.data.Message || "Your profile has been updated successfully.",
+          timer: 2000,
+          showConfirmButton: false,
+        }).then(() => {
+          const modal = document.getElementById("editProfileModal");
+
+          if (modal) {
+            const modalInstance =
+              window.bootstrap?.Modal?.getOrCreateInstance(modal);
+
+            modalInstance.hide();
+          }
+        });
+      } else {
+        if (res.data.Error === "No changes detected") {
+          Swal.fire({
+            icon: "info",
+            title: "No Changes Made",
+            text: "You did not modify any profile fields.",
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Update Failed",
+            text: res.data.Error || "Unable to update profile.",
+          });
+        }
+      }
+    } catch (err) {
+      console.log(err);
+
+      if (err.response) {
+        Swal.fire({
+          icon: "error",
+          title: "Server Error",
+          text: err.response.data?.Error || "Update failed",
         });
       } else {
         Swal.fire({
           icon: "error",
-          title: "Update Failed",
-          text: res.data.Error || "Unable to update profile.",
+          title: "Network Error",
+          text: "Server not reachable. Please check your connection.",
         });
       }
-
     }
 
-  } catch (err) {
-    console.log(err);
-
-    if (err.response) {
-      Swal.fire({
-        icon: "error",
-        title: "Server Error",
-        text: err.response.data?.Error || "Update failed",
-      });
-    } else {
-      Swal.fire({
-        icon: "error",
-        title: "Network Error",
-        text: "Server not reachable. Please check your connection.",
-      });
-    }
-  }
-
-  setSaving(false);
-};
+    setSaving(false);
+  };
 
   if (!user) {
     return (
-      <div className="container py-5 text-center">
-        <div className="spinner-border text-success"></div>
+      <div className="text-center py-5">
+        <PulseLoader color="#198754" size={12} margin={4} />
+        <p className="mt-3 text-muted">Loading profile...</p>
       </div>
     );
   }
@@ -154,7 +151,7 @@ const handleUpdate = async () => {
               </div>
 
               <h6 className="fw-bold">
-                {user.title}{" "}{user.full_name}
+                {user.title} {user.full_name}
               </h6>
               <span className="fw-semibold mb-0">Super Administrator</span>
 
@@ -187,7 +184,9 @@ const handleUpdate = async () => {
               <div className="row small">
                 <div className="col-md-6 mb-3">
                   <strong>Full Name</strong>
-                  <div>{user.title}{" "}{user.full_name}</div>
+                  <div>
+                    {user.title} {user.full_name}
+                  </div>
                 </div>
 
                 <div className="col-md-6 mb-3">
@@ -213,7 +212,12 @@ const handleUpdate = async () => {
                 <div className="col-md-6 mb-3">
                   <strong className="me-2">Status</strong>
                   {user.is_active ? (
-                    <span className="badge text-white" style={{ backgroundColor: "#25d366" }}>Active</span>
+                    <span
+                      className="badge text-white"
+                      style={{ backgroundColor: "#25d366" }}
+                    >
+                      Active
+                    </span>
                   ) : (
                     <span className="badge bg-danger">Inactive</span>
                   )}
@@ -221,7 +225,9 @@ const handleUpdate = async () => {
 
                 <div className="col-md-6 mb-3">
                   <strong>Created</strong>
-                  <div>{new Date(user.created_at).toLocaleDateString("en-GB")}</div>
+                  <div>
+                    {new Date(user.created_at).toLocaleDateString("en-GB")}
+                  </div>
                 </div>
 
                 <div className="col-md-6 mb-3">
@@ -250,7 +256,9 @@ const handleUpdate = async () => {
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title"><i className="bi bi-pencil-square me-2"></i>Edit Profile</h5>
+              <h5 className="modal-title">
+                <i className="bi bi-pencil-square me-2"></i>Edit Profile
+              </h5>
               <button className="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
@@ -265,15 +273,15 @@ const handleUpdate = async () => {
                   }
                 >
                   <option value="">Select</option>
-                      <option value="Mr.">Mr.</option>
-                      <option value="Ms.">Ms.</option>
-                      <option value="Mrs.">Mrs</option>
-                      <option value="Miss.">Miss.</option>
-                      <option value="Dr.">Dr.</option>
-                      <option value="Engr.">Engr.</option>
-                      <option value="Pharm.">Pharm.</option>
-                      <option value="Prof.">Prof.</option>
-                      <option value="Barr.">Barr.</option>
+                  <option value="Mr.">Mr.</option>
+                  <option value="Ms.">Ms.</option>
+                  <option value="Mrs.">Mrs</option>
+                  <option value="Miss.">Miss.</option>
+                  <option value="Dr.">Dr.</option>
+                  <option value="Engr.">Engr.</option>
+                  <option value="Pharm.">Pharm.</option>
+                  <option value="Prof.">Prof.</option>
+                  <option value="Barr.">Barr.</option>
                 </select>
               </div>
 
@@ -294,7 +302,10 @@ const handleUpdate = async () => {
                   className="form-control"
                   value={editData.division_unit_state}
                   onChange={(e) =>
-                    setEditData({ ...editData, division_unit_state: e.target.value })
+                    setEditData({
+                      ...editData,
+                      division_unit_state: e.target.value,
+                    })
                   }
                 />
               </div>

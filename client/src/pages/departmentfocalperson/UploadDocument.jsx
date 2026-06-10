@@ -33,10 +33,9 @@ const Upload = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get(
-        `${API_BASE_URL}/department/categories`,
-        { withCredentials: true },
-      );
+      const res = await axios.get(`${API_BASE_URL}/department/categories`, {
+        withCredentials: true,
+      });
       setCategories(res.data);
     } catch (err) {
       console.error("Failed to fetch categories");
@@ -168,8 +167,12 @@ const Upload = () => {
   };
 
   const handleDuplicateCheck = async () => {
-    if (!file || !form.title  || !form.description ) {
-      return Swal.fire("Missing", "File, title and description required", "warning");
+    if (!file || !form.title || !form.description) {
+      return Swal.fire(
+        "Missing",
+        "File, title and description required",
+        "warning",
+      );
     }
 
     try {
@@ -310,12 +313,12 @@ const Upload = () => {
                   placeholder=""
                   rows="2"
                   value={form.title}
-                  onChange={(e) =>
-                    setForm({ ...form, title: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
                 />
 
-                <label className="form-label">Short Description <span className="text-danger">*</span></label>
+                <label className="form-label">
+                  Short Description <span className="text-danger">*</span>
+                </label>
                 <textarea
                   className="form-control mb-3"
                   placeholder=""
@@ -425,7 +428,6 @@ const Upload = () => {
                   </div>
                 </div>
 
-                
                 {/* DRAG DROP */}
                 <div
                   onDrop={handleDrop}
@@ -456,8 +458,11 @@ const Upload = () => {
 
             {/* RIGHT: GUIDELINES */}
             <div className="col-md-4">
-              <div className="p-3 rounded-3" style={{backgroundColor: "#0b8585"}}>
-                <h5 style={{color: "#badfdf"}}>Rules</h5>
+              <div
+                className="p-3 rounded-3"
+                style={{ backgroundColor: "#0b8585" }}
+              >
+                <h5 style={{ color: "#badfdf" }}>Rules</h5>
                 <ul className="small text-white mb-0">
                   <li>No zip/rar files</li>
                   <li>Max 50MB</li>
@@ -469,7 +474,11 @@ const Upload = () => {
             {/* PROCEED */}
             {isStep1Complete && (
               <div className="col-12 text-end">
-                <button className="btn text-white px-4" onClick={nextStep} style={{backgroundColor: "#0b8585"}}>
+                <button
+                  className="btn text-white px-4"
+                  onClick={nextStep}
+                  style={{ backgroundColor: "#0b8585" }}
+                >
                   Proceed to Validation →
                 </button>
               </div>
@@ -480,95 +489,134 @@ const Upload = () => {
         {/* STEP 2 */}
         {step === 2 && (
           <div className="row g-4">
-            <h4 className="mb-3">
-              <i class="bi bi-database me-2 "></i> STEP 2: <span className="text-muted">Validation</span>
-            </h4>
-            {/* LEFT: DUPLICATE CHECK */}
-            <div className="col-md-4">
-              <div className="card shadow-sm border-0 p-4 h-100">
-                <h5>Duplicate Check</h5>
-                <p className="small text-muted">
-                  Ensure this document does not already exist.
-                </p>
+            {/* HEADER */}
+            <div className="col-12">
+              <h4 className="fw-bold mb-0">
+                <i className="bi bi-shield-check me-2 text-success"></i>
+                STEP 2: <span className="text-muted">Validation</span>
+              </h4>
+              <small className="text-muted">
+                Ensure document integrity before proceeding
+              </small>
+            </div>
 
-                <button
-                  className="btn btn-outline-secondary w-100"
-                  onClick={handleDuplicateCheck}
-                >
-                  <i class="bi bi-search me-2"></i> Run Verification
-                </button>
-                {/* 
+            {/* LEFT CARD - DUPLICATE CHECK */}
+            <div className="col-md-4">
+              <div className="card border rounded-4 shadow-sm h-100">
+                <div className="card-body p-4">
+                  <h6 className="fw-bold mb-2">
+                    <i className="bi bi-search me-2 text-danger"></i>
+                    Duplicate Check
+                  </h6>
+
+                  <p className="text-muted small mb-4">
+                    Verify that this document does not already exist in the
+                    system.
+                  </p>
+
+                  <button
+                    className="btn bg-danger-subtle w-100 rounded-3 text-danger"
+                    onClick={handleDuplicateCheck}
+                  >
+                    <i className="bi bi-shield-lock me-2"></i>
+                    Run Verification
+                  </button>
+
+                  {/* STATUS (optional future use) */}
                   {form.duplicate_checked && (
-                    <div className="alert alert-success mt-3 py-2">
-                      🔍 No duplicate found
+                    <div className="alert alert-success mt-3 py-2 small mb-0">
+                      <i className="bi bi-check-circle me-2"></i>
+                      No duplicate found
                     </div>
                   )}
-                */}
+                </div>
               </div>
             </div>
 
-            {/* RIGHT: KEYWORDS & VERIFY */}
+            {/* RIGHT CARD - VALIDATION DETAILS */}
             <div className="col-md-8">
-              <div className="card shadow-sm border-0 p-4">
-                <label className="form-label fw-bold">
-                  Enter document search keywords{" "}
-                  <span className="text-danger">*</span>
-                </label>
+              <div className="card border rounded-4 shadow-sm h-100">
+                <div className="card-body p-4">
+                  <h6 className="fw-bold mb-3">
+                    <i className="bi bi-tags me-2 text-warning"></i>
+                    Document Metadata Validation
+                  </h6>
 
-                <textarea
-                  className="form-control mb-2"
-                  rows="3"
-                  placeholder="e.g. Strategy, Budget, Audit"
-                  value={form.keywords}
-                  onChange={(e) =>
-                    setForm({ ...form, keywords: e.target.value })
-                  }
-                  onBlur={(e) =>
-                    setForm({
-                      ...form,
-                      keywords: formatKeywords(e.target.value),
-                    })
-                  }
-                />
+                  {/* KEYWORDS */}
+                  <label className="form-label fw-semibold">
+                    Search Keywords <span className="text-danger">*</span>
+                  </label>
 
-                <small className="text-danger mb-3">
-                  <i className="bi bi-exclamation-triangle-fill me-2"></i>
-                  Keywords must be separated by comma and single space. Each
-                  word must start with capital letter (e.g. Strategy, Budget)
-                </small>
-                <h5 className="mt-3">For Quality Assurance</h5>
+                  <textarea
+                    className="form-control rounded-3 mb-2"
+                    rows="3"
+                    placeholder="e.g. Strategy, Budget, Audit"
+                    value={form.keywords}
+                    onChange={(e) =>
+                      setForm({ ...form, keywords: e.target.value })
+                    }
+                    onBlur={(e) =>
+                      setForm({
+                        ...form,
+                        keywords: formatKeywords(e.target.value),
+                      })
+                    }
+                  />
 
-                <label className="form-label mt-2">
-                  Document Reviewed and Verified By{" "}
-                  <span className="text-danger">*</span>
-                </label>
+                  <small className="text-muted d-block mb-4">
+                    <i className="bi bi-info-circle me-1"></i>
+                    Separate keywords with commas. Example: Strategy, Budget,
+                    Audit
+                  </small>
 
-                <input
-                  className="form-control mb-2"
-                  placeholder="Enter full name of reviewing officer/staff"
-                  value={form.verified_by}
-                  onChange={(e) =>
-                    setForm({ ...form, verified_by: e.target.value })
-                  }
-                />
+                  {/* QA SECTION */}
+                  <div className="border-top pt-3">
+                    <h6 className="fw-bold mb-3">
+                      <i className="bi bi-person-check me-2 text-success"></i>
+                      Quality Assurance
+                    </h6>
 
-                <small className="text-danger">
-                  <i className="bi bi-exclamation-triangle-fill me-2"></i>
-                  Please enter the name of the staff member who reviewed and
-                  confirmed the accuracy of this document before upload.
-                </small>
+                    <label className="form-label fw-semibold">
+                      Verified By <span className="text-danger">*</span>
+                    </label>
+
+                    <input
+                      className="form-control rounded-3 mb-2"
+                      placeholder="Enter full name of reviewing officer/staff"
+                      value={form.verified_by}
+                      onChange={(e) =>
+                        setForm({ ...form, verified_by: e.target.value })
+                      }
+                    />
+
+                    <small className="text-muted">
+                      <i className="bi bi-info-circle me-1"></i>
+                      Enter the staff member who reviewed and confirmed document
+                      accuracy.
+                    </small>
+                  </div>
+                </div>
               </div>
             </div>
 
             {/* ACTIONS */}
-            <div className="col-12 d-flex justify-content-between">
-              <button className="btn btn-outline-secondary" onClick={prevStep}>
-                ← Back
+            <div className="col-12 d-flex justify-content-between mt-6">
+              <button
+                className="btn bg-light border rounded-3 px-4"
+                onClick={prevStep}
+              >
+                <i className="bi bi-arrow-left me-2"></i>
+                Back
               </button>
 
               {isStep2Complete && (
-                <button className="btn text-white px-4" onClick={nextStep} style={{backgroundColor: "#0b8585"}}>
-                  Proceed to Preview →
+                <button
+                  className="btn text-white rounded-3 px-4"
+                  onClick={nextStep}
+                  style={{ backgroundColor: "#0b8585" }}
+                >
+                  Proceed to Preview
+                  <i className="bi bi-arrow-right ms-2"></i>
                 </button>
               )}
             </div>
@@ -577,67 +625,124 @@ const Upload = () => {
 
         {/* STEP 3 */}
         {step === 3 && (
-          <div className="card shadow-sm border-0 p-4">
-            <h4 className="mb-4">
-              <i class="bi  bi-journal-medical me-2"></i> STEP 3: <span className="text-muted">Preview Detail</span>
-            </h4>
+          <div className="card border-0 shadow-sm rounded-4 p-4">
+            {/* HEADER */}
+            <div className="d-flex justify-content-between align-items-start mb-3">
+              <div>
+                <h4 className="fw-bold mb-1">
+                  <i className="bi bi-eye me-2 text-primary"></i>
+                  STEP 3: <span className="text-muted">Preview & Confirm</span>
+                </h4>
+
+                <small className="text-muted">
+                  Review all details before final upload
+                </small>
+              </div>
+
+              <span className="badge bg-light text-dark border px-3 py-2">
+                Final Step
+              </span>
+            </div>
+
             <hr />
 
-            <div className="row g-3">
+            {/* CONTENT GRID */}
+            <div className="row g-4">
               <div className="col-md-6">
-                <strong>Title</strong>
-                <p>{form.title}</p>
+                <div className="border rounded-3 p-3 h-100 bg-light">
+                  <small className="text-muted">Title</small>
+                  <div className="fw-semibold text-dark">
+                    {form.title || "—"}
+                  </div>
+                </div>
               </div>
 
               <div className="col-md-6">
-                <strong>File Name</strong>
-                <p>{file?.name}</p>
+                <div className="border rounded-3 p-3 h-100 bg-light">
+                  <small className="text-muted">File Name</small>
+                  <div className="fw-semibold text-dark">
+                    {file?.name || "—"}
+                  </div>
+                </div>
               </div>
 
               <div className="col-md-4">
-                <strong>Category</strong>
-                <p>{categories.find((c) => c.id == form.category)?.name}</p>
+                <div className="border rounded-3 p-3 h-100">
+                  <small className="text-muted">Category</small>
+                  <div className="fw-semibold">
+                    {categories.find((c) => c.id == form.category)?.name || "—"}
+                  </div>
+                </div>
               </div>
 
               <div className="col-md-4">
-                <strong>Subcategory</strong>
-                <p>
-                  {subcategories.find((s) => s.id == form.subcategory)?.name}
-                </p>
+                <div className="border rounded-3 p-3 h-100">
+                  <small className="text-muted">Subcategory</small>
+                  <div className="fw-semibold">
+                    {subcategories.find((s) => s.id == form.subcategory)
+                      ?.name || "—"}
+                  </div>
+                </div>
               </div>
 
               <div className="col-md-4">
-                <strong>Retention Period</strong>
-                <p>{form.retention}</p>
+                <div className="border rounded-3 p-3 h-100">
+                  <small className="text-muted">Retention Period</small>
+                  <div className="fw-semibold">{form.retention || "—"}</div>
+                </div>
               </div>
 
               <div className="col-md-4">
-                <strong>Classification</strong>
-                <p>{form.visibility}</p>
+                <div className="border rounded-3 p-3 h-100">
+                  <small className="text-muted">Classification</small>
+                  <div>
+                    <span className="badge rounded-pill px-3 py-2 bg-primary">
+                      {form.visibility || "—"}
+                    </span>
+                  </div>
+                </div>
               </div>
 
               <div className="col-md-4">
-                <strong>File Type</strong>
-                <p>{file?.type}</p>
+                <div className="border rounded-3 p-3 h-100">
+                  <small className="text-muted">File Type</small>
+                  <div className="fw-semibold">{file?.type || "—"}</div>
+                </div>
               </div>
 
               <div className="col-md-4">
-                <strong>File Size</strong>
-                <p>{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                <div className="border rounded-3 p-3 h-100">
+                  <small className="text-muted">File Size</small>
+                  <div className="fw-semibold">
+                    {file ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : "—"}
+                  </div>
+                </div>
               </div>
 
-              <div className="col-md-4">
-                <strong>Search Keywords</strong>
-                <p>{form.keywords}</p>
+              <div className="col-12">
+                <div className="border rounded-3 p-3">
+                  <small className="text-muted">Search Keywords</small>
+                  <div className="fw-semibold">{form.keywords || "—"}</div>
+                </div>
               </div>
             </div>
 
-            <div className="d-flex justify-content-between mt-4">
-              <button className="btn btn-outline-secondary" onClick={prevStep}>
-                ← Back
+            {/* ACTIONS */}
+            <div className="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+              <button
+                className="btn btn-outline-secondary rounded-3 px-4"
+                onClick={prevStep}
+              >
+                <i className="bi bi-arrow-left me-2"></i>
+                Back
               </button>
-              <button className="btn btn-success px-4" onClick={handleSubmit}>
-                <i class="bi bi-floppy2-fill me-2"></i>Upload
+
+              <button
+                className="btn btn-success rounded-3 px-4"
+                onClick={handleSubmit}
+              >
+                <i className="bi bi-cloud-upload me-2"></i>
+                Upload Document
               </button>
             </div>
           </div>

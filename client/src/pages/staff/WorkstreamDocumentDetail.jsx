@@ -14,6 +14,8 @@ const WorkstreamDocumentDetail = () => {
   const [showModal, setShowModal] = useState(false);
   const [reason, setReason] = useState("");
   const [showKeywords, setShowKeywords] = useState(false);
+  const defaultRequestText =
+    "I am requesting access to this document to support official departmental duties, review relevant information, and ensure proper execution of assigned responsibilities. Access will be used strictly for official purposes in line with NPHCDA-DASS policies.";
 
   // ✅ Inject spinner CSS globally (FIXED)
   useEffect(() => {
@@ -68,10 +70,9 @@ const WorkstreamDocumentDetail = () => {
 
   const loadData = async () => {
     try {
-      const docRes = await axios.get(
-        `${API_BASE_URL}/staff/documents/${id}`,
-        { withCredentials: true },
-      );
+      const docRes = await axios.get(`${API_BASE_URL}/staff/documents/${id}`, {
+        withCredentials: true,
+      });
 
       const statusRes = await axios.get(
         `${API_BASE_URL}/staff/documents/${id}/request-status`,
@@ -239,7 +240,9 @@ const WorkstreamDocumentDetail = () => {
               <small className="text-muted">{doc.document_code}</small>
             </div>
 
-            <span className="badge bg-danger-subtle text-danger border px-3 py-2 rounded-pill">
+            <span
+              className={`badge rounded-pill px-4 py-3 bg-dark-subtle border text-dark`}
+            >
               {doc.classification}
             </span>
           </div>
@@ -326,7 +329,7 @@ const WorkstreamDocumentDetail = () => {
           <div className="mt-4 d-flex gap-2 flex-wrap">
             {/* Back Button */}
             <button
-              className="btn btn-outline-secondary me-2"
+              className="btn btn-light border px-3 me-2"
               onClick={() => navigate("/staff/document/workstream")}
             >
               <i className="bi bi-arrow-left me-2"></i>
@@ -378,8 +381,8 @@ const WorkstreamDocumentDetail = () => {
                   <div className="alert alert-success d-flex align-items-center justify-content-between py-2 px-3 mb-0">
                     <div>
                       <i className="bi bi-check-circle-fill me-2"></i>
-                      <strong>Access Granted.</strong> You can now download
-                      this document.
+                      <strong>Access Granted.</strong> You can now download this
+                      document.
                     </div>
 
                     <button
@@ -395,11 +398,15 @@ const WorkstreamDocumentDetail = () => {
                 {/* 🆕 FIRST TIME */}
                 {!requestStatus && (
                   <button
-                    className="btn btn-primary"
-                    onClick={() => setShowModal(true)}
+                    className="btn text-white"
+                    onClick={() => {
+                      setReason(defaultRequestText);
+                      setShowModal(true);
+                    }}
+                    style={{ backgroundColor: "#ef6c00" }}
                   >
                     <i className="bi bi-file-earmark-lock me-2"></i>
-                    Request Access
+                    Request Document
                   </button>
                 )}
               </>
@@ -416,34 +423,60 @@ const WorkstreamDocumentDetail = () => {
           <div className="modal-backdrop fade show" />
 
           <div className="modal show d-block">
-            <div className="modal-dialog modal-dialog-centered">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title">Request Access</h5>
+            <div className="modal-dialog modal-dialog-centered modal-lg">
+              <div className="modal-content border-0 shadow-lg rounded-4">
+                {/* HEADER */}
+                <div className="modal-header border-0 pb-0">
+                  <h4 className="modal-title fw-bold">
+                    <i className="bi bi-shield-lock me-2"></i>
+                    Request Document Access
+                  </h4>
+
                   <button
                     className="btn-close"
                     onClick={() => setShowModal(false)}
                   />
                 </div>
 
-                <div className="modal-body">
+                {/* BODY */}
+                <div className="modal-body pt-2">
+                  <p className="text-muted small mb-3">
+                    Please provide a justification for accessing this document.
+                    You may edit the default request message below.
+                  </p>
+
+                  <label className="form-label fw-semibold">
+                    Reason for Access
+                  </label>
+
                   <textarea
-                    className="form-control"
-                    placeholder="Enter reason..."
+                    className="form-control rounded-3"
+                    rows="5"
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
                   />
+
+                  <small className="text-muted d-block mt-2">
+                    <i className="bi bi-check me-1"></i>This request will be reviewed by the department focal
+                    person before approval.
+                  </small>
                 </div>
 
-                <div className="modal-footer">
+                {/* FOOTER */}
+                <div className="modal-footer border-0 pt-0">
                   <button
-                    className="btn btn-secondary"
+                    className="btn btn-light border px-4"
                     onClick={() => setShowModal(false)}
                   >
                     Cancel
                   </button>
 
-                  <button className="btn btn-success" onClick={submitRequest}>
+                  <button
+                    className="btn px-4 text-white"
+                    onClick={submitRequest}
+                    disabled={!reason?.trim()}
+                    style={{ backgroundColor: "#ef6c00" }}
+                  >
                     Submit Request
                   </button>
                 </div>

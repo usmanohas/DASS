@@ -3,6 +3,8 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../../config/baseUrl";
+import { ClipLoader } from "react-spinners";
+import { PulseLoader } from "react-spinners";
 
 const TeamLead = () => {
   const [programs, setPrograms] = useState([]);
@@ -13,10 +15,9 @@ const TeamLead = () => {
   const fetchPrograms = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(
-        `${API_BASE_URL}/staff/team-lead/programs`,
-        { withCredentials: true },
-      );
+      const res = await axios.get(`${API_BASE_URL}/staff/team-lead/programs`, {
+        withCredentials: true,
+      });
 
       if (res.data.Status) {
         setPrograms(res.data.data);
@@ -36,7 +37,9 @@ const TeamLead = () => {
       {/* HEADER */}
 
       <div className="mb-4">
-        <h3 className=""><span className="bi bi-people me-1"></span>Team Lead</h3>
+        <h3 className="">
+          <span className="bi bi-people me-1"></span>Team Lead
+        </h3>
         <small className="text-muted">
           You have been assigned as a team lead for the following programs
         </small>
@@ -47,7 +50,8 @@ const TeamLead = () => {
         <div className="card-body">
           {loading ? (
             <div className="text-center py-5">
-              <div className="spinner-border"></div>
+              <PulseLoader color="#ef6c00" size={12} margin={4} />
+              <p className="mt-3 text-muted">Fetching program...</p>
             </div>
           ) : programs.length === 0 ? (
             <div className="text-center text-muted py-5">
@@ -73,23 +77,27 @@ const TeamLead = () => {
                     <tr
                       key={p.id}
                       style={{ cursor: "pointer" }}
-                      onClick={() => navigate(`/staff/program/team-lead/${p.id}`)}
+                      onClick={() =>
+                        navigate(`/staff/program/team-lead/${p.id}`)
+                      }
                     >
                       <td>{i + 1}</td>
 
                       <td className="fw-semibold">{p.name}</td>
 
-                      <td className="text-muted small">{p.department_name || "—"}</td>
+                      <td className="text-muted small">
+                        {p.department_name || "—"}
+                      </td>
 
                       <td>
-                        <small className="">
-                          {p.state}
-                        </small>
+                        <small className="">{p.state}</small>
                       </td>
 
                       <td>
                         {p.submission_status === "submitted" ? (
-                          <span className="badge bg-success-subtle text-success rounded-pill px-3 py-2">Submitted</span>
+                          <span className="badge bg-success-subtle text-success rounded-pill px-3 py-2">
+                            Submitted
+                          </span>
                         ) : (
                           <span className="badge bg-warning-subtle text-warning rounded-pill px-3 py-2">
                             Pending

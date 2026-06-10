@@ -109,17 +109,18 @@ const AdminChangePassword = () => {
       );
 
       if (res.data.Status) {
-        await Swal.fire({
-          icon: "success",
-          title: "Password Updated",
-          text: "Please login again",
-        });
-
         await axios.get(`${API_BASE_URL}/auth/logout`, {
           withCredentials: true,
         });
 
-        window.location.href = "/login";
+        await Swal.fire({
+          icon: "success",
+          title: "Password Updated",
+          text: "You will be logged out and redirected to login.",
+          confirmButtonText: "OK",
+        });
+
+        window.location.replace("/login");
       } else {
         Swal.fire("Error", res.data.Error, "error");
       }
@@ -263,13 +264,12 @@ const AdminChangePassword = () => {
                   </div>
                 )}
             </div>
-            
+
             <div className="d-flex justify-content-center mt-3">
               <button className="btn btn-success btn-md" disabled={loading}>
                 {loading ? "Updating..." : "Update Password"}
               </button>
             </div>
-
           </form>
         </div>
       </div>

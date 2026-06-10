@@ -74,8 +74,8 @@ const FocalPersonSidebar = ({ collapsed, user }) => {
       <div className="flex-grow-1 d-flex flex-column gap-1">
         {/* DASHBOARD */}
         <Link
-          to="/"
-          style={menuItem(isActive("/"))}
+          to="/department"
+          style={menuItem(isActive("/department"))}
           className={navItemClass}
         >
           <div style={iconStyle}>
@@ -86,8 +86,8 @@ const FocalPersonSidebar = ({ collapsed, user }) => {
             <>
               <span>Dashboard</span>
 
-              {isActive("/") && (
-                <span className="ms-auto badge rounded-pill bg-info">
+              {isActive("/department") && (
+                <span className="ms-auto badge text-success fw-normal rounded-pill bg-white">
                   Active
                 </span>
               )}

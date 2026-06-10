@@ -3,6 +3,8 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../../config/baseUrl";
+import { ClipLoader } from "react-spinners";
+import { PulseLoader } from "react-spinners";
 
 const ProgramsPage = () => {
   const [programs, setPrograms] = useState([]);
@@ -150,8 +152,8 @@ const ProgramsPage = () => {
         <div className="card-body p-0">
           {loading ? (
             <div className="text-center py-5">
-              <div className="spinner-border text-primary"></div>
-              <div className="mt-2 text-muted">Loading programs...</div>
+              <PulseLoader color="#0b8585" size={12} margin={4} />
+              <p className="mt-3 text-muted">Fetching programs...</p>
             </div>
           ) : programs.length === 0 ? (
             <div className="text-center py-5 text-muted">

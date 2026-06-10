@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import API_BASE_URL from "../../config/baseUrl";
+import { ClipLoader } from "react-spinners";
+import { PulseLoader } from "react-spinners";
 
 const SuperAdminAuditTrail = () => {
   const [groupedLogs, setGroupedLogs] = useState({});
@@ -319,7 +321,8 @@ const SuperAdminAuditTrail = () => {
       {/* ================= LOGS ================= */}
       {loading ? (
         <div className="text-center py-5">
-          <div className="spinner-border"></div>
+          <PulseLoader color="#198754" size={12} margin={4} />
+          <p className="mt-3 text-muted">Loading data...</p>
         </div>
       ) : Object.keys(groupedLogs).length === 0 ? (
         <div className="text-center text-muted py-5">No audit logs found</div>

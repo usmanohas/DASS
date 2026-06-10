@@ -34,14 +34,11 @@ const MainStaffDashboard = () => {
 
   const fetchSummary = async () => {
     try {
-      const res = await axios.get(
-        `${API_BASE_URL}/staff/dashboard-summary`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+      const res = await axios.get(`${API_BASE_URL}/staff/dashboard-summary`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-      );
+      });
 
       setSummary(res.data.Data);
     } catch (err) {
@@ -68,16 +65,13 @@ const MainStaffDashboard = () => {
 
   const fetchDownloadStats = async () => {
     try {
-      const res = await axios.get(
-        `${API_BASE_URL}/staff/download-stats`,
-        {
-          params: dateRange,
+      const res = await axios.get(`${API_BASE_URL}/staff/download-stats`, {
+        params: dateRange,
 
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-      );
+      });
 
       setDownloadData(res.data.Data || []);
     } catch (err) {
@@ -144,81 +138,80 @@ const MainStaffDashboard = () => {
   };
 
   const downloadChart = {
-  labels: downloadData.map((d) => d.date),
-  datasets: [
-    {
-      label: "Downloads",
-      data: downloadData.map((d) => toNum(d.total)),
-      borderColor: "#0d6efd",
-      borderWidth: 2,
-      tension: 0.3,
-      fill: false, // ✅ REMOVE background shading
-    },
-  ],
-};
+    labels: downloadData.map((d) => d.date),
+    datasets: [
+      {
+        label: "Downloads",
+        data: downloadData.map((d) => toNum(d.total)),
+        borderColor: "#0d6efd",
+        borderWidth: 2,
+        tension: 0.3,
+        fill: false, // ✅ REMOVE background shading
+      },
+    ],
+  };
 
   return (
     <div className="container-fluid py-4">
       {/* =========================================
           HEADER
       ========================================= */}
-      <div
-        className="card border-0 shadow-sm rounded-4 mb-3 overflow-hidden"
-        style={{
-          background: "linear-gradient(135deg, #ef6c00, #ff8f00)",
-        }}
-      >
-        <div className="card-body p-3 p-md-4">
+      <div className="card border rounded-4 shadow-sm mb-4 overflow-hidden">
+        <div className="card-body p-4">
           <div className="row align-items-center">
+            {/* LEFT */}
             <div className="col-lg-8">
-              <div className="d-flex align-items-center gap-3 mb-3">
+              <div className="d-flex align-items-center gap-3 mb-4">
+                {/* AVATAR */}
                 <div
-                  className="rounded-circle bg-white bg-opacity-25 d-flex align-items-center justify-content-center"
+                  className="rounded-circle d-flex align-items-center justify-content-center border"
                   style={{
                     width: "70px",
                     height: "70px",
+                    backgroundColor: "#f8f9fa",
                   }}
                 >
                   <i
-                    className="bi bi-person text-white"
+                    className="bi bi-person text-secondary"
                     style={{ fontSize: "2rem" }}
                   ></i>
                 </div>
 
+                {/* TEXT */}
                 <div>
-                  <h2 className="fw-bold text-white mb-1">Welcome Back</h2>
+                  <div className="text-muted small mb-1">Welcome back,</div>
 
-                  <h5 className="text-white mb-0">{user?.full_name}</h5>
+                  <h4 className="fw-bold mb-0 text-dark">{user?.full_name}</h4>
                 </div>
               </div>
 
-              <div className="d-flex flex-wrap gap-4 text-white">
+              {/* INFO ROW */}
+              <div className="d-flex flex-wrap gap-5">
                 <div>
-                  <small className="opacity-75 d-block">Department</small>
-
-                  <strong>{user?.department}</strong>
+                  <small className="text-muted d-block">Department</small>
+                  <div className="fw-semibold text-dark">
+                    {user?.department}
+                  </div>
                 </div>
 
                 <div>
-                  <small className="opacity-75 d-block">Last Login</small>
-
-                  <strong>{formattedLastLogin}</strong>
+                  <small className="text-muted d-block">Last Login</small>
+                  <div className="fw-semibold text-dark">
+                    {formattedLastLogin}
+                  </div>
                 </div>
+                
               </div>
             </div>
 
+            {/* RIGHT */}
             <div className="col-lg-4 text-lg-end mt-4 mt-lg-0">
-              <div
-                className="bg-white bg-opacity-10 rounded-4 p-3 d-inline-block"
-                style={{
-                  backdropFilter: "blur(6px)",
-                }}
-              >
-                <small className="text-white opacity-75 d-block mb-1">
+              <div className="border rounded-3 p-3 d-inline-block bg-light">
+                <small className="text-muted d-block mb-1">
                   System Access Level
                 </small>
 
-                <h5 className="text-white fw-bold mb-0">Staff Dashboard</h5>
+                <h6 className="fw-bold mb-0 text-dark">Staff Dashboard</h6>
               </div>
             </div>
           </div>

@@ -177,65 +177,85 @@ const InternalAccessRequests = () => {
       </div>
 
       {/* TABLE */}
-      <div className="card shadow-sm">
-        <div className="card-body">
+      <div className="card border-0 shadow-sm rounded-4">
+        <div className="card-body p-0">
           <div className="table-responsive">
-            <table className="table table-hover align-middle">
+            <table className="table table-hover align-middle mb-0">
               <thead className="table-light">
                 <tr>
-                  <th>#</th>
+                  <th className="ps-4">#</th>
                   <th>Staff</th>
-                  <th>Division/Unit/State</th>
-                  <th>Document</th>
+                  <th>Division / Unit / State</th>
+                  <th>Document Title</th>
                   <th>Classification</th>
                   <th>Status</th>
                   <th>Date</th>
-                  <th className="text-end">Actions</th>
+                  <th className="text-center pe-4">Actions</th>
                 </tr>
               </thead>
 
               <tbody>
                 {paginatedData.length === 0 ? (
                   <tr>
-                    <td colSpan="8" className="text-center py-3">
-                      <div className="text-center py-5">
-                        <i
-                          className="bi bi-inbox text-muted"
-                          style={{ fontSize: "40px" }}
-                        ></i>
+                    <td colSpan="8" className="text-center py-5">
+                      <i
+                        className="bi bi-inbox text-muted"
+                        style={{ fontSize: "3rem" }}
+                      ></i>
 
-                        <h6 className="mt-3 fw-semibold">
-                          No Access Requests Submitted
-                        </h6>
+                      <h6 className="mt-3 fw-semibold">
+                        No Access Requests Submitted
+                      </h6>
 
-                        <p className="text-muted mb-0">
-                          Department staff have not submitted any document
-                          access requests yet.
-                        </p>
+                      <p className="text-muted mb-0">
+                        Department staff have not submitted any document access
+                        requests yet.
+                      </p>
 
-                        <small className="text-muted">
-                          New requests will appear here.
-                        </small>
-                      </div>
+                      <small className="text-muted">
+                        New requests will appear here.
+                      </small>
                     </td>
                   </tr>
                 ) : (
                   paginatedData.map((r, index) => (
                     <tr key={r.id}>
-                      {/* ✅ ROW NUMBER */}
-                      <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                      <td className="ps-4 fw-semibold text-muted">
+                        {(currentPage - 1) * itemsPerPage + index + 1}
+                      </td>
 
-                      <td>{r.full_name}</td>
-                      <td>{r.division_unit_state}</td>
-                      <td>{r.title}</td>
-                      <td className="fw-bold">
-                        <span className="badge bg-light text-dark border px-3 py-2 rounded-pill">
+                      <td>
+                        <div className="text-muted">
+                          {r.full_name}
+                        </div>
+                      </td>
+
+                      <td>
+                        <span className="text-muted">
+                          {r.division_unit_state}
+                        </span>
+                      </td>
+
+                      <td>
+                        <div className="text-dark">{r.title}</div>
+                      </td>
+
+                      <td>
+                        <span
+                          className="badge rounded-pill px-3 py-2"
+                          style={{
+                            backgroundColor: "#eef6ff",
+                            color: "#0d6efd",
+                            fontWeight: 600,
+                          }}
+                        >
                           {r.classification}
                         </span>
                       </td>
+
                       <td>
                         <span
-                          className={`badge ${
+                          className={`badge rounded-pill px-3 py-2 ${
                             r.status === "approved"
                               ? "bg-success"
                               : r.status === "declined"
@@ -247,12 +267,21 @@ const InternalAccessRequests = () => {
                         </span>
                       </td>
 
-                      <td>{new Date(r.created_at).toLocaleString()}</td>
+                      <td>
+                        <small className="text-muted">
+                          {new Date(r.created_at).toLocaleDateString("en-GB", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </small>
+                      </td>
 
-                      <td className="text-end">
+                      <td className="text-end pe-4">
                         <div className="d-flex justify-content-end gap-2">
                           <button
-                            className="btn btn-sm btn-outline-primary"
+                            className="btn btn-light border rounded-circle action-btn"
+                            title="View Details"
                             onClick={() => {
                               setSelected(r);
                               setShowDetails(true);
@@ -264,14 +293,16 @@ const InternalAccessRequests = () => {
                           {r.status === "pending" && (
                             <>
                               <button
-                                className="btn btn-sm btn-success"
+                                className="btn btn-success rounded-circle action-btn"
+                                title="Approve Request"
                                 onClick={() => handleApprove(r)}
                               >
                                 <i className="bi bi-check-lg"></i>
                               </button>
 
                               <button
-                                className="btn btn-sm btn-danger"
+                                className="btn btn-danger rounded-circle action-btn"
+                                title="Decline Request"
                                 onClick={() => handleReject(r)}
                               >
                                 <i className="bi bi-x-lg"></i>
@@ -287,44 +318,58 @@ const InternalAccessRequests = () => {
             </table>
           </div>
 
-          {/* ✅ PAGINATION UI */}
+          {/* Pagination */}
           {requests.length > 0 && (
-            <div className="card-footer d-flex justify-content-between align-items-center">
-              <span>
-                Page {currentPage} of {totalPages || 1}
-              </span>
+            <div className="d-flex justify-content-between align-items-center p-3 border-top">
+              <small className="text-muted">
+                Showing page {currentPage} of {totalPages}
+              </small>
 
-              <div>
-                <button
-                  className="btn btn-sm btn-outline-secondary me-2"
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage((p) => p - 1)}
-                >
-                  Previous
-                </button>
-
-                {[...Array(totalPages)].map((_, i) => (
-                  <button
-                    key={i}
-                    className={`btn btn-sm me-1 ${
-                      currentPage === i + 1
-                        ? "btn-primary"
-                        : "btn-outline-primary"
+              <nav>
+                <ul className="pagination pagination-sm mb-0">
+                  <li
+                    className={`page-item ${
+                      currentPage === 1 ? "disabled" : ""
                     }`}
-                    onClick={() => setCurrentPage(i + 1)}
                   >
-                    {i + 1}
-                  </button>
-                ))}
+                    <button
+                      className="page-link"
+                      onClick={() => setCurrentPage((p) => p - 1)}
+                    >
+                      <i className="bi bi-chevron-left"></i>
+                    </button>
+                  </li>
 
-                <button
-                  className="btn btn-sm btn-outline-secondary ms-2"
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage((p) => p + 1)}
-                >
-                  Next
-                </button>
-              </div>
+                  {[...Array(totalPages)].map((_, i) => (
+                    <li
+                      key={i}
+                      className={`page-item ${
+                        currentPage === i + 1 ? "active" : ""
+                      }`}
+                    >
+                      <button
+                        className="page-link"
+                        onClick={() => setCurrentPage(i + 1)}
+                      >
+                        {i + 1}
+                      </button>
+                    </li>
+                  ))}
+
+                  <li
+                    className={`page-item ${
+                      currentPage === totalPages ? "disabled" : ""
+                    }`}
+                  >
+                    <button
+                      className="page-link"
+                      onClick={() => setCurrentPage((p) => p + 1)}
+                    >
+                      <i className="bi bi-chevron-right"></i>
+                    </button>
+                  </li>
+                </ul>
+              </nav>
             </div>
           )}
         </div>

@@ -140,7 +140,7 @@ const ShareDocumentPage = () => {
   const fetchLatestLink = async () => {
     try {
       const res = await axios.get(
-        `${API_BASE_URL}/admin/documents/latest-link/${id}`,
+        `${API_BASE_URL}/admin/documents/latest-link/${id}`, 
       );
 
       if (res.data.Status) {

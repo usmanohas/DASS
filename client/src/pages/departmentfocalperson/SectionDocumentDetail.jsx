@@ -192,19 +192,23 @@ const SectionDocumentDetail = () => {
   ========================= */
   const requestAccess = async () => {
     const result = await Swal.fire({
-      title: "Request Document Access",
+      title: "Request Document",
       input: "textarea",
-      inputLabel: "Reason for access",
+      inputLabel: "Why requesting this document?",
+      inputValue:
+        "I am requesting access to this document to support official duties, review relevant information, and facilitate departmental operations. Access will be used strictly for authorized work purposes in accordance with NPHCDA-DASS policies.",
       inputPlaceholder: "Explain why you need access...",
       confirmButtonText: "Submit Request",
-      confirmButtonColor: "#198754",
-      cancelButtonColor: "#6c757d",
+      confirmButtonColor: "#0b8585",
+      cancelButtonColor: "#ff1522",
       showCancelButton: true,
       showLoaderOnConfirm: true,
       allowOutsideClick: () => !Swal.isLoading(),
 
       inputValidator: (value) => {
-        if (!value) return "Please provide a reason";
+        if (!value?.trim()) {
+          return "Please provide a reason";
+        }
       },
 
       preConfirm: async (reason) => {
@@ -235,7 +239,7 @@ const SectionDocumentDetail = () => {
         icon: "success",
         title: "Request Sent",
         text: result.value.Message,
-        confirmButtonColor: "#198754",
+        confirmButtonColor: "#0b8585",
       });
 
       setTimeout(() => {
@@ -265,7 +269,7 @@ const SectionDocumentDetail = () => {
         </h3>
 
         <span
-          className={`badge ${isConfidential ? "bg-danger" : "bg-success"}`}
+          className={`badge rounded-pill px-4 py-3 bg-dark-subtle border text-dark`}
         >
           {doc.classification}
         </span>
@@ -338,11 +342,12 @@ const SectionDocumentDetail = () => {
             {/* REQUEST ACCESS */}
             {isConfidential && (
               <button
-                className="btn btn-warning text-white"
+                className="btn text-white"
+                style={{backgroundColor:"#0b8585"}}
                 onClick={requestAccess}
               >
                 <i className="bi bi-shield-lock me-1"></i>
-                Request Access
+                Request Document
               </button>
             )}
           </div>
