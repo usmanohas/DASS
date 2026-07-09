@@ -203,85 +203,227 @@ router.get("/logout", async (req, res) => {
   }
 });
 
+/* ===============================================
+         FORGET PASSWORD
+================================================= */
 
-
-router.get("/logou", async (req, res) => {
-  const connection = await connectToDatabase();
-
+router.post("/forgot-password/verify-user", async (req, res) => {
   try {
-    const token = req.cookies.token;
+    const connection = await connectToDatabase();
 
-    if (token) {
-      try {
-        const decoded = jwt.verify(token, process.env.JWT_KEY);
+    const { email, file_number } = req.body;
 
-        // Parse device info
-        const parser = new UAParser(req.headers["user-agent"]);
-        const ua = parser.getResult();
+    const [rows] = await connection.query(
+      `
+      SELECT id
+      FROM users
+      WHERE email = ?
+      AND file_number = ?
+      AND is_active = 1
+      LIMIT 1
+      `,
+      [email, file_number]
+    );
 
-        const browser =
-          `${ua.browser.name || "Unknown"} ${ua.browser.version || ""}`.trim();
-        const os = `${ua.os.name || "Unknown"} ${ua.os.version || ""}`.trim();
-        const device = ua.device.vendor
-          ? `${ua.device.vendor} ${ua.device.model}`
-          : "Desktop";
-
-        const ip = req.ip === "::1" ? "127.0.0.1" : req.ip;
-
-        await connection.query(
-          `INSERT INTO audit_logs
-           (user_id, session_id, action, entity_type, description, user_agent_raw,
-            ip_address, browser, os, device, status)
-           VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
-          [
-            decoded.id,
-            decoded.session_id,
-            "LOGOUT",
-            "AUTH",
-            "User logged out successfully",
-            req.headers["user-agent"],
-            ip,
-            browser,
-            os,
-            device,
-            "SUCCESS",
-          ],
-        );
-      } catch (verifyError) {
-        // Token invalid or expired → log attempt
-        await connection.query(
-          `INSERT INTO audit_logs
-           (action, entity_type, description, status)
-           VALUES (?,?,?,?)`,
-          [
-            "LOGOUT",
-            "AUTH",
-            "Logout attempted with invalid/expired token",
-            "FAILED",
-          ],
-        );
-      }
+    if (rows.length === 0) {
+      return res.json({
+        Status: false,
+        Error: "Invalid email or file number",
+      });
     }
 
-    // Always clear cookie
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+    const staffId = rows[0].id;
+
+    const token = crypto.randomBytes(32).toString("hex");
+
+    const expires = new Date(
+      Date.now() + 10 * 60 * 1000
+    );
+
+    await connection.query(
+      `
+      INSERT INTO password_recovery_sessions
+      (staff_id, token, expires_at)
+      VALUES(?,?,?)
+      `,
+      [staffId, token, expires]
+    );
+
+    const [questions] = await connection.query(
+      `
+      SELECT
+      ssa.question_id,
+      sq.question
+      FROM staff_security_answers ssa
+      JOIN security_questions sq
+      ON sq.id = ssa.question_id
+      WHERE ssa.staff_id = ?
+      ORDER BY ssa.slot_number ASC
+      `,
+      [staffId]
+    );
+
+    return res.json({
+      Status: true,
+      Token: token,
+      Questions: questions,
     });
 
-    return res.json({ Status: true, Message: "Logout successful" });
   } catch (err) {
-    console.error("Logout error:", err);
+    console.log(err);
 
-    // Even if DB fails, never break logout
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+    return res.json({
+      Status: false,
+      Error: "Unable to verify account",
+    });
+  }
+});
+
+router.post("/forgot-password/verify-answers", async (req, res) => {
+  try {
+    const connection = await connectToDatabase();
+
+    const { token, answers } = req.body;
+
+    const [session] = await connection.query(
+      `
+      SELECT *
+      FROM password_recovery_sessions
+      WHERE token = ?
+      AND verified = 0
+      AND expires_at > NOW()
+      `,
+      [token]
+    );
+
+    if (session.length === 0) {
+      return res.json({
+        Status: false,
+        Error: "Recovery session expired",
+      });
+    }
+
+    const staffId = session[0].staff_id;
+
+    const [savedAnswers] = await connection.query(
+      `
+      SELECT *
+      FROM staff_security_answers
+      WHERE staff_id=?
+      ORDER BY slot_number ASC
+      `,
+      [staffId]
+    );
+
+    let matched = 0;
+
+    for (let i = 0; i < savedAnswers.length; i++) {
+      const ok = await bcrypt.compare(
+        answers[i].trim().toLowerCase(),
+        savedAnswers[i].answer_hash
+      );
+
+      if (ok) matched++;
+    }
+
+    if (matched !== 3) {
+      return res.json({
+        Status: false,
+        Error: "One or more answers are incorrect. Please try again",
+      });
+    }
+
+    await connection.query(
+      `
+      UPDATE password_recovery_sessions
+      SET verified = 1
+      WHERE token = ?
+      `,
+      [token]
+    );
+
+    return res.json({
+      Status: true,
+      Message: "Security questions verified",
     });
 
-    return res.json({ Status: true });
+  } catch (err) {
+    return res.json({
+      Status: false,
+      Error: "Verification failed",
+    });
+  }
+});
+
+router.post("/forgot-password/reset", async (req, res) => {
+  try {
+    const connection = await connectToDatabase();
+
+    const { token, password } = req.body;
+
+    // PASSWORD VALIDATION
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^()_\-+=])[A-Za-z\d@$!%*?&#^()_\-+=]{8,}$/;
+
+    if (!passwordRegex.test(password)) {
+      return res.json({
+        Status: false,
+        Error:
+          "Password must be at least 8 characters and contain uppercase, lowercase, number and special character.",
+      });
+    }
+
+    // VERIFY SESSION
+    const [session] = await connection.query(
+      `
+      SELECT *
+      FROM password_recovery_sessions
+      WHERE token = ?
+      AND verified = 1
+      AND expires_at > NOW()
+      `,
+      [token]
+    );
+
+    if (session.length === 0) {
+      return res.json({
+        Status: false,
+        Error: "Session expired",
+      });
+    }
+
+    // UPDATE PASSWORD
+    const hash = await bcrypt.hash(password, 10);
+
+    await connection.query(
+      `
+      UPDATE users
+      SET password_hash = ?
+      WHERE id = ?
+      `,
+      [hash, session[0].staff_id]
+    );
+
+    // Remove recovery session after successful reset
+    await connection.query(
+      `
+      DELETE FROM password_recovery_sessions
+      WHERE token = ?
+      `,
+      [token]
+    );
+
+    return res.json({
+      Status: true,
+      Message: "Password updated successfully",
+    });
+  } catch (err) {
+    console.error(err);
+
+    return res.json({
+      Status: false,
+      Error: "Unable to reset password",
+    });
   }
 });
 

@@ -10,6 +10,7 @@ const WorkstreamDocumentRequests = () => {
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
+  const [expandedRow, setExpandedRow] = useState(null);
 
   const itemsPerPage = 10;
 
@@ -271,6 +272,7 @@ const WorkstreamDocumentRequests = () => {
     <div className="container py-4">
       <h3 className="mb-4 fw-bold">
         <span className="bi bi-building me-2"></span>Inter-Departmental Requests
+        bbbb
       </h3>
 
       {/* 🔍 SEARCH */}
@@ -311,18 +313,18 @@ const WorkstreamDocumentRequests = () => {
               <tr>
                 <th>#</th>
                 <th>Document</th>
-                <th>Reason</th>
                 <th>Request Status</th>
                 <th>Requested At</th>
                 <th>Expires At</th>
                 <th>Action</th>
+                <th></th>
               </tr>
             </thead>
 
             <tbody>
               {paginatedRequests.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="text-center py-4">
+                  <td colSpan="8" className="text-center py-4">
                     No matching requests
                   </td>
                 </tr>
@@ -331,73 +333,210 @@ const WorkstreamDocumentRequests = () => {
                   const expired = isExpired(r.expires_at);
 
                   return (
-                    <tr key={r.id}>
-                      <td>{i + 1}</td>
+                    <React.Fragment key={r.id}>
+                      {/* MAIN ROW */}
+                      <tr key={r.id}>
+                        <td>{i + 1}</td>
+                        <td>
+                          <div className="fw-semibold">
+                            {truncate(r.title, 35)}
+                          </div>
 
-                      <td>
-                        <div className="fw-semibold">
-                          {truncate(r.title, 35)}
-                        </div>
-                        <small className="text-muted">
-                          <i className="bi bi-building me-2"></i>
-                          {r.owner_department_name}
-                        </small>
-                      </td>
-
-                      <td className="text-muted">{truncate(r.reason, 45)}</td>
-
-                      <td>{getBadge(r.status)}</td>
-
-                      <td>
-                        <small className="text-muted">
-                          {new Date(r.created_at).toLocaleDateString("en-GB")}
-                        </small>
-                      </td>
-
-                      <td>
-                        {r.expires_at ? (
-                          <small
-                            className={expired ? "text-danger" : "text-muted"}
-                          >
-                            {new Date(r.expires_at).toLocaleDateString("en-GB")}
+                          <small className="text-muted">
+                            <i className="bi bi-building me-2"></i>
+                            {r.owner_department_name}
                           </small>
-                        ) : (
-                          "-"
-                        )}
-                      </td>
+                        </td>
 
-                      <td className="text-center">
-                        <div className="d-flex gap-2 justify-content-center">
-                          {/* VIEW BUTTON */}
-                          <button
-                            className="btn btn-outline-secondary btn-sm"
-                            onClick={() => viewDetails(r)}
-                            title="View Detail"
-                          >
-                            <i className="bi bi-eye"></i>
-                          </button>
+                        <td>{getBadge(r.status)}</td>
 
-                          {/* DOWNLOAD BUTTON */}
-                          {r.status === "Approved" &&
-                          r.expires_at &&
-                          !expired ? (
-                            <button
-                              className="btn btn-success btn-sm"
-                              onClick={() =>
-                                handleDownload(r.current_version_id)
-                              }
-                              title="Download Document"
+                        <td>
+                          <small className="text-muted">
+                            {new Date(r.created_at).toLocaleDateString("en-GB")}
+                          </small>
+                        </td>
+
+                        <td>
+                          {r.expires_at ? (
+                            <small
+                              className={expired ? "text-danger" : "text-muted"}
                             >
-                              <i className="bi bi-download"></i>
-                            </button>
-                          ) : expired ? (
-                            <span className="text-danger">Expired</span>
+                              {new Date(r.expires_at).toLocaleDateString(
+                                "en-GB",
+                              )}
+                            </small>
                           ) : (
-                            <span className="text-muted small">-</span>
+                            "-"
                           )}
-                        </div>
-                      </td>
-                    </tr>
+                        </td>
+
+                        <td className="text-center">
+                          <div className="d-flex gap-2 justify-content-center">
+                            {/* VIEW */}
+                            <button
+                              className="btn btn-outline-secondary btn-sm"
+                              onClick={() => viewDetails(r)}
+                            >
+                              <i className="bi bi-eye"></i>
+                            </button>
+
+                            {/* DOWNLOAD */}
+                            {r.status === "Approved" &&
+                            r.expires_at &&
+                            !expired ? (
+                              <button
+                                className="btn btn-light border border-1 btn-sm"
+                                onClick={() =>
+                                  handleDownload(r.current_version_id)
+                                }
+                              >
+                                <i className="bi bi-download me-2"></i>Download
+                              </button>
+                            ) : expired ? (
+                              <span className="text-danger small">Expired</span>
+                            ) : (
+                              <span className="text-muted small">-</span>
+                            )}
+                          </div>
+                        </td>
+                        <td>
+                          <button
+                            className="btn btn-sm rounded-circle border-0 shadow-sm"
+                            style={{
+                              width: "36px",
+                              height: "36px",
+                              background:
+                                expandedRow === r.id ? "#df792b" : "#f8f9fa",
+                              color: expandedRow === r.id ? "#fff" : "#495057",
+                            }}
+                            onClick={() =>
+                              setExpandedRow(expandedRow === r.id ? null : r.id)
+                            }
+                          >
+                            <i
+                              className={`bi ${
+                                expandedRow === r.id
+                                  ? "bi-chevron-up"
+                                  : "bi-chevron-down"
+                              }`}
+                            ></i>
+                          </button>
+                        </td>
+                      </tr>
+
+                      {/* EXPANDED ROW */}
+                      {expandedRow === r.id && (
+                        <tr>
+                          <td colSpan="7" className="border-0 bg-light">
+                            <div
+                              className="rounded-4 border bg-white p-4 shadow-sm"
+                              style={{
+                                animation: "fadeIn 0.25s ease-in-out",
+                              }}
+                            >
+                              <div className="row g-4">
+                                {/* ACCESS JUSTIFICATION */}
+                                <div className="col-md-6">
+                                  <div className="h-100 rounded-4 border p-4 bg-light">
+                                    <div className="d-flex align-items-center mb-3">
+                                      <div
+                                        className="rounded-circle d-flex align-items-center justify-content-center me-3"
+                                        style={{
+                                          width: "45px",
+                                          height: "45px",
+                                          background: "#e8f4ff",
+                                        }}
+                                      >
+                                        <i className="bi bi-shield-check text-primary"></i>
+                                      </div>
+
+                                      <div>
+                                        <h6 className="fw-bold mb-0">
+                                          Request Justification
+                                        </h6>
+
+                                        <small className="text-muted">
+                                          Purpose for requesting access
+                                        </small>
+                                      </div>
+                                    </div>
+                                    <div
+                                      className="rounded-3 p-3"
+                                      style={{
+                                        backgroundColor: "#ffffff",
+                                        border: "1px solid #f8d7da",
+                                        minHeight: "120px",
+                                      }}
+                                    >
+                                      <div className="text-secondary">
+                                        {r.reason || (
+                                          <span className="text-muted">
+                                            No justification provided.
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* REVIEW FEEDBACK */}
+                                {r.status?.toLowerCase() === "rejected" && (
+                                  <div className="col-md-6">
+                                    <div
+                                      className="h-100 rounded-4 border p-4"
+                                      style={{
+                                        background: "#fff5f5",
+                                        borderColor: "#f8d7da",
+                                      }}
+                                    >
+                                      <div className="d-flex align-items-center mb-3">
+                                        <div
+                                          className="rounded-circle d-flex align-items-center justify-content-center me-3"
+                                          style={{
+                                            width: "45px",
+                                            height: "45px",
+                                            background: "#ffe5e5",
+                                          }}
+                                        >
+                                          <i className="bi bi-exclamation-octagon text-danger"></i>
+                                        </div>
+
+                                        <div>
+                                          <h6 className="fw-bold mb-0 text-danger">
+                                            Why was this request declined?
+                                          </h6>
+
+                                          <small className="text-muted">
+                                            Feedback provided by the reviewer
+                                          </small>
+                                        </div>
+                                      </div>
+
+                                      <div
+                                        className="rounded-3 p-3"
+                                        style={{
+                                          backgroundColor: "#ffffff",
+                                          border: "1px solid #f8d7da",
+                                          minHeight: "120px",
+                                        }}
+                                      >
+                                        <div className="text-secondary">
+                                          {r.admin_comment || (
+                                            <span className="text-muted">
+                                              No review comments were provided.
+                                            </span>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
                   );
                 })
               )}

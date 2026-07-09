@@ -7,6 +7,7 @@ import FocalPersonLayout from "./layout/FocalPersonLayout";
 import StaffLayout from "./layout/StaffLayout";
 import RequireAuth from "./pages/RequireAuth";
 import PublicDocumentLink from "./pages/PuplicDocumentLink";
+import ForgotPassword from "./pages/ForgotPassword";
 
 //For Super Adminstrator
 import SuperAdministratorDashboard from "./pages/superadministrator/SuperAdministratorDashboard";
@@ -25,6 +26,7 @@ import ManageSupportContacts from "./pages/superadministrator/SupportContact";
 import StorageDashboard from "./pages/superadministrator/StorageDashboard";
 import SuperAdminDocumentTracker from "./pages/superadministrator/SuperAdminDocumentTracker";
 import BackupPage from "./pages/superadministrator/BackupPage";
+import SecuritySettingsSuperAdmin from "./pages/superadministrator/SecuritySetting";
 
 //For Adminstrator (DPRS)
 import AdministratorDashboard from "./pages/administrator/AdministratorDashboard";
@@ -48,6 +50,7 @@ import TeamLeadAdmin from "./pages/administrator/TeamLead";
 import TeamLeadDetailsAdmin from "./pages/administrator/TeamLeadDetail";
 import AdminDocumentTracker from "./pages/administrator/AdminDocumentTracker";
 import StorageDashboardAdmin from "./pages/administrator/StorageDashboard";
+import SecuritySettingsAdmin from "./pages/administrator/SecuritySetting";
 
 //for DFP
 import DfpDashboard from "./pages/departmentfocalperson/Dashboard";
@@ -74,11 +77,13 @@ import ProgramDetails from "./pages/departmentfocalperson/ProgramDetails";
 import TeamLeadDashboard from "./pages/departmentfocalperson/ProgramAssigned";
 import TeamLeadProgramDetails from "./pages/departmentfocalperson/TeamLeadProgramDetails";
 import ProgramReportsPage from "./pages/departmentfocalperson/ProgramReportsPage";
+import SecuritySettingsDFP from "./pages/departmentfocalperson/SecuritySetting";
 
 //FOR STAFF
 import MainStaffDashboard from "./pages/staff/DashboardStaff";
 import StaffProfile from "./pages/staff/Profile";
 import StaffChangePassword from "./pages/staff/ChangePassword";
+import SecuritySettings from "./pages/staff/SecuritySetting";
 import StaffLineManager from "./pages/staff/LineManager";
 import StaffSupportTickets from "./pages/staff/MySupportTickets";
 import Colleague from "./pages/staff/Colleague";
@@ -104,12 +109,15 @@ import HelpDesk from "./pages/partners/HelpDesk";
 
 
 
+
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route
           path="/public/document/:token"
           element={<PublicDocumentLink />}
@@ -132,6 +140,7 @@ function App() {
             element={<SuperAdminChangePassword />}
           />
           <Route path="line-manager" element={<SuperAdminLineManager />} />
+          <Route path="security-setting" element={<SecuritySettingsSuperAdmin />} />
           <Route path="audit-trait" element={<SuperAdminAuditTrail />} />
           <Route path="staff" element={<StaffDirectorySuperAdmin />} />
           <Route path="account/admin" element={<AdminManagement />} />
@@ -166,6 +175,7 @@ function App() {
           <Route path="profile" element={<AdminProfile />} />
           <Route path="change-password" element={<AdminChangePassword />} />
           <Route path="line-manager" element={<AdminLineManager />} />
+          <Route path="security-setting" element={<SecuritySettingsAdmin />} />
           <Route path="my-support-tickets" element={<AdminSupportTickets />} />
           <Route path="staff" element={<StaffDirectoryAdmin />} />
           <Route path="partners" element={<PartnerPage />} />
@@ -242,6 +252,7 @@ function App() {
           <Route path="staff-directory" element={<StaffDirectory />} />
           <Route path="staff/:id/dashboard" element={<StaffDashboard />} />
           <Route path="/department/line-manager" element={<LineManager />} />
+          <Route path="security-setting" element={<SecuritySettingsDFP />} />
           <Route
             path="/department/my-support-tickets"
             element={<MySupportTickets />}
@@ -279,6 +290,7 @@ function App() {
           <Route index element={<MainStaffDashboard />} />
           <Route path="profile" element={<StaffProfile />} />
           <Route path="change-password" element={<StaffChangePassword />} />
+          <Route path="security-setting" element={<SecuritySettings />} />
           <Route path="line-manager" element={<StaffLineManager />} />
           <Route path="my-support-tickets" element={<StaffSupportTickets />} />
           <Route path="staff-list" element={<Colleague />} />

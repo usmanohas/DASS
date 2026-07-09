@@ -289,6 +289,12 @@ const SuperAdminTopbar = ({
                   Line Manager / Support
                 </Link>
               </li>
+              <li>
+                <Link to="/superadmin/security-setting" className="dropdown-item">
+                  <i className="bi bi-gear me-2"></i>
+                  Security Setting
+                </Link>
+              </li>
             </ul>
           </div>
 

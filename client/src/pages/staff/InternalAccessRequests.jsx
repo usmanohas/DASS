@@ -8,6 +8,7 @@ const StaffDocumentAccess = () => {
   const [filtered, setFiltered] = useState([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [expandedRow, setExpandedRow] = useState(null);
 
   // ✅ Inject spinner CSS globally (FIXED)
   useEffect(() => {
@@ -63,10 +64,9 @@ const StaffDocumentAccess = () => {
   // Fetch only requests for logged-in user
   const fetchRequests = async () => {
     try {
-      const res = await axios.get(
-        `${API_BASE_URL}/staff/my-access-requests`,
-        { withCredentials: true },
-      );
+      const res = await axios.get(`${API_BASE_URL}/staff/my-access-requests`, {
+        withCredentials: true,
+      });
       setRequests(res.data.Data || []);
     } catch (err) {
       Swal.fire("Error", "Failed to fetch requests", "error");
@@ -247,19 +247,20 @@ const StaffDocumentAccess = () => {
             <table className="table table-hover align-middle">
               <thead className="table-light">
                 <tr>
-                  <th>#</th>
-                  <th>Document</th>
+                  <th width="50">#</th>
+                  <th>Document Title</th>
                   <th>Classification</th>
                   <th>Status</th>
                   <th>Expires At</th>
                   <th>Date Requested</th>
                   <th className="text-center">Action</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
                 {paginatedData.length === 0 ? (
                   <tr>
-                    <td colSpan="7" className="text-center py-3">
+                    <td colSpan="8" className="text-center py-3">
                       <div className="text-center py-5">
                         <i
                           className="bi bi-inbox text-muted"
@@ -283,48 +284,253 @@ const StaffDocumentAccess = () => {
                   </tr>
                 ) : (
                   paginatedData.map((r, index) => (
-                    <tr key={r.id}>
-                      <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                      <td>{r.title}</td>
-                      <td>
-                        <span className="badge bg-light text-dark border px-3 py-2 rounded-pill">
-                          {r.classification}
-                        </span>
-                      </td>
-                      <td>
-                        <span
-                          className={`badge ${
-                            r.status === "approved"
-                              ? "bg-success-subtle text-success border px-3 py-2 rounded-pill"
-                              : r.status === "declined"
-                                ? "bg-danger-subtle text-danger border px-3 py-2 rounded-pill"
-                                : "bg-warning-subtle text-warning border px-3 py-2 rounded-pill"
-                          }`}
-                        >
-                          {r.status.toUpperCase()}
-                        </span>
-                      </td>
-                      <td>
-                        {r.expires_at
-                          ? new Date(r.expires_at).toLocaleString()
-                          : "-"}
-                      </td>
-                      <td>{new Date(r.created_at).toLocaleString()}</td>
-                      <td className="text-end text-center">
-                        {canDownload(r) ? (
-                          <button
-                            className="btn btn-sm btn-success"
-                            onClick={() => handleDownload(r.current_version_id)}
+                    <React.Fragment key={r.id}>
+                      {/* MAIN ROW */}
+                      <tr>
+                        {/* Expand Button */}
+                        <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
+
+                        <td>
+                          <div className="fw-semibold">{r.title}</div>
+                        </td>
+
+                        <td>
+                          <span className="badge bg-light text-dark border px-3 py-2 rounded-pill">
+                            {r.classification}
+                          </span>
+                        </td>
+
+                        <td>
+                          <span
+                            className={`badge ${
+                              r.status === "approved"
+                                ? "bg-success-subtle text-success border"
+                                : r.status === "declined"
+                                  ? "bg-danger-subtle text-danger border"
+                                  : "bg-warning-subtle text-warning border"
+                            } px-3 py-2 rounded-pill`}
                           >
-                            <i className="bi bi-download" title="Download"></i>
+                            {r.status.toUpperCase()}
+                          </span>
+                        </td>
+
+                        <td>
+                          {r.expires_at
+                            ? new Date(r.expires_at).toLocaleString()
+                            : "-"}
+                        </td>
+
+                        <td>{new Date(r.created_at).toLocaleString()}</td>
+
+                        <td className="text-center">
+                          {canDownload(r) ? (
+                            <button
+                              className="btn btn-success btn-sm"
+                              onClick={() =>
+                                handleDownload(r.current_version_id)
+                              }
+                            >
+                              <i className="bi bi-download me-1"></i>
+                              Download
+                            </button>
+                          ) : r.status === "approved" ? (
+                            <span className="text-danger">Expired</span>
+                          ) : (
+                            <span className="text-secondary">No Access</span>
+                          )}
+                        </td>
+                        <td>
+                          <button
+                            className="btn btn-sm rounded-circle border-0 shadow-sm"
+                            style={{
+                              width: "36px",
+                              height: "36px",
+                              background:
+                                expandedRow === r.id ? "#df792b" : "#f8f9fa",
+                              color: expandedRow === r.id ? "#fff" : "#495057",
+                            }}
+                            onClick={() =>
+                              setExpandedRow(expandedRow === r.id ? null : r.id)
+                            }
+                          >
+                            <i
+                              className={`bi ${
+                                expandedRow === r.id
+                                  ? "bi-chevron-up"
+                                  : "bi-chevron-down"
+                              }`}
+                            ></i>
                           </button>
-                        ) : r.status === "approved" ? (
-                          <span className="text-danger">Expired</span>
-                        ) : (
-                          <span className="text-secondary">No Access</span>
-                        )}
-                      </td>
-                    </tr>
+                        </td>
+                      </tr>
+
+                      {/* EXPANDED ROW */}
+                      {expandedRow === r.id && (
+                        <tr>
+                          <td colSpan="8" className="border-0 bg-light-subtle">
+                            <div
+                              className="p-4 mx-2 my-3 rounded-4 border bg-white shadow-sm"
+                              style={{
+                                animation: "fadeIn 0.25s ease-in-out",
+                              }}
+                            >
+                              <div className="row g-4">
+                                {/* REQUEST REASON */}
+                                <div
+                                  className={
+                                    r.status === "declined"
+                                      ? "col-md-6"
+                                      : "col-12"
+                                  }
+                                >
+                                  <div
+                                    className="h-100 rounded-4 border p-4"
+                                    style={{
+                                      background:
+                                        "linear-gradient(to right, #f8fbff, #ffffff)",
+                                      borderLeft: "5px solid #0d6efd",
+                                    }}
+                                  >
+                                    <div className="d-flex align-items-center mb-3">
+                                      <div
+                                        className="rounded-circle d-flex align-items-center justify-content-center me-3"
+                                        style={{
+                                          width: "48px",
+                                          height: "48px",
+                                          background: "rgba(13,110,253,0.1)",
+                                        }}
+                                      >
+                                        <i className="bi bi-chat-left-text fs-5 text-primary"></i>
+                                      </div>
+
+                                      <div>
+                                        <h6 className="fw-bold mb-1">
+                                          Request Justification
+                                        </h6>
+                                        <small className="text-muted">
+                                          Submitted by requester
+                                        </small>
+                                      </div>
+                                    </div>
+
+                                    <div
+                                      className="rounded-3 p-3"
+                                      style={{
+                                        backgroundColor: "#ffffff",
+                                        border: "1px solid #edf2f7",
+                                        minHeight: "120px",
+                                      }}
+                                    >
+                                      {r.reason ? (
+                                        <p
+                                          className="mb-0 text-secondary"
+                                          style={{
+                                            lineHeight: "1.8",
+                                            whiteSpace: "pre-wrap",
+                                          }}
+                                        >
+                                          {r.reason}
+                                        </p>
+                                      ) : (
+                                        <div className="text-center py-4">
+                                          <i className="bi bi-chat-square-text text-muted fs-2"></i>
+                                          <p className="text-muted mt-2 mb-0">
+                                            No reason provided.
+                                          </p>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* DECLINE REASON */}
+                                {r.status === "declined" && (
+                                  <div className="col-md-6">
+                                    <div
+                                      className="h-100 rounded-4 border p-4"
+                                      style={{
+                                        background:
+                                          "linear-gradient(to right, #fff8f8, #ffffff)",
+                                        borderLeft: "5px solid #dc3545",
+                                      }}
+                                    >
+                                      <div className="d-flex align-items-center mb-3">
+                                        <div
+                                          className="rounded-circle d-flex align-items-center justify-content-center me-3"
+                                          style={{
+                                            width: "48px",
+                                            height: "48px",
+                                            background: "rgba(220,53,69,0.1)",
+                                          }}
+                                        >
+                                          <i className="bi bi-shield-x fs-5 text-danger"></i>
+                                        </div>
+
+                                        <div>
+                                          <h6 className="fw-bold mb-1 text-danger">
+                                            Why was this request declined?
+                                          </h6>
+                                          <small className="text-muted">
+                                            Review feedback from DFP
+                                          </small>
+                                        </div>
+                                      </div>
+
+                                      <div
+                                        className="rounded-3 p-3"
+                                        style={{
+                                          backgroundColor: "#ffffff",
+                                          border: "1px solid #f8d7da",
+                                          minHeight: "120px",
+                                        }}
+                                      >
+                                        {r.review_note ? (
+                                          <p
+                                            className="mb-0 text-secondary"
+                                            style={{
+                                              lineHeight: "1.8",
+                                              whiteSpace: "pre-wrap",
+                                            }}
+                                          >
+                                            {r.review_note}
+                                          </p>
+                                        ) : (
+                                          <div className="text-center py-4">
+                                            <i className="bi bi-info-circle text-muted fs-2"></i>
+                                            <p className="text-muted mt-2 mb-0">
+                                              No decline reason provided.
+                                            </p>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* FOOTER INFO */}
+                              <div className="mt-4 pt-3 border-top">
+                                <div className="row text-muted small">
+                                  <div className="col-md-6">
+                                    <i className="bi bi-calendar-event me-2"></i>
+                                    Requested:{" "}
+                                    {new Date(r.created_at).toLocaleString()}
+                                  </div>
+
+                                  {r.reviewed_at && (
+                                    <div className="col-md-6 text-md-end mt-2 mt-md-0">
+                                      <i className="bi bi-check2-circle me-2"></i>
+                                      Reviewed:{" "}
+                                      {new Date(r.reviewed_at).toLocaleString()}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
                   ))
                 )}
               </tbody>

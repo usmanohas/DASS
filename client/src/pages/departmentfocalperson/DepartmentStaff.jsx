@@ -87,16 +87,59 @@ const DepartmentStaff = () => {
       }
 
       if (res.data.Status) {
-        Swal.fire(
-          "Success",
-          selectedStaff
-            ? "Staff updated successfully"
-            : "Staff added successfully",
-          "success",
-        );
+        if (selectedStaff) {
+          Swal.fire({
+            icon: "success",
+            title: "Staff Updated",
+            text: "Staff record updated successfully.",
+            confirmButtonColor: "#198754",
+          });
+        } else {
+          Swal.fire({
+            icon: "success",
+            title: "Staff Account Created Successfully",
+            html: `
+        <div class="text-start">
+          <p>The staff account has been created successfully.</p>
+
+          <div class="alert alert-info mt-3">
+            <strong>Login Credentials</strong>
+            <hr class="my-2">
+
+            <p class="mb-2">
+              <strong>Username:</strong><br>
+              ${form.email || "No email provided"}
+            </p>
+
+            <p class="mb-0">
+              <strong>Password:</strong><br>
+              ${form.fileNumber}
+            </p>
+          </div>
+
+          <small class="text-muted">
+            The staff member should change the password after first login.
+          </small>
+        </div>
+      `,
+            confirmButtonColor: "#198754",
+            width: "600px",
+          });
+        }
 
         setShowAddModal(false);
         setSelectedStaff(null);
+
+        setForm({
+          title: "",
+          full_name: "",
+          gender: "",
+          designation: "",
+          fileNumber: "",
+          email: "",
+          phone_number: "",
+        });
+
         fetchStaff();
       } else {
         Swal.fire("Error", res.data.Error || "Operation failed", "error");
@@ -408,7 +451,9 @@ const DepartmentStaff = () => {
           {/* SUMMARY */}
           <div className="d-flex align-items-center gap-2">
             <span className="text-white small">Total Records:</span>
-            <span className="badge bg-white text-dark fw-bold px-3 py-2">{staff.length}</span>
+            <span className="badge bg-white text-dark fw-bold px-3 py-2">
+              {staff.length}
+            </span>
           </div>
         </div>
       </div>

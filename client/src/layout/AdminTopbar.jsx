@@ -475,6 +475,12 @@ const AdminTopbar = ({
                   Line Manager / Support
                 </Link>
               </li>
+              <li>
+                <Link to="/admin/security-setting" className="dropdown-item">
+                  <i className="bi bi-gear me-2"></i>
+                  Security Setting
+                </Link>
+              </li>
             </ul>
           </div>
 

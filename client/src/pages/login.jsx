@@ -188,7 +188,7 @@ const Login = () => {
                 </label>
               </div>
 
-              <Link to="/forgot-password" className="small text-success fw-semibold">
+              <Link to="/forgot-password" className="small text-success fw-semibold text-decoration-none">
                 Forgot password?
               </Link>
 

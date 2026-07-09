@@ -6577,6 +6577,189 @@ router.get("/programs/:id/reports", verifyToken, async (req, res) => {
   }
 });
 
+/* ===============================================
+         FORGET PASSWORD SECURITY SETTINGS
+================================================= */
 
+router.get(
+  "/security-questions",
+  verifyToken,
+  async (req, res) => {
+    try {
+      const connection = await connectToDatabase();
+
+      const [rows] = await connection.query(`
+        SELECT id, question
+        FROM security_questions
+        WHERE is_active = 1
+        ORDER BY question
+      `);
+
+      return res.json({
+        Status: true,
+        Questions: rows,
+      });
+    } catch (err) {
+      console.log(err);
+
+      return res.json({
+        Status: false,
+        Error: "Unable to fetch questions",
+      });
+    }
+  }
+);
+
+router.get(
+  "/security-settings",
+  verifyToken,
+  async (req, res) => {
+    try {
+      const connection = await connectToDatabase();
+
+      const staffId = req.user.id;
+
+      const [rows] = await connection.query(
+        `
+        SELECT
+          ssa.id,
+          ssa.question_id,
+          sq.question
+        FROM staff_security_answers ssa
+        JOIN security_questions sq
+          ON sq.id = ssa.question_id
+        WHERE ssa.staff_id = ?
+        ORDER BY ssa.slot_number ASC
+      `,
+        [staffId]
+      );
+
+      return res.json({
+        Status: true,
+        Questions: rows,
+      });
+    } catch (err) {
+      console.log(err);
+
+      return res.json({
+        Status: false,
+        Error: "Unable to fetch settings",
+      });
+    }
+  }
+);
+
+router.post(
+  "/security-settings",
+  verifyToken,
+  async (req, res) => {
+    try {
+      const connection = await connectToDatabase();
+
+      const staffId = req.user.id;
+      const { questions } = req.body;
+
+      // Validation
+      if (!questions || questions.length !== 3) {
+        return res.json({
+          Status: false,
+          Error: "Exactly three security questions are required",
+        });
+      }
+
+      // Prevent duplicate questions
+      const questionIds = questions.map(
+        (q) => Number(q.question_id)
+      );
+
+      const uniqueQuestions = [...new Set(questionIds)];
+
+      if (uniqueQuestions.length !== 3) {
+        return res.json({
+          Status: false,
+          Error: "Please select three different questions",
+        });
+      }
+
+      // Save/Update Questions
+      for (let i = 0; i < questions.length; i++) {
+        const q = questions[i];
+
+        if (!q.question_id || !q.answer?.trim()) {
+          return res.json({
+            Status: false,
+            Error: "All questions and answers are required",
+          });
+        }
+
+        const hash = await bcrypt.hash(
+          q.answer.trim().toLowerCase(),
+          10
+        );
+
+        await connection.query(
+          `
+          INSERT INTO staff_security_answers
+          (
+            staff_id,
+            slot_number,
+            question_id,
+            answer_hash
+          )
+          VALUES (?, ?, ?, ?)
+
+          ON DUPLICATE KEY UPDATE
+            question_id = VALUES(question_id),
+            answer_hash = VALUES(answer_hash)
+          `,
+          [
+            staffId,
+            i + 1,
+            q.question_id,
+            hash,
+          ]
+        );
+      }
+
+      return res.json({
+        Status: true,
+        Message:
+          "Security questions updated successfully",
+      });
+    } catch (err) {
+      console.log(err);
+
+      return res.json({
+        Status: false,
+        Error: "Unable to save security settings",
+      });
+    }
+  }
+);
+
+router.delete(
+  "/security-settings",
+  verifyToken,
+  async (req, res) => {
+    try {
+      const connection = await connectToDatabase();
+
+      await connection.query(
+        "DELETE FROM staff_security_answers WHERE staff_id=?",
+        [req.user.id]
+      );
+
+      return res.json({
+        Status: true,
+        Message: "Security settings removed successfully",
+      });
+    } catch (err) {
+      return res.json({
+        Status: false,
+        Error: "Unable to remove settings",
+      });
+    }
+  }
+);
 
 export { router as DepartmentRouter };
